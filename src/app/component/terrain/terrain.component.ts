@@ -56,6 +56,11 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
   get isAltitudeIndicate(): boolean { return this.terrain.isAltitudeIndicate; }
   set isAltitudeIndicate(isAltitudeIndicate: boolean) { this.terrain.isAltitudeIndicate = isAltitudeIndicate; }
 
+  get isHollow(): boolean { return this.terrain.isHollow; }
+  set isHollow(isHollow: boolean) { this.terrain.isHollow = isHollow; }
+  get isBlackPaint(): boolean { return this.terrain.isBlackPaint; }
+  set isBlackPaint(isBlackPaint: boolean) { this.terrain.isBlackPaint = isBlackPaint; }
+
   gridSize: number = 50;
 
   get isWallExist(): boolean {
@@ -201,6 +206,33 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
             this.isSlope = true;
           }
         }),
+      ContextMenuSeparator,
+      { name: '画像効果', action: null, subActions: [
+        (this.isHollow
+          ? {
+            name: '☑ ぼかし', action: () => {
+              this.isHollow = false;
+              EventSystem.trigger('UPDATE_INVENTORY', null);
+            }
+          } : {
+            name: '☐ ぼかし', action: () => {
+              this.isHollow = true;
+              EventSystem.trigger('UPDATE_INVENTORY', null);
+            }
+          }),
+          (this.isBlackPaint
+            ? {
+              name: '☑ 黒塗り', action: () => {
+                this.isBlackPaint = false;
+                EventSystem.trigger('UPDATE_INVENTORY', null);
+              }
+            } : {
+              name: '☐ 黒塗り', action: () => {
+                this.isBlackPaint = true;
+                EventSystem.trigger('UPDATE_INVENTORY', null);
+              }
+            }),
+        ]},
       (this.isSurfaceShading
         ? {
           name: '壁に陰影をつけない', action: () => {

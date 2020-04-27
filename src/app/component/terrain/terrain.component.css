@@ -198,3 +198,26 @@
   text-shadow: #444 0px 0px 3px;
   backface-visibility: hidden;
 }
+.hollow .texture {
+  opacity: 0.6;
+  filter: blur(1px);
+}
+.hollow .texture.of-wall-top {
+  filter: brightness(0.3) blur(1px);
+}
+.hollow .texture.of-wall-bottom {
+  filter: brightness(1.0) blur(1px);
+}
+.hollow .texture.of-wall-left {
+  filter: brightness(0.5) blur(1px);
+}
+.hollow .texture.of-wall-right {
+  filter: brightness(0.8) blur(1px);
+}
+.hollow .of-wall-top.no-shadow, .hollow .of-wall-left.no-shadow, .hollow .of-wall-right.no-shadow {
+  filter: brightness(1.0);
+}
+
+.black-paint .texture {
+  filter: brightness(0) !important;
+}
