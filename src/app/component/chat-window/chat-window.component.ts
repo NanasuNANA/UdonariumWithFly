@@ -1,17 +1,10 @@
-import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
-
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatMessage } from '@udonarium/chat-message';
 import { ChatTab } from '@udonarium/chat-tab';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
-import { EventSystem, Network } from '@udonarium/core/system';
-import { PeerContext } from '@udonarium/core/system/network/peer-context';
-import { DiceBot } from '@udonarium/dice-bot';
-import { GameCharacter } from '@udonarium/game-character';
+import { EventSystem } from '@udonarium/core/system';
 import { PeerCursor } from '@udonarium/peer-cursor';
-
 import { ChatTabSettingComponent } from 'component/chat-tab-setting/chat-tab-setting.component';
-import { TextViewComponent } from 'component/text-view/text-view.component';
 import { ChatMessageService } from 'service/chat-message.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
@@ -21,20 +14,27 @@ import { ContextMenuSeparator, ContextMenuService, ContextMenuAction } from 'ser
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
 import { ChatPaletteComponent } from 'component/chat-palette/chat-palette.component';
 
+import { GameCharacter } from '@udonarium/game-character';
+import { Network } from '@udonarium/core/system';
+import { DiceBot } from '@udonarium/dice-bot';
+import { TextViewComponent } from 'component/text-view/text-view.component';
+import { ViewChild, ElementRef } from '@angular/core';
+import { PeerContext } from '@udonarium/core/system/network/peer-context';
+
 @Component({
   selector: 'chat-window',
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css']
 })
 export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef;
+  @ViewChild('textArea') textAreaElementRef: ElementRef<HTMLTextAreaElement>;
+  sendFrom: string = 'Guest';
 
   sender: string = 'Guest';  
   text: string = '';
   sendTo: string = '';
   get isDirect(): boolean { return this.sendTo != null && this.sendTo.length ? true : false }
-  get gameType(): string { return this.chatMessageService.gameType; }
-  set gameType(gameType: string) { this.chatMessageService.gameType = gameType; }
+
   gameHelp: string|string[] = '';
 
   private shouldUpdateCharacterList: boolean = true;
@@ -51,6 +51,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
 
   gameCharacter: GameCharacter = null;
   isUseFaceIcon: boolean = true;
+
+  get gameType(): string { return this.chatMessageService.gameType; }
+  set gameType(gameType: string) { this.chatMessageService.gameType = gameType; }
 
   private _chatTabidentifier: string = '';
   get chatTabidentifier(): string { return this._chatTabidentifier; }
@@ -90,7 +93,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   get chatTab(): ChatTab { return ObjectStore.instance.get<ChatTab>(this.chatTabidentifier); }
-  maxLogLength: number = 1000;
   isAutoScroll: boolean = true;
   scrollToBottomTimer: NodeJS.Timer = null;
 
@@ -105,7 +107,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   get otherPeers(): PeerCursor[] { return ObjectStore.instance.getObjects(PeerCursor); }
 
   constructor(
-    private ngZone: NgZone,
     public chatMessageService: ChatMessageService,
     private panelService: PanelService,
     private pointerDeviceService: PointerDeviceService,
@@ -113,7 +114,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.sender = this.myPeer.identifier;
+    this.sendFrom = PeerCursor.myCursor.identifier;
     this._chatTabidentifier = 0 < this.chatMessageService.chatTabs.length ? this.chatMessageService.chatTabs[0].identifier : '';
 
     EventSystem.register(this)
@@ -126,37 +127,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
           this.checkAutoScroll();
         }
         if (this.isAutoScroll && this.chatTab) this.chatTab.markForRead();
-        let sendFrom = message ? message.from : '?';
-        if (this.writingPeers.has(sendFrom)) {
-          clearTimeout(this.writingPeers.get(sendFrom));
-          this.writingPeers.delete(sendFrom);
-          this.updateWritingPeerNames();
-        }
-      })
-      .on('UPDATE_GAME_OBJECT', -1000, event => {
-        if (event.data.aliasName !== GameCharacter.aliasName) return;
-        this.shouldUpdateCharacterList = true;
-        if (this.gameCharacter && !this.allowsChat(this.gameCharacter)) {
-          this.gameCharacter = null;
-          this.sender = this.myPeer.identifier;
-        }
-      })
-      .on('DISCONNECT_PEER', event => {
-        let object = ObjectStore.instance.get(this.sendTo);
-        if (object instanceof PeerCursor && object.peerId === event.data.peer) {
-          this.sendTo = '';
-        }
-      })
-      .on<string>('WRITING_A_MESSAGE', event => {
-        if (event.isSendFromSelf || event.data !== this.chatTabidentifier) return;
-        this.ngZone.run(() => {
-          if (this.writingPeers.has(event.sendFrom)) clearTimeout(this.writingPeers.get(event.sendFrom));
-          this.writingPeers.set(event.sendFrom, setTimeout(() => {
-            this.writingPeers.delete(event.sendFrom);
-            this.updateWritingPeerNames();
-          }, 2000));
-          this.updateWritingPeerNames();
-        });
       });
     Promise.resolve().then(() => this.updatePanelTitle());
   }
@@ -167,13 +137,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     EventSystem.unregister(this);
-  }
-
-  private updateWritingPeerNames() {
-    this.writingPeerNames = Array.from(this.writingPeers.keys()).map(peerId => {
-      let peer = PeerCursor.find(peerId);
-      return peer ? peer.name : '';
-    });
   }
 
   // @TODO やり方はもう少し考えた方がいいい
@@ -349,49 +312,13 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
     component.selectedTab = this.chatTab;
   }
 
-  onInput() {
-    if (this.writingEventInterval === null && this.previousWritingLength <= this.text.length) {
-      let sendTo: string = null;
-      if (this.isDirect) {
-        let object = ObjectStore.instance.get(this.sendTo);
-        if (object instanceof PeerCursor) {
-          let peer = PeerContext.create(object.peerId);
-          if (peer) sendTo = peer.id;
-        }
-      }
-      EventSystem.call('WRITING_A_MESSAGE', this.chatTabidentifier, sendTo);
-      this.writingEventInterval = setTimeout(() => {
-        this.writingEventInterval = null;
-      }, 200);
-    }
-    this.previousWritingLength = this.text.length;
-    this.calcFitHeight();
-  }
-
-  calcFitHeight() {
-    let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
-    textArea.style.height = '';
-    if (textArea.scrollHeight >= textArea.offsetHeight) {
-      textArea.style.height = textArea.scrollHeight + 'px';
+  /*
+  sendChat(value: { text: string, gameType: string, sendFrom: string, sendTo: string }) {
+    if (this.chatTab) {
+      this.chatMessageService.sendMessage(this.chatTab, value.text, value.gameType, value.sendFrom, value.sendTo);
     }
   }
-
-  private allowsChat(gameCharacter: GameCharacter): boolean {
-    switch (gameCharacter.location.name) {
-      case 'table':
-      case this.myPeer.peerId:
-        return true;
-      case 'graveyard':
-        return false;
-      default:
-        for (const conn of Network.peerContexts) {
-          if (conn.isOpen && gameCharacter.location.name === conn.fullstring) {
-            return false;
-          }
-        }
-        return true;
-    }
-  }
+ */
 
   trackByChatTab(index: number, chatTab: ChatTab) {
     return chatTab.identifier;
@@ -516,5 +443,49 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
     let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
     let component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
     component.character = gameObject;
+  }
+
+  private allowsChat(gameCharacter: GameCharacter): boolean {
+    switch (gameCharacter.location.name) {
+      case 'table':
+      case this.myPeer.peerId:
+        return true;
+      case 'graveyard':
+        return false;
+      default:
+        for (const conn of Network.peerContexts) {
+          if (conn.isOpen && gameCharacter.location.name === conn.fullstring) {
+            return false;
+          }
+        }
+        return true;
+    }
+  }
+
+  calcFitHeight() {
+    let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+    textArea.style.height = '';
+    if (textArea.scrollHeight >= textArea.offsetHeight) {
+      textArea.style.height = textArea.scrollHeight + 'px';
+    }
+  }
+
+  onInput() {
+    if (this.writingEventInterval === null && this.previousWritingLength <= this.text.length) {
+      let sendTo: string = null;
+      if (this.isDirect) {
+        let object = ObjectStore.instance.get(this.sendTo);
+        if (object instanceof PeerCursor) {
+          let peer = PeerContext.create(object.peerId);
+          if (peer) sendTo = peer.id;
+        }
+      }
+      EventSystem.call('WRITING_A_MESSAGE', this.chatTabidentifier, sendTo);
+      this.writingEventInterval = setTimeout(() => {
+        this.writingEventInterval = null;
+      }, 200);
+    }
+    this.previousWritingLength = this.text.length;
+    this.calcFitHeight();
   }
 }

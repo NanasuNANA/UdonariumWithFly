@@ -27,7 +27,15 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "hammerjs",
+              "crypto-js/sha256.js",
+              "crypto-js/lib-typedarrays.js",
+              "file-saver",
+              "msgpack-lite",
+              "pako"
+            ]
           },
           "configurations": {
             "production": {

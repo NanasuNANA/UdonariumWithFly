@@ -1,21 +1,24 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-
 import { ChatPalette } from '@udonarium/chat-palette';
 import { ChatTab } from '@udonarium/chat-tab';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
-import { EventSystem, Network } from '@udonarium/core/system';
-import { PeerContext } from '@udonarium/core/system/network/peer-context';
+import { EventSystem } from '@udonarium/core/system';
 import { DiceBot } from '@udonarium/dice-bot';
 import { GameCharacter } from '@udonarium/game-character';
 import { PeerCursor } from '@udonarium/peer-cursor';
-
-import { TextViewComponent } from 'component/text-view/text-view.component';
+import { ChatInputComponent } from 'component/chat-input/chat-input.component';
 import { ChatMessageService } from 'service/chat-message.service';
+
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { ContextMenuSeparator, ContextMenuService, ContextMenuAction } from 'service/context-menu.service';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
+
+//import { PanelService } from 'service/panel.service';
+import { TextViewComponent } from 'component/text-view/text-view.component';
+import { PeerContext } from '@udonarium/core/system/network/peer-context';
+import { Network } from '@udonarium/core/system';
 
 @Component({
   selector: 'chat-palette',
@@ -23,13 +26,13 @@ import { GameCharacterSheetComponent } from 'component/game-character-sheet/game
   styleUrls: ['./chat-palette.component.css']
 })
 export class ChatPaletteComponent implements OnInit, OnDestroy {
-  @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('chatInput', { static: true }) chatInputComponent: ChatInputComponent;
   @ViewChild('chatPlette') chatPletteElementRef: ElementRef<HTMLSelectElement>;
+  @ViewChild('textArea') textAreaElementRef: ElementRef<HTMLTextAreaElement>;
   @Input() character: GameCharacter = null;
 
   get palette(): ChatPalette { return this.character.chatPalette; }
-  sendTo: string = '';
-  get isDirect(): boolean { return this.sendTo != null && this.sendTo.length ? true : false }
+
   private _gameType: string = '';
   get gameType(): string { return this._gameType };
   set gameType(gameType: string) {
@@ -60,8 +63,16 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     return PeerCursor.CHAT_DEFAULT_COLOR;
   }
 
+  get sendFrom(): string { return this.character.identifier; }
+  set sendFrom(sendFrom: string) {
+    this.onSelectedCharacter(sendFrom);
+  }
+
+  get isDirect(): boolean { return this.sendTo != null && this.sendTo.length ? true : false }
+
   chatTabidentifier: string = '';
   text: string = '';
+  sendTo: string = '';
 
   isEdit: boolean = false;
   editPalette: string = '';
@@ -105,29 +116,12 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     this.chatTabidentifier = this.chatMessageService.chatTabs ? this.chatMessageService.chatTabs[0].identifier : '';
     this.gameType = this.character.chatPalette ? this.character.chatPalette.dicebot : '';
     EventSystem.register(this)
-      .on('UPDATE_GAME_OBJECT', -1000, event => {
-        if (event.data.aliasName !== GameCharacter.aliasName) return;
-        this.shouldUpdateCharacterList = true;
-        if (this.character && !this.allowsChat(this.character)) {
-          if (0 < this.gameCharacters.length) {
-            this.onSelectedCharacter(this.gameCharacters[0].identifier);
-          } else {
-            this.panelService.close();
-          }
-        }
-      })
       .on('DELETE_GAME_OBJECT', -1000, event => {
         if (this.character && this.character.identifier === event.data.identifier) {
           this.panelService.close();
         }
         if (this.chatTabidentifier === event.data.identifier) {
           this.chatTabidentifier = this.chatMessageService.chatTabs ? this.chatMessageService.chatTabs[0].identifier : '';
-        }
-      })
-      .on('DISCONNECT_PEER', event => {
-        let object = ObjectStore.instance.get(this.sendTo);
-        if (object instanceof PeerCursor && object.peerId === event.data.peer) {
-          this.sendTo = '';
         }
       });
   }
@@ -144,7 +138,11 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   onSelectedCharacter(identifier: string) {
     if (this.isEdit) this.toggleEditMode();
     let object = ObjectStore.instance.get(identifier);
-    if (object instanceof GameCharacter) this.character = object;
+    if (object instanceof GameCharacter) {
+      this.character = object;
+      let gameType = this.character.chatPalette ? this.character.chatPalette.dicebot : '';
+      if (0 < gameType.length) this.gameType = gameType;
+    }
     this.updatePanelTitle();
   }
 
@@ -153,6 +151,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     console.log(this.text);
     let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
     textArea.value = this.text;
+    //this.text = line;
   }
 
   clickPalette(line: string) {
@@ -161,12 +160,13 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     if (this.doubleClickTimer && this.selectedPaletteIndex === this.chatPletteElementRef.nativeElement.selectedIndex) {
       clearTimeout(this.doubleClickTimer);
       this.doubleClickTimer = null;
-      this.sendChat(null);
+      this.chatInputComponent.sendChat(null);
     } else {
       this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
       this.text = evaluatedLine;
       let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
       textArea.value = this.text;
+      //this.text = line;
       this.doubleClickTimer = setTimeout(() => { this.doubleClickTimer = null }, 400);
     }
   }
@@ -281,6 +281,13 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     textArea.value = '';
     //this.resetPletteSelect();
     this.calcFitHeight();
+/*
+  sendChat(value: { text: string, gameType: string, sendFrom: string, sendTo: string }) {
+    if (this.chatTab) {
+      let text = this.palette.evaluate(value.text, this.character.rootDataElement);
+      this.chatMessageService.sendMessage(this.chatTab, text, value.gameType, value.sendFrom, value.sendTo);
+    }
+*/
   }
 
   resetPletteSelect() {
