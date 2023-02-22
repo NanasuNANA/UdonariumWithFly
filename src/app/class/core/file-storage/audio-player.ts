@@ -36,6 +36,13 @@ export class AudioPlayer {
     AudioPlayer.auditionGainNode.gain.setTargetAtTime(AudioPlayer._auditionVolume, AudioPlayer.audioContext.currentTime, 0.01);
   }
 
+  private static _soundEffectVolume: number = 0.5;
+  static get soundEffectVolume(): number { return AudioPlayer._soundEffectVolume; }
+  static set soundEffectVolume(soundEffectVolume: number) {
+    AudioPlayer._soundEffectVolume = soundEffectVolume;
+    AudioPlayer.auditionGainNode.gain.setTargetAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime, 0.01);
+  }
+
   private static _masterGainNode: GainNode
   private static get masterGainNode(): GainNode {
     if (!AudioPlayer._masterGainNode) {

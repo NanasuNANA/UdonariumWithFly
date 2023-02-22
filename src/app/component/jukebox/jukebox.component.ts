@@ -24,6 +24,9 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
   set auditionVolume(auditionVolume: number) { AudioPlayer.auditionVolume = auditionVolume; EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null); }
 
+  get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
+  set soundEffectVolume(soundEffectVolume: number) { AudioPlayer.soundEffectVolume = soundEffectVolume; EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null); }
+
   get audios(): AudioFile[] { return AudioStorage.instance.audios.filter(audio => !audio.isHidden); }
   get jukebox(): Jukebox { return ObjectStore.instance.get<Jukebox>('Jukebox'); }
 
