@@ -36,6 +36,9 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   get percentVolume(): number { return Math.floor(AudioPlayer.volume * 100); }
   set percentVolume(percentVolume: number) { AudioPlayer.volume = percentVolume / 100; }
 
+  get percentSoundEffectVolume(): number { return Math.floor(AudioPlayer.soundEffectVolume * 100); }
+  set percentSoundEffectVolume(percentSoundEffectVolume: number) { AudioPlayer.volume = percentSoundEffectVolume / 100; }
+
   readonly auditionPlayer: AudioPlayer = new AudioPlayer();
   private lazyUpdateTimer: NodeJS.Timer = null;
 

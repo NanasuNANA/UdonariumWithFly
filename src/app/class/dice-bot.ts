@@ -380,7 +380,7 @@ export class DiceBot extends GameObject {
     const isFumble: boolean = rollResult.isFumble;
 
     if (result.length < 1) return;
-    if (!rollResult.isDiceRollTable) result = this.formatRollResult(result);
+    if (!rollResult.isDiceRollTable) result = this.formatRollResult(result, id);
 
     let tag = 'system';
     if (isSecret) tag += ' secret';
@@ -651,7 +651,7 @@ export class DiceBot extends GameObject {
     return queue;
   }
 
-  private formatRollResult(result: string): string {
+  private formatRollResult(result: string, id='DiceBot'): string {
     if (result == null) return '';
     return result.split("\n").map(resultLine => {
       let addDiceInfos = [];
@@ -743,6 +743,29 @@ export class DiceBot extends GameObject {
             resultFragment = tmpString;
           } catch(e) {
             console.error(e);
+          }
+        } else if (i == 1 && id == 'DungeonsAndDragons5' && (a[0].startsWith('(AT') || a[0].startsWith('(AR'))) {
+          const isAttackRoll = a[0].startsWith('(AT');
+          const isAdvantage = a[0].endsWith('A)');
+          const isDisadvantage = a[0].endsWith('D)');
+          if (isAdvantage || isDisadvantage) {
+            const match = resultFragment.match(/\[(?<diceArrayString>\d+(?:,\d+)*)?\](?<modifier>[\-+]\d+)?/i);
+            if (!match) return resultFragment;
+            const {diceArrayString, modifier} = match.groups;
+            const numbers = diceArrayString.split(',').map(n => parseInt(n));
+            const liveNumber = isAdvantage ? Math.max(...numbers) : Math.min(...numbers);
+            let isDone = false;
+            return '[' + numbers.map(n => {
+              let palceString = (isAttackRoll && (n === 20 || n === 1)) ? `###${n}###` : n.toString();
+              if (!isDone && n === liveNumber) {
+                isDone = true;
+              } else {
+                palceString = `~~~${palceString}~~~`;
+              }
+              return palceString;
+            }).join(',') + ']' + (modifier ? modifier : '');
+          } else {
+            return resultFragment;
           }
         }
         return resultFragment;

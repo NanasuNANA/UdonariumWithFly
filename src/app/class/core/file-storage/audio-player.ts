@@ -4,6 +4,7 @@ import { FileReaderUtil } from './file-reader-util';
 export enum VolumeType {
   MASTER,
   AUDITION,
+  SOUND_EFFECT
 }
 
 declare global {
@@ -65,8 +66,20 @@ export class AudioPlayer {
     return AudioPlayer._auditionGainNode;
   }
 
+  private static _soundEffectGainNode: GainNode
+  private static get soundEffectGainNode(): GainNode {
+    if (!AudioPlayer._soundEffectGainNode) {
+      let auditionGain = AudioPlayer.audioContext.createGain();
+      auditionGain.gain.setValueAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime);
+      auditionGain.connect(AudioPlayer.audioContext.destination);
+      AudioPlayer._soundEffectGainNode = auditionGain;
+    }
+    return AudioPlayer._soundEffectGainNode;
+  }
+
   static get rootNode(): AudioNode { return AudioPlayer.masterGainNode; }
   static get auditionNode(): AudioNode { return AudioPlayer.auditionGainNode; }
+  static get soundEffectNode(): AudioNode { return AudioPlayer.soundEffectGainNode; }
 
   private _audioElm: HTMLAudioElement;
   private get audioElm(): HTMLAudioElement {
@@ -102,6 +115,10 @@ export class AudioPlayer {
 
   static play(audio: AudioFile, volume: number = 1.0) {
     this.playBufferAsync(audio, volume);
+  }
+
+  static playSoundEffect(audio: AudioFile, volume: number = 1.0) {
+    this.playBufferAsyncBase(AudioPlayer.soundEffectNode, audio, volume);
   }
 
   play(audio: AudioFile = this.audio) {
@@ -142,12 +159,16 @@ export class AudioPlayer {
     switch (this.volumeType) {
       case VolumeType.AUDITION:
         return AudioPlayer.auditionNode;
+      case VolumeType.SOUND_EFFECT:
+        return AudioPlayer.soundEffectNode;
       default:
         return AudioPlayer.rootNode;
     }
   }
 
   private static async playBufferAsync(audio: AudioFile, volume: number = 1.0) {
+    AudioPlayer.playBufferAsyncBase(AudioPlayer.rootNode, audio, volume);
+    /*
     let source = await AudioPlayer.createBufferSourceAsync(audio);
     if (!source) return;
 
@@ -155,6 +176,27 @@ export class AudioPlayer {
     gain.gain.setValueAtTime(volume, AudioPlayer.audioContext.currentTime);
 
     gain.connect(AudioPlayer.rootNode);
+    source.connect(gain);
+
+    source.onended = () => {
+      source.stop();
+      source.disconnect();
+      gain.disconnect();
+      source.buffer = null;
+    };
+
+    source.start();
+    */
+  }
+
+  private static async playBufferAsyncBase(audioNode: AudioNode, audio: AudioFile, volume: number = 1.0) {
+    let source = await AudioPlayer.createBufferSourceAsync(audio);
+    if (!source) return;
+
+    let gain = AudioPlayer.audioContext.createGain();
+    gain.gain.setValueAtTime(volume, AudioPlayer.audioContext.currentTime);
+
+    gain.connect(audioNode);
     source.connect(gain);
 
     source.onended = () => {

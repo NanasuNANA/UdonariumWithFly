@@ -11,6 +11,12 @@
     <input [(ngModel)]="volume" type="range" min="0" title="{{percentVolume + '%'}}" max="1" step="0.01" style="width:53%" /> 
     <span style="white-space: nowrap;"><input type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
   </div>
+  <div>
+    <b>ＳＥ音量<sup class="self-only">*</sup>：</b>
+    <i class="material-icons" style="font-size: 22px">{{ soundEffectVolume == 0 ? 'volume_off' : soundEffectVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i> 
+    <input [(ngModel)]="soundEffectVolume" type="range" min="0" title="{{percentSoundEffectVolume + '%'}}" max="1" step="0.01" style="width:53%" /> 
+    <span style="white-space: nowrap;"><input type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentSoundEffectVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
+  </div>
 </div>
 
 <div style="margin-bottom: 3px">
