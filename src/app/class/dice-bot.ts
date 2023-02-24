@@ -638,7 +638,9 @@ export class DiceBot extends GameObject {
         if (lang && lang[1]) {
           langName = (lang[1] == 'ChineseTraditional') ? '正體中文'
             : (lang[1] == 'Korean') ? '한국어'
-            : (lang[1] == 'English') ? 'English' : 'Other';
+            : (lang[1] == 'English') ? 'English'
+            : (lang[1] == 'SimplifiedChinese') ? '简体中文'
+            : 'Other';
         }
         return {
           id: gameSystemInfo.id,
@@ -755,17 +757,21 @@ export class DiceBot extends GameObject {
             const numbers = diceArrayString.split(',').map(n => parseInt(n));
             const liveNumber = isAdvantage ? Math.max(...numbers) : Math.min(...numbers);
             let isDone = false;
-            return '[' + numbers.map(n => {
-              let palceString = (isAttackRoll && (n === 20 || n === 1)) ? `###${n}###` : n.toString();
-              if (!isDone && n === liveNumber) {
-                isDone = true;
-              } else {
-                palceString = `~~~${palceString}~~~`;
-              }
-              return palceString;
-            }).join(',') + ']' + (modifier ? modifier : '');
-          } else {
-            return resultFragment;
+            resultFragment = '[' + numbers.map(n => {
+                let palceString = (isAttackRoll && (n === 20 || n === 1)) ? `###${n}###` : n.toString();
+                if (!isDone && n === liveNumber) {
+                  isDone = true;
+                } else {
+                  palceString = `~~~${palceString}~~~`;
+                }
+                return palceString;
+              }).join(',') + ']' + (modifier ? modifier : '');
+          } else if (isAttackRoll) {
+            const match = resultFragment.match(/(?<diceString>\d+)?(?<modifier>[\-+]\d+)?/i);
+            if (match) {
+              const {diceString, modifier} = match.groups;
+              if (diceString && (parseInt(diceString) === 20 || parseInt(diceString) === 1)) resultFragment = `###${diceString}###${modifier ? modifier : ''}`;
+            }
           }
         }
         return resultFragment;
