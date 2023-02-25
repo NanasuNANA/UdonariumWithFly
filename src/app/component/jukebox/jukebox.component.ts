@@ -19,25 +19,43 @@ import { PanelService } from 'service/panel.service';
 export class JukeboxComponent implements OnInit, OnDestroy {
 
   get volume(): number { return AudioPlayer.volume; }
-  set volume(volume: number) { AudioPlayer.volume = volume; EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null); }
+  set volume(volume: number) {
+    AudioPlayer.volume = volume;
+    EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    if (window.localStorage) {
+      localStorage.setItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY, volume.toString());
+    }
+  }
 
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
-  set auditionVolume(auditionVolume: number) { AudioPlayer.auditionVolume = auditionVolume; EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null); }
+  set auditionVolume(auditionVolume: number) { 
+    AudioPlayer.auditionVolume = auditionVolume;
+    EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    if (window.localStorage) {
+      localStorage.setItem(Jukebox.JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume.toString());
+    }
+  }
 
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
-  set soundEffectVolume(soundEffectVolume: number) { AudioPlayer.soundEffectVolume = soundEffectVolume; EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null); }
+  set soundEffectVolume(soundEffectVolume: number) {
+    AudioPlayer.soundEffectVolume = soundEffectVolume;
+    EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    if (window.localStorage) {
+      localStorage.setItem(Jukebox.JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume.toString());
+    }
+  }
 
   get audios(): AudioFile[] { return AudioStorage.instance.audios.filter(audio => !audio.isHidden); }
   get jukebox(): Jukebox { return ObjectStore.instance.get<Jukebox>('Jukebox'); }
 
-  get percentAuditionVolume(): number { return Math.floor(AudioPlayer.auditionVolume * 100); }
-  set percentAuditionVolume(percentAuditionVolume: number) { AudioPlayer.auditionVolume = percentAuditionVolume / 100; }
+  get percentVolume(): number { return Math.floor(this.volume * 100); }
+  set percentVolume(percentVolume: number) { this.volume = percentVolume / 100; }
 
-  get percentVolume(): number { return Math.floor(AudioPlayer.volume * 100); }
-  set percentVolume(percentVolume: number) { AudioPlayer.volume = percentVolume / 100; }
+  get percentAuditionVolume(): number { return Math.floor(this.auditionVolume * 100); }
+  set percentAuditionVolume(percentAuditionVolume: number) { this.auditionVolume = percentAuditionVolume / 100; }
 
-  get percentSoundEffectVolume(): number { return Math.floor(AudioPlayer.soundEffectVolume * 100); }
-  set percentSoundEffectVolume(percentSoundEffectVolume: number) { AudioPlayer.volume = percentSoundEffectVolume / 100; }
+  get percentSoundEffectVolume(): number { return Math.floor(this.soundEffectVolume * 100); }
+  set percentSoundEffectVolume(percentSoundEffectVolume: number) { this.soundEffectVolume = percentSoundEffectVolume / 100; }
 
   readonly auditionPlayer: AudioPlayer = new AudioPlayer();
   private lazyUpdateTimer: NodeJS.Timer = null;
@@ -46,7 +64,19 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private panelService: PanelService,
     private ngZone: NgZone
-  ) { }
+  ) {
+    if (window.localStorage) {
+      if (localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY) != null) {
+        this.volume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY));
+      }
+      if (localStorage.getItem(Jukebox.JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY) != null) {
+        this.auditionVolume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY));
+      }
+      if (localStorage.getItem(Jukebox.JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY) != null) {
+        this.soundEffectVolume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY));
+      }
+    }
+  }
 
   ngOnInit() {
     Promise.resolve().then(() => this.modalService.title = this.panelService.title = 'ジュークボックス');
