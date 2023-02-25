@@ -64,11 +64,13 @@ export class DataElement extends ObjectNode {
     return null;
   }
 
-  getFirstElementByNameUnsensitive(name: string): DataElement {
+  getFirstElementByNameUnsensitive(name: string, replacePattern: string|RegExp = null, replacement=''): DataElement {
     for (let child of this.children) {
       if (child instanceof DataElement) {
-        if (StringUtil.toHalfWidth(child.getAttribute('name').replace(/[―ー—‐]/g, '-')).toLowerCase() === StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')).toLowerCase()) return child;
-        let match = child.getFirstElementByNameUnsensitive(name);
+        let normalizeName = StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')).toLowerCase();
+        if (replacePattern != null) normalizeName = normalizeName.replace(replacePattern, replacement);
+        if (StringUtil.toHalfWidth(child.getAttribute('name').replace(/[―ー—‐]/g, '-')).toLowerCase() === normalizeName) return child;
+        let match = child.getFirstElementByNameUnsensitive(name, replacePattern, replacement);
         if (match) return match;
       }
     }
