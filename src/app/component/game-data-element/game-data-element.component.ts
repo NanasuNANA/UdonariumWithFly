@@ -10,7 +10,8 @@ import {
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { DataElement } from '@udonarium/data-element';
-import { RangeArea } from '@udonarium/range';
+import { GameCharacter } from '@udonarium/game-character';
+import { TabletopObject } from '@udonarium/tabletop-object';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { ModalService } from 'service/modal.service';
 
@@ -21,7 +22,7 @@ import { ModalService } from 'service/modal.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() tableTopObjectName: string = null;
+  @Input() tabletopObject: TabletopObject = null;
   @Input() gameDataElement: DataElement = null;
   @Input() isEdit: boolean = false;
   @Input() isTagLocked: boolean = false;
@@ -46,15 +47,24 @@ export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewIni
 
   get abilityScore(): number { return this.gameDataElement.calcAbilityScore(); }
 
-  get isTableTopObjectName() {
+  get isTabletopObjectName() {
     return this.isTagLocked && (this.gameDataElement.name === 'name');
+  }
+
+  get tabletopObjectName() {
+    let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
+    return element ? <string>element.value : '';
   }
 
   get checkValue(): string {
     if (this.currentValue == null) return '';
     let ary = this.currentValue.toString().split(/[|｜]/, 2);
-    if (ary.length <= 1) return this.value == null || this.value == '' ? '' : this.currentValue.toString();
-    return this.value == null || this.value == '' ? ary[1] : ary[0];
+    if (ary.length <= 1) return (this.value == null || this.value == '') ? '' : this.currentValue.toString();
+    let ret = (this.value == null || this.value == '') ? ary[1] : ary[0];
+    if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette) {
+      ret = this.tabletopObject.chatPalette.evaluate(ret, this.tabletopObject.rootDataElement);
+    }
+    return ret;
   }
 
   get isCommonValue(): boolean {
@@ -104,10 +114,14 @@ export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewIni
 
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', event => {
+        let isDetectChange = false;
         if (this.gameDataElement && event.data.identifier === this.gameDataElement.identifier) {
           this.setValues(this.gameDataElement);
-          this.changeDetector.markForCheck();
+          isDetectChange = true;
+        } else if (this.tabletopObject && this.tabletopObject.contains(this.gameDataElement)) {
+          isDetectChange = true;
         }
+        if (isDetectChange) this.changeDetector.markForCheck();
       })
       .on('DELETE_GAME_OBJECT', event => {
         if (this.gameDataElement && this.gameDataElement.identifier === event.data.identifier) {
@@ -162,7 +176,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewIni
     if (StringUtil.sameOrigin(url)) {
       window.open(url.trim(), '_blank', 'noopener');
     } else {
-      this.modalService.open(OpenUrlComponent, { url: url, title: this.tableTopObjectName, subTitle: this.name });
+      this.modalService.open(OpenUrlComponent, { url: url, title: this.tabletopObjectName, subTitle: this.name });
     } 
   }
 

@@ -99,7 +99,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     private saveDataService: SaveDataService,
     private panelService: PanelService,
     private modalService: ModalService,
-    private pointerDeviceService: PointerDeviceService,
+    private pointerDeviceService: PointerDeviceService
   ) { }
 
   ngOnInit() {
@@ -113,33 +113,33 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
         if (this.tabletopObject && this.tabletopObject.identifier === event.data.identifier) {
           switch (this.tabletopObject.aliasName) {
             case 'terrain':
-              this.panelService.title = `地形設定 - ${this.tableTopObjectName}`;
+              this.panelService.title = `地形設定 - ${this.tabletopObjectName}`;
               break;
             case 'card':
               const card = this.tabletopObject;
               if (card instanceof Card) { 
-                this.panelService.title = `カード設定 - ${card.isFront ? this.tableTopObjectName : 'カード（裏面）'}`;
+                this.panelService.title = `カード設定 - ${card.isFront ? this.tabletopObjectName : 'カード（裏面）'}`;
               } 
               break;
             case 'card-stack':
-              this.panelService.title = `山札設定 - ${this.tableTopObjectName}`;
+              this.panelService.title = `山札設定 - ${this.tabletopObjectName}`;
               break;
             case 'table-mask':
-              this.panelService.title = `マップマスク設定 - ${this.tableTopObjectName}`;
+              this.panelService.title = `マップマスク設定 - ${this.tabletopObjectName}`;
               break;
             case 'text-note':
-              this.panelService.title = `共有メモ設定 - ${this.tableTopObjectName}`;
+              this.panelService.title = `共有メモ設定 - ${this.tabletopObjectName}`;
               break;
             case 'dice-symbol':
-              this.panelService.title = `ダイスシンボル設定 - ${this.tableTopObjectName}`;
+              this.panelService.title = `ダイスシンボル設定 - ${this.tabletopObjectName}`;
               break;
             case 'character':
-              this.panelService.title = `キャラクターシート - ${this.tableTopObjectName}`;
+              this.panelService.title = `キャラクターシート - ${this.tabletopObjectName}`;
               break;
             case 'range':
-              this.panelService.title = `射程・範囲設定 - ${this.tableTopObjectName}`;
+              this.panelService.title = `射程・範囲設定 - ${this.tabletopObjectName}`;
               break;
-          }  
+          }
         }
       });
   }
@@ -195,7 +195,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     }
   }
 
-  get tableTopObjectName(): string {
+  get tabletopObjectName(): string {
     let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
     return element ? <string>element.value : '';
   }
@@ -219,7 +219,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
     //let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
     //let objectName: string = element ? <string>element.value : '';
-    let objectName = this.tableTopObjectName;
+    let objectName = this.tabletopObjectName;
 
     await this.saveDataService.saveGameObjectAsync(this.tabletopObject, 'fly_xml_' + objectName, percent => {
       this.progresPercent = percent;

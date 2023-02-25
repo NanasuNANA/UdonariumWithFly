@@ -102,8 +102,8 @@
   </div>
 </ng-template>
 <ng-template #dataElmTag let-dataElm="dataElm" let-name="name">
-  <ng-container *ngIf="dataElm?.name === newLineString"><br></ng-container>
-  <div *ngIf="dataElm && dataElm.name !== newLineString" class="object-tag">
+  <ng-container *ngIf="dataElm && newLineStrings.includes(dataElm.name)"><br></ng-container>
+  <div *ngIf="dataElm && !newLineStrings.includes(dataElm.name)" class="object-tag">
     <ng-container [ngSwitch]="dataElm.attributes['type']">
       <ng-container *ngSwitchCase="'simpleNumber'">
         <div class="tag-name"><span>{{dataElm.name}}</span></div>

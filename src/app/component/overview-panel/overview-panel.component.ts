@@ -164,14 +164,23 @@ export class OverviewPanelComponent implements AfterViewInit, OnDestroy {
   get dataElms(): DataElement[] { return this.tabletopObject && this.tabletopObject.detailDataElement ? this.tabletopObject.detailDataElement.children as DataElement[] : []; }
   get hasDataElms(): boolean { return 0 < this.dataElms.length; }
 
-  get newLineString(): string { return this.inventoryService.newLineString; }
+  get newLineStrings(): string { return this.inventoryService.newLineStrings; }
   get isPointerDragging(): boolean { return this.pointerDeviceService.isDragging; }
 
   get pointerEventsStyle(): any { return { 'is-pointer-events-auto': !this.isPointerDragging, 'pointer-events-none': this.isPointerDragging }; }
 
   isOpenImageView: boolean = false;
 
-  checkRegExp = /[|｜]/g;
+  checkValue(dataElm): string {
+    if (!dataElm || dataElm.currentValue == null) return '';
+    let ary = dataElm.currentValue.toString().split(/[|｜]/, 2);
+    if (ary.length <= 1) return (dataElm.value == null || dataElm.value == '') ? '' : dataElm.currentValue.toString();
+    let ret = (dataElm.value == null || dataElm.value == '') ? ary[1] : ary[0];
+    if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette) {
+      ret = this.tabletopObject.chatPalette.evaluate(ret, this.tabletopObject.rootDataElement);
+    }
+    return ret;
+  }
 
   constructor(
     private inventoryService: GameObjectInventoryService,

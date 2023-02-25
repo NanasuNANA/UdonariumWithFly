@@ -52,7 +52,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
 
   get sortOrderName(): string { return this.sortOrder === SortOrder.ASC ? '昇順' : '降順'; }
 
-  get newLineString(): string { return this.inventoryService.newLineString; }
+  get newLineStrings(): string { return this.inventoryService.newLineStrings; }
 
   get isGMMode(): boolean{ return PeerCursor.myCursor ? PeerCursor.myCursor.isGMMode : false; }
 

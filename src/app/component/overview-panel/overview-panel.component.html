@@ -112,7 +112,7 @@
       <div class="grid-container-root" *ngIf="hasDataElms">
         <!--<ng-container *ngFor="let dataElm of dataElms">-->
         <ng-container *ngFor="let dataElm of inventoryDataElms">
-          <ng-container *ngIf="dataElm && dataElm.name !== newLineString">
+          <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
             <div class="grid-container">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: character.name }"></ng-container>
             </div>
@@ -149,7 +149,7 @@
       <div class="grid-container-root" *ngIf="hasDataElms && dice.isVisible">
         <div class="grid-container">
           <ng-container *ngFor="let dataElm of dataElms">
-            <ng-container *ngIf="dataElm && dataElm.name !== newLineString">
+            <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: dice.name }"></ng-container>
             </ng-container>
           </ng-container>
@@ -213,7 +213,7 @@
           </ng-container>
           <div *ngIf="dataElms.length > 0" class="section border" style="padding-top: 2px"></div>
           <ng-container *ngFor="let dataElm of dataElms">
-            <ng-container *ngIf="dataElm && dataElm.name !== newLineString">
+            <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: range.name }"></ng-container>
             </ng-container>
           </ng-container>
@@ -236,7 +236,7 @@
       <div class="grid-container-root">
         <div class="grid-container">
           <ng-container *ngFor="let dataElm of dataElms">
-            <ng-container *ngIf="dataElm && dataElm.name !== newLineString">
+            <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: object.name }"></ng-container>
             </ng-container>
           </ng-container>
@@ -294,7 +294,7 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'checkProperty'">
-        <div class="tag" [attr.title]="dataElm.name"><span [style.textDecoration]="dataElm.value ? 'none' : 'line-through'">{{dataElm.name}}</span> {{ dataElm.currentValue.toString().split(checkRegExp)[ dataElm.value ? 0 : 1 ] }}</div>
+        <div class="tag" [attr.title]="dataElm.name"><span [style.textDecoration]="dataElm.value ? 'none' : 'line-through'">{{dataElm.name}}</span> {{ checkValue(dataElm) }}</div>
         <div class="value">
           <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" type="checkbox" style="width: 2em; margin-right:1em" [(ngModel)]="dataElm.value" checked="{{dataElm.value ? 'checked' : ''}}" (change)="dataElm.value = (dataElm.value ? dataElm.name : '')">
         </div>

@@ -71,7 +71,7 @@ export class ChatPalette extends ObjectNode {
       evaluate = line.palette;
     }
 
-    console.log(evaluate);
+    //console.log(evaluate);
     let limit = 128;
     let loop = 0;
     let isContinue = true;

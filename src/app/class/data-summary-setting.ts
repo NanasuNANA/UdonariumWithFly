@@ -28,7 +28,7 @@ export class DataSummarySetting extends GameObject implements InnerXml {
   get dataTags(): string[] {
     if (this._dataTag !== this.dataTag) {
       this._dataTag = this.dataTag;
-      this._dataTags = this.dataTag != null && 0 < this.dataTag.trim().length ? this.dataTag.trim().split(/\s+/) : [];
+      this._dataTags = this.dataTag != null && 0 < this.dataTag.trim().length ? this.dataTag.trim().split(/[　\s]+/) : [];
     }
     return this._dataTags;
   }
