@@ -5,7 +5,7 @@ import { AudioPlayer } from '@udonarium/core/file-storage/audio-player';
 import { AudioSharingSystem } from '@udonarium/core/file-storage/audio-sharing-system';
 import { AudioStorage } from '@udonarium/core/file-storage/audio-storage';
 import { FileArchiver } from '@udonarium/core/file-storage/file-archiver';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { ImageSharingSystem } from '@udonarium/core/file-storage/image-sharing-system';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { ObjectFactory } from '@udonarium/core/synchronize-object/object-factory';
@@ -399,6 +399,39 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.panelService.open(ChatWindowComponent, { width: 700, height: 400, left: 100, top: 450 });
     });
 
+    // アイコン
+    if (window.localStorage) {
+      const identifierOrDataUrl = localStorage.getItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+      if (identifierOrDataUrl.startsWith('data:image/')) {
+        try {
+          const type = identifierOrDataUrl.substring('data:'.length, identifierOrDataUrl.indexOf(';'));
+          const bin = atob(identifierOrDataUrl.replace(/^.*,/, '')); 
+          let buffer = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) {
+            buffer[i] = bin.charCodeAt(i);
+          }
+          ImageFile.createAsync(new Blob([buffer.buffer], { type: type })).then(imageFile => {
+            if (imageFile.state === ImageState.COMPLETE) {
+              ImageStorage.instance.add(imageFile);
+              PeerCursor.myCursor.imageIdentifier = imageFile.identifier;
+            } else {
+              localStorage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+            }
+          });
+        } catch (e) {
+          localStorage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+        }
+      } else {
+        ImageStorage.instance.images.forEach((image) => {
+          if (image.identifier === identifierOrDataUrl) {
+            PeerCursor.myCursor.imageIdentifier = identifierOrDataUrl;
+            return;
+          };
+        });
+      }
+    }
+
+    // PWA
     this.swUpdate.versionUpdates.subscribe(evt => {
       switch (evt.type) {
         case 'VERSION_DETECTED':

@@ -14,6 +14,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { ChatMessageService } from 'service/chat-message.service';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { GameCharacter } from '@udonarium/game-character';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
+import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 
 @Component({
   selector: 'peer-menu',
@@ -103,6 +105,21 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.myPeer || !value) return;
       this.myPeer.imageIdentifier = value;
+      if (window.localStorage) {
+        let file: ImageFile = ImageStorage.instance.get(value);
+        if (file) {
+          if (file.state === ImageState.COMPLETE) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                const uriData = reader.result;
+                localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, uriData.toString())
+            });
+            reader.readAsDataURL(file.blob);
+          } else {
+            localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, value);
+          }
+        }
+      }
     });
   }
 
