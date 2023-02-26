@@ -71,6 +71,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private contextMenuService: ContextMenuService
   ) {
+    this.soundTestPlayer.volumeType = VolumeType.SOUND_EFFECT;
     if (window.localStorage) {
       if (localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY) != null) {
         this.volume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY));
@@ -142,11 +143,11 @@ export class JukeboxComponent implements OnInit, OnDestroy {
         { name: 'カードを引く／裏返す', action: () => { this.playSETest(PresetSound.cardDraw); }},
         { name: 'カード・山札を取る', action: () => { this.playSETest(PresetSound.cardPick); }},
         { name: 'カード・山札を置く', action: () => { this.playSETest(PresetSound.cardPut); }},
-        { name: '山札をシャッフルする', action: () => { this.playSETest(PresetSound.cardShuffle); }},
+        { name: '山札をシャッフル', action: () => { this.playSETest(PresetSound.cardShuffle); }},
       ]},
       { name: 'その他', subActions: [
         { name: 'ロック／解除', action: () => { this.playSETest(PresetSound.lock); }},
-        { name: '取り除く／削除', action: () => { this.playSETest(PresetSound.sweep); }},
+        { name: '落下／取り除く／削除', action: () => { this.playSETest(PresetSound.sweep); }},
         { name: '変身！', action: () => { this.playSETest(PresetSound.surprise); }}
       ]}
     ];
@@ -155,7 +156,6 @@ export class JukeboxComponent implements OnInit, OnDestroy {
 
   private playSETest(audioIdentifier) {
     const audio = AudioStorage.instance.get(audioIdentifier);
-    this.soundTestPlayer.volumeType = VolumeType.SOUND_EFFECT;
     if (audio && audio.isReady) {
       EventSystem.unregister(this, 'UPDATE_AUDIO_RESOURE');
       this.soundTestPlayer.play(audio);

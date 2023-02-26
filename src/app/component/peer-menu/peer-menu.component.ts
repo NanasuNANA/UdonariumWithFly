@@ -54,10 +54,16 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     return PeerCursor.myCursor.name;
   }
   set myPeerName(name: string) {
-    if (window.localStorage) {
-      localStorage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, name);
+    if (PeerCursor.myCursor) {
+      PeerCursor.myCursor.name = name;
+      if (window.localStorage) {
+        if (name === PeerCursor.CHAT_DEFAULT_NAME) {
+          localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+        } else {
+          localStorage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, name);
+        }
+      }
     }
-    if (PeerCursor.myCursor) PeerCursor.myCursor.name = name;
   }
 
   get myPeerColor(): string {
@@ -66,10 +72,14 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   }
   set myPeerColor(color: string) {
     if (PeerCursor.myCursor) {
-      PeerCursor.myCursor.color = (color == PeerCursor.CHAT_TRANSPARENT_COLOR) ? PeerCursor.CHAT_DEFAULT_COLOR : color;
-    }
-    if (window.localStorage) {
-      localStorage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color);
+      PeerCursor.myCursor.color = (color == PeerCursor.CHAT_TRANSPARENT_COLOR) ? PeerCursor.CHAT_DEFAULT_COLOR : color; 
+      if (window.localStorage) {
+        if (PeerCursor.myCursor.color === PeerCursor.CHAT_DEFAULT_COLOR) {
+          localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+        } else {
+          localStorage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color);
+        }
+      }
     }
   }
 
@@ -115,6 +125,8 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
                 localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, uriData.toString())
             });
             reader.readAsDataURL(file.blob);
+          } else if (value === 'none_icon') {
+            localStorage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
           } else {
             localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, value);
           }
