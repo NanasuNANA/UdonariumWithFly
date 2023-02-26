@@ -7,6 +7,8 @@ import { FileArchiver } from '@udonarium/core/file-storage/file-archiver';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem } from '@udonarium/core/system';
 import { Jukebox } from '@udonarium/Jukebox';
+import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
+import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 
 import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
@@ -60,10 +62,14 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   readonly auditionPlayer: AudioPlayer = new AudioPlayer();
   private lazyUpdateTimer: NodeJS.Timer = null;
 
+  private readonly soundTestPlayer: AudioPlayer = new AudioPlayer();
+  private menu: ContextMenuAction[];
+
   constructor(
     private modalService: ModalService,
     private panelService: PanelService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private contextMenuService: ContextMenuService
   ) {
     if (window.localStorage) {
       if (localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY) != null) {
@@ -113,6 +119,52 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     let files = input.files;
     if (files.length) FileArchiver.instance.load(files);
     input.value = '';
+  }
+
+  soundTest(event: Event) {
+    const button = <HTMLElement>event.target;
+    const clientRect = button.getBoundingClientRect();
+    const position = { x: window.pageXOffset + clientRect.left, y: window.pageYOffset + clientRect.top + button.clientHeight };
+    const menu: ContextMenuAction[] = [
+      { name: 'キャラクター・地形', subActions: [
+        { name: 'キャラクターの移動開始', action: () => { this.playSETest(PresetSound.piecePick); }},
+        { name: 'キャラクターを置く', action: () => { this.playSETest(PresetSound.piecePut); }},
+        { name: '地形の移動開始／終了', action: () => { this.playSETest(PresetSound.blockPick); }},
+      ]},
+      { name: 'ダイス・コイン', subActions: [
+        { name: 'ダイスシンボルを取る', action: () => { this.playSETest(PresetSound.dicePick); }},
+        { name: 'ダイスシンボルを置く', action: () => { this.playSETest(PresetSound.dicePut); }},
+        { name: 'ダイスを振る１', action: () => { this.playSETest(PresetSound.diceRoll1); }},
+        { name: 'ダイスを振る２', action: () => { this.playSETest(PresetSound.diceRoll2); }},
+        { name: 'コイントス', action: () => { this.playSETest(PresetSound.coinToss); }},
+      ]},
+      { name: 'カード・山札', subActions: [
+        { name: 'カードを引く／裏返す', action: () => { this.playSETest(PresetSound.cardDraw); }},
+        { name: 'カード・山札を取る', action: () => { this.playSETest(PresetSound.cardPick); }},
+        { name: 'カード・山札を置く', action: () => { this.playSETest(PresetSound.cardPut); }},
+        { name: '山札をシャッフルする', action: () => { this.playSETest(PresetSound.cardShuffle); }},
+      ]},
+      { name: 'その他', subActions: [
+        { name: 'ロック／解除', action: () => { this.playSETest(PresetSound.lock); }},
+        { name: '取り除く／削除', action: () => { this.playSETest(PresetSound.sweep); }},
+        { name: '変身！', action: () => { this.playSETest(PresetSound.surprise); }}
+      ]}
+    ];
+    this.contextMenuService.open(position, menu, '効果音');
+  }
+
+  private playSETest(audioIdentifier) {
+    const audio = AudioStorage.instance.get(audioIdentifier);
+    this.soundTestPlayer.volumeType = VolumeType.SOUND_EFFECT;
+    if (audio && audio.isReady) {
+      EventSystem.unregister(this, 'UPDATE_AUDIO_RESOURE');
+      this.soundTestPlayer.play(audio);
+    } else {
+      EventSystem.register(this)
+      .on('UPDATE_AUDIO_RESOURE', -100, event => {
+        this.playSETest(audioIdentifier);
+      });
+    }
   }
 
   private lazyNgZoneUpdate() {

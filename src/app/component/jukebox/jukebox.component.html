@@ -17,7 +17,10 @@
     <input [(ngModel)]="soundEffectVolume" type="range" min="0" title="{{percentSoundEffectVolume + '%'}}" max="1" step="0.01" style="width:53%" /> 
     <span style="white-space: nowrap;"><input type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentSoundEffectVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
   </div>
-  <small>※設定した音量はブラウザに保存されます。</small>
+  <div style="display: flex; justify-content: space-between; padding: 1px 0px 2px 0px">
+    <div><small>※設定した音量はブラウザに保存されます。</small></div>
+    <div><button style="font-size: xx-small; font-weight: bolder; margin-right: 2em" (click)="soundTest($event)">ＳＥテスト<sup style="font-size: larger" class="self-only">*</sup></button></div>
+  </div>
 </div>
 
 <div style="margin-bottom: 3px">

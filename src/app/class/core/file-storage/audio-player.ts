@@ -41,7 +41,7 @@ export class AudioPlayer {
   static get soundEffectVolume(): number { return AudioPlayer._soundEffectVolume; }
   static set soundEffectVolume(soundEffectVolume: number) {
     AudioPlayer._soundEffectVolume = soundEffectVolume;
-    AudioPlayer.auditionGainNode.gain.setTargetAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime, 0.01);
+    AudioPlayer.soundEffectGainNode.gain.setTargetAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime, 0.01);
   }
 
   private static _masterGainNode: GainNode
@@ -69,10 +69,10 @@ export class AudioPlayer {
   private static _soundEffectGainNode: GainNode
   private static get soundEffectGainNode(): GainNode {
     if (!AudioPlayer._soundEffectGainNode) {
-      let auditionGain = AudioPlayer.audioContext.createGain();
-      auditionGain.gain.setValueAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime);
-      auditionGain.connect(AudioPlayer.audioContext.destination);
-      AudioPlayer._soundEffectGainNode = auditionGain;
+      let soundEffectGain = AudioPlayer.audioContext.createGain();
+      soundEffectGain.gain.setValueAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime);
+      soundEffectGain.connect(AudioPlayer.audioContext.destination);
+      AudioPlayer._soundEffectGainNode = soundEffectGain;
     }
     return AudioPlayer._soundEffectGainNode;
   }
