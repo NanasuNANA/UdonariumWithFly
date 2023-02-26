@@ -121,8 +121,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
           if (file.state === ImageState.COMPLETE) {
             const reader = new FileReader();
             reader.addEventListener('load', () => {
-                const uriData = reader.result;
-                localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, uriData.toString())
+              localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, reader.result.toString());
             });
             reader.readAsDataURL(file.blob);
           } else if (value === 'none_icon') {
