@@ -63,7 +63,6 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   private lazyUpdateTimer: NodeJS.Timer = null;
 
   private readonly soundTestPlayer: AudioPlayer = new AudioPlayer();
-  private menu: ContextMenuAction[];
 
   constructor(
     private modalService: ModalService,
@@ -146,7 +145,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
         { name: '山札をシャッフル', action: () => { this.playSETest(PresetSound.cardShuffle); }},
       ]},
       { name: 'その他', subActions: [
-        { name: 'ロック／解除', action: () => { this.playSETest(PresetSound.lock); }},
+        { name: '固定・ロック／解除', action: () => { this.playSETest(PresetSound.lock); }},
         { name: '落下／取り除く／削除', action: () => { this.playSETest(PresetSound.sweep); }},
         { name: '変身！', action: () => { this.playSETest(PresetSound.surprise); }}
       ]}
