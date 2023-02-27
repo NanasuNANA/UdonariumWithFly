@@ -569,7 +569,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  toolBox() {
+  toolBox(event: Event) {
+    const button = <HTMLElement>event.target;
+    const clientRect = button.getBoundingClientRect();
+    const position = { 
+      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9), 
+      y: window.pageYOffset + clientRect.top + (this.isHorizontal ? button.clientHeight * 0.9 : 0)
+    };
     const menu = [];
     const cunIns = CutInList.instance.cutIns;
     menu.push({ name: 'カットイン再生', materialIcon: 'play_arrow',
@@ -619,21 +625,33 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     menu.push(ContextMenuSeparator);
     menu.push({ name: 'カットイン設定', materialIcon: 'movie_creation', action: () => this.open('CutInSettingComponent') });
     menu.push({ name: 'ダイスボット表設定', materialIcon: 'table_rows', action: () => this.open('DiceRollTableSettingComponent') })
-    this.contextMenuService.open(this.pointerDeviceService.pointers[0], menu, 'ツールボックス');
+    this.contextMenuService.open(position, menu, 'ツールボックス');
   }
 
-  resetPointOfView() {
-    this.contextMenuService.open(this.pointerDeviceService.pointers[0], [
+  resetPointOfView(event: Event) {
+    const button = <HTMLElement>event.target;
+    const clientRect = button.getBoundingClientRect();
+    const position = { 
+      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9), 
+      y: window.pageYOffset + clientRect.top + (this.isHorizontal ? button.clientHeight * 0.9 : 0)
+    };
+    this.contextMenuService.open(position, [
       { name: '初期視点に戻す', action: () => EventSystem.trigger('RESET_POINT_OF_VIEW', null) },
       { name: '真上から視る', action: () => EventSystem.trigger('RESET_POINT_OF_VIEW', 'top') }
     ], '視点リセット');
   }
 
-  standSetteings() {
+  standSetteings(event: Event) {
+    const button = <HTMLElement>event.target;
+    const clientRect = button.getBoundingClientRect();
+    const position = { 
+      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9), 
+      y: window.pageYOffset + clientRect.top + (this.isHorizontal ? button.clientHeight * 0.9 : 0)
+    };
     const isShowStand = StandImageComponent.isShowStand;
     const isShowNameTag = StandImageComponent.isShowNameTag;
     const isCanBeGone = StandImageComponent.isCanBeGone; 
-    this.contextMenuService.open(this.pointerDeviceService.pointers[0], [
+    this.contextMenuService.open(position, [
       { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }テーブルグリッドを常に表示`, 
       action: () => {
         TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;

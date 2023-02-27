@@ -34,8 +34,8 @@
           <div>音楽</div>
         </a>
       </li>
-      <li (click)="toolBox()">
-        <a routerLink="/" routerLinkActive="active">
+      <li (click)="toolBox($event)">
+        <a routerLink="/" routerLinkActive="active" style="pointer-events: none">
           <div><i class="material-icons">build</i></div>
           <div>ツールボックス</div>
         </a>
@@ -52,14 +52,14 @@
           <div>ダイス一斉公開</div>
         </a>
       </li>
-      <li (click)="standSetteings()">
-        <a routerLink="/" routerLinkActive="active">
+      <li (click)="standSetteings($event)">
+        <a routerLink="/" routerLinkActive="active" style="pointer-events: none">
           <div><i class="material-icons icon-size">how_to_reg</i></div>
           <div>個人設定<sup class="self-only">*</sup></div>
         </a>
       </li>
-      <li (click)="resetPointOfView()">
-        <a routerLink="/" routerLinkActive="active">
+      <li (click)="resetPointOfView($event)">
+        <a routerLink="/" routerLinkActive="active" style="pointer-events: none">
           <div><i class="material-icons icon-size">remove_red_eye</i></div>
           <div>視点リセット<sup class="self-only">*</sup></div>
         </a>

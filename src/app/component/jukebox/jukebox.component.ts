@@ -150,7 +150,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
         { name: '変身！', action: () => { this.playSETest(PresetSound.surprise); }}
       ]}
     ];
-    this.contextMenuService.open(position, menu, '効果音');
+    this.contextMenuService.open(position, menu, 'SEテスト');
   }
 
   private playSETest(audioIdentifier) {
