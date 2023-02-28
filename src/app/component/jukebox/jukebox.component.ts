@@ -7,11 +7,13 @@ import { FileArchiver } from '@udonarium/core/file-storage/file-archiver';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem } from '@udonarium/core/system';
 import { Jukebox } from '@udonarium/Jukebox';
-import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
-import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
+import { PresetSound } from '@udonarium/sound-effect';
+import { ContextMenuAction, ContextMenuService } from 'service/context-menu.service';
 
 import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
+
+import * as localForage from 'localforage';
 
 @Component({
   selector: 'app-jukebox',
@@ -24,27 +26,21 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   set volume(volume: number) {
     AudioPlayer.volume = volume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
-    if (window.localStorage) {
-      localStorage.setItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY, volume.toString());
-    }
+    localForage.setItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY, volume).catch(e => console.log(e));
   }
 
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
   set auditionVolume(auditionVolume: number) { 
     AudioPlayer.auditionVolume = auditionVolume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
-    if (window.localStorage) {
-      localStorage.setItem(Jukebox.JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume.toString());
-    }
+    localForage.setItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume).catch(e => console.log(e));
   }
 
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
     AudioPlayer.soundEffectVolume = soundEffectVolume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
-    if (window.localStorage) {
-      localStorage.setItem(Jukebox.JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume.toString());
-    }
+    localForage.setItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
   }
 
   get audios(): AudioFile[] { return AudioStorage.instance.audios.filter(audio => !audio.isHidden); }
@@ -71,16 +67,21 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     private contextMenuService: ContextMenuService
   ) {
     this.soundTestPlayer.volumeType = VolumeType.SOUND_EFFECT;
-    if (window.localStorage) {
-      if (localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY) != null) {
-        this.volume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY));
-      }
-      if (localStorage.getItem(Jukebox.JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY) != null) {
-        this.auditionVolume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY));
-      }
-      if (localStorage.getItem(Jukebox.JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY) != null) {
-        this.soundEffectVolume = parseFloat(localStorage.getItem(Jukebox.JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY));
-      }
+    try {
+      localForage.getItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).then(volume => { 
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.volume = volume;
+      });
+      localForage.getItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.auditionVolume = volume;
+      });
+      localForage.getItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.soundEffectVolume = volume;
+      });
+    } catch(e) {
+      console.log(e);
+      localForage.removeItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     }
   }
 

@@ -21,15 +21,12 @@ export class ChatPalette extends ObjectNode {
   @SyncVar() paletteColor: string = '';
   //TODO: キャラシ項目のコピー
 
-  get color() {
-    if (this.paletteColor && this.paletteColor != '#ffffff') {
+  get color(): string {
+    if (this.paletteColor && this.paletteColor != PeerCursor.CHAT_TRANSPARENT_COLOR) {
       return this.paletteColor;
-    }
-    if (window.localStorage 
-      && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY) 
-      && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY) != '#ffffff') {
-      return localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
-    }
+    } else if (PeerCursor.myCursor && PeerCursor.myCursor.color != PeerCursor.CHAT_TRANSPARENT_COLOR) {
+      return PeerCursor.myCursor.color;
+    } 
     return PeerCursor.CHAT_DEFAULT_COLOR;
   }
   set color(color: string) {

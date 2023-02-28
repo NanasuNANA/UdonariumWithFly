@@ -55,6 +55,8 @@ import { CutInList } from '@udonarium/cut-in-list';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { SwUpdate } from '@angular/service-worker';
 
+import * as localForage from 'localforage';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -183,7 +185,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     AudioStorage.instance.get(PresetSound.coinToss).isHidden = true;
 
     PeerCursor.createMyCursor();
-    if (!PeerCursor.myCursor.name) PeerCursor.myCursor.name = 'プレイヤー';
+    if (!PeerCursor.myCursor.name) PeerCursor.myCursor.name = PeerCursor.CHAT_DEFAULT_NAME;
     PeerCursor.myCursor.imageIdentifier = noneIconImage.identifier;
 
     EventSystem.register(this)
@@ -400,37 +402,47 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // アイコン
-    if (window.localStorage) {
-      const identifierOrDataUrl = localStorage.getItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
-      if (identifierOrDataUrl.startsWith('data:image/')) {
-        try {
-          const type = identifierOrDataUrl.substring('data:'.length, identifierOrDataUrl.indexOf(';'));
-          const bin = atob(identifierOrDataUrl.replace(/^.*,/, '')); 
-          let buffer = new Uint8Array(bin.length);
-          for (let i = 0; i < bin.length; i++) {
-            buffer[i] = bin.charCodeAt(i);
+    try { 
+      localForage.getItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY).then(identifierOrImageData => {
+        let blob: Blob = null;
+        if (typeof identifierOrImageData === 'string') {
+          if (identifierOrImageData.startsWith('data:image/')) {
+            const type = identifierOrImageData.substring('data:'.length, identifierOrImageData.indexOf(';'));
+            const bin = atob(identifierOrImageData.replace(/^.*,/, '')); 
+            let buffer = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) {
+              buffer[i] = bin.charCodeAt(i);
+            }
+            blob = new Blob([buffer.buffer], { type: type });
+          } else {
+            const identifier = ImageStorage.instance.images.find(image => image.identifier === identifierOrImageData);
+            if (identifier) {
+              PeerCursor.myCursor.imageIdentifier = identifierOrImageData;
+            } else {
+              localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+            }
           }
-          ImageFile.createAsync(new Blob([buffer.buffer], { type: type })).then(imageFile => {
+        } else if (identifierOrImageData instanceof Blob) {
+          blob = identifierOrImageData;
+        } else {
+          localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+        }
+        if (blob) {
+          ImageFile.createAsync(blob).then(imageFile => {
             if (imageFile.state === ImageState.COMPLETE) {
               ImageStorage.instance.add(imageFile);
               PeerCursor.myCursor.imageIdentifier = imageFile.identifier;
             } else {
-              localStorage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+              localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
             }
           });
-        } catch (e) {
-          localStorage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
         }
-      } else {
-        ImageStorage.instance.images.forEach((image) => {
-          if (image.identifier === identifierOrDataUrl) {
-            PeerCursor.myCursor.imageIdentifier = identifierOrDataUrl;
-            return;
-          };
-        });
-      }
+      }).catch(e => { throw e; });
+    } catch (e) {
+      console.log(e);
+      localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
     }
-
+    
     // PWA
     this.swUpdate.versionUpdates.subscribe(evt => {
       switch (evt.type) {

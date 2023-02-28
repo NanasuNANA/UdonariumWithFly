@@ -17,6 +17,8 @@ import { GameCharacter } from '@udonarium/game-character';
 import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 
+import * as localForage from 'localforage';
+
 @Component({
   selector: 'peer-menu',
   templateUrl: './peer-menu.component.html',
@@ -56,13 +58,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   set myPeerName(name: string) {
     if (PeerCursor.myCursor) {
       PeerCursor.myCursor.name = name;
-      if (window.localStorage) {
-        if (name === PeerCursor.CHAT_DEFAULT_NAME) {
-          localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
-        } else {
-          localStorage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, name);
-        }
-      }
+      localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, name).catch(e => console.log(e));
     }
   }
 
@@ -73,13 +69,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   set myPeerColor(color: string) {
     if (PeerCursor.myCursor) {
       PeerCursor.myCursor.color = (color == PeerCursor.CHAT_TRANSPARENT_COLOR) ? PeerCursor.CHAT_DEFAULT_COLOR : color; 
-      if (window.localStorage) {
-        if (PeerCursor.myCursor.color === PeerCursor.CHAT_DEFAULT_COLOR) {
-          localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
-        } else {
-          localStorage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color);
-        }
-      }
+      localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color).catch(e => console.log(e));
     }
   }
 
@@ -115,20 +105,14 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.myPeer || !value) return;
       this.myPeer.imageIdentifier = value;
-      if (window.localStorage) {
-        let file: ImageFile = ImageStorage.instance.get(value);
-        if (file) {
-          if (file.state === ImageState.COMPLETE) {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => {
-              localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, reader.result.toString());
-            });
-            reader.readAsDataURL(file.blob);
-          } else if (value === 'none_icon') {
-            localStorage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
-          } else {
-            localStorage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, value);
-          }
+      let file: ImageFile = ImageStorage.instance.get(value);
+      if (file) {
+        if (file.state === ImageState.COMPLETE) {
+          localForage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, file.blob).catch(e => console.log(e));
+        } else if (value === 'none_icon') {
+          localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+        } else {
+          localForage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, value).catch(e => console.log(e));
         }
       }
     });

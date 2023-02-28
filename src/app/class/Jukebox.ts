@@ -12,9 +12,9 @@ export class Jukebox extends GameObject {
   @SyncVar() isLoop: boolean = false;
   @SyncVar() isPlaying: boolean = false;
 
-  static readonly JUKEBOX_AUDITION_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-jukebox-audition-volume-local-storage';
-  static readonly JUKEBOX_MAIN_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-jukebox-main-volume-local-storage';
-  static readonly JUKEBOX_SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-jukebox-sound-effect-volume-local-storage';
+  static readonly AUDITION_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-jukebox-audition-volume-local-storage';
+  static readonly MAIN_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-jukebox-main-volume-local-storage';
+  static readonly SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-jukebox-sound-effect-volume-local-storage';
 
   get audio(): AudioFile { return AudioStorage.instance.get(this.audioIdentifier); }
 

@@ -5,6 +5,8 @@ import { GameObject, ObjectContext } from './core/synchronize-object/game-object
 import { ObjectStore } from './core/synchronize-object/object-store';
 import { EventSystem, Network } from './core/system';
 
+import * as localForage from 'localforage';
+
 type UserId = string;
 type PeerId = string;
 type ObjectIdentifier = string;
@@ -90,11 +92,37 @@ export class PeerCursor extends GameObject {
     PeerCursor.myCursor = new PeerCursor();
     PeerCursor.myCursor.peerId = Network.peerId;
     PeerCursor.myCursor.initialize();
-    if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)) {
-      PeerCursor.myCursor.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
-    }
-    if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)) {
-      PeerCursor.myCursor.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+    try {
+      // 互換のためしばらく残す
+      if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)) {
+        PeerCursor.myCursor.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+        localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name).catch(e => console.log(e));
+        localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+      }
+      if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)) {
+        PeerCursor.myCursor.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+        localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color).catch(e => console.log(e));
+        localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+      }
+      
+      localForage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).then(name => {
+        if (typeof name === 'string') {
+          PeerCursor.myCursor.name = name;
+        } else {
+          localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+        }
+      });
+      localForage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).then(color => {
+        if (typeof color === 'string') {
+          PeerCursor.myCursor.color = color;
+        } else {
+          localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+      localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     }
     return PeerCursor.myCursor;
   }
