@@ -313,7 +313,7 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
         altitudeHande: this.terrain
       },
       ContextMenuSeparator,
-      { name: '地形設定を編集', action: () => { this.showDetail(this.terrain); } },
+      { name: '地形設定を編集...', action: () => { this.showDetail(this.terrain); } },
       (this.terrain.getUrls().length <= 0 ? null : {
         name: '参照URLを開く', action: null,
         subActions: this.terrain.getUrls().map((urlElement) => {

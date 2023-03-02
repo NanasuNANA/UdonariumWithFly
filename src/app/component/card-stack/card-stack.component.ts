@@ -423,7 +423,7 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         disabled: this.cards.length == 0
       },
-      { name: 'カード一覧を見る', action: () => {
+      { name: 'カード一覧を見る...', action: () => {
         this.showStackList(this.cardStack);
         this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} のカード一覧を見た`);
       }, disabled: this.cards.length == 0 },
@@ -474,7 +474,7 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
         disabled: this.cards.length == 0
       },
       ContextMenuSeparator,
-      { name: '詳細を表示', action: () => { this.showDetail(this.cardStack); } },
+      { name: '詳細を表示...', action: () => { this.showDetail(this.cardStack); } },
       (this.cardStack.getUrls().length <= 0 ? null : {
         name: '参照URLを開く', action: null,
         subActions: this.cardStack.getUrls().map((urlElement) => {

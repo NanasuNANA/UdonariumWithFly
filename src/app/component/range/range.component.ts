@@ -638,7 +638,7 @@ export class RangeComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     menuArray.push(ContextMenuSeparator);
     menuArray.push(
-      { name: '射程・範囲を編集', action: () => { this.showDetail(this.range); } }
+      { name: '射程・範囲を編集...', action: () => { this.showDetail(this.range); } }
     );
     if (this.range.getUrls().length > 0) {
       menuArray.push(

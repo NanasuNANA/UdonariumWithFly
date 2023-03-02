@@ -296,7 +296,7 @@ export class TextNoteComponent implements OnInit, OnDestroy, AfterViewInit {
         altitudeHande: this.textNote
       },
       ContextMenuSeparator,
-      { name: 'メモを編集', action: () => { this.showDetail(this.textNote); } },
+      { name: 'メモを編集...', action: () => { this.showDetail(this.textNote); } },
       (this.textNote.getUrls().length <= 0 ? null : {
         name: '参照URLを開く', action: null,
         subActions: this.textNote.getUrls().map((urlElement) => {

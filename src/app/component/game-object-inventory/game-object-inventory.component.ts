@@ -330,11 +330,11 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       altitudeHande: gameObject
     });
     actions.push(ContextMenuSeparator);
-    actions.push({ name: '詳細を表示', action: () => { this.showDetail(gameObject); } });
+    actions.push({ name: '詳細を表示...', action: () => { this.showDetail(gameObject); } });
     //if (gameObject.location.name !== 'graveyard') {
-      actions.push({ name: 'チャットパレットを表示', action: () => { this.showChatPalette(gameObject) }, disabled: gameObject.location.name === 'graveyard' });
+      actions.push({ name: 'チャットパレットを表示...', action: () => { this.showChatPalette(gameObject) }, disabled: gameObject.location.name === 'graveyard' });
     //}
-    actions.push({ name: 'スタンド設定', action: () => { this.showStandSetting(gameObject) } });
+    actions.push({ name: 'スタンド設定...', action: () => { this.showStandSetting(gameObject) } });
     actions.push(ContextMenuSeparator);
     actions.push({
       name: '参照URLを開く', action: null,

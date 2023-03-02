@@ -239,7 +239,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         altitudeHande: this.gameTableMask
       },
       ContextMenuSeparator,
-      { name: 'マップマスクを編集', action: () => { this.showDetail(this.gameTableMask); } },
+      { name: 'マップマスクを編集...', action: () => { this.showDetail(this.gameTableMask); } },
       (this.gameTableMask.getUrls().length <= 0 ? null : {
         name: '参照URLを開く', action: null,
         subActions: this.gameTableMask.getUrls().map((urlElement) => {

@@ -399,7 +399,7 @@ export class DiceSymbolComponent implements OnInit, AfterViewInit, OnDestroy {
       }));
 
     actions.push(ContextMenuSeparator);
-    actions.push({ name: '詳細を表示', action: () => { this.showDetail(this.diceSymbol); } });
+    actions.push({ name: '詳細を表示...', action: () => { this.showDetail(this.diceSymbol); } });
     if (this.diceSymbol.getUrls().length > 0) {
       actions.push({
         name: '参照URLを開く', action: null,
