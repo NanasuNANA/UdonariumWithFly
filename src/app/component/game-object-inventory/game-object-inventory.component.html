@@ -82,7 +82,7 @@
         <i class="material-icons" style="font-size: 1em;">all_inbox</i>
       </button>
       <button *ngIf="selectedIdentifier === gameObject.identifier" style="font-size: 0.8em; padding: 2px 5px;" title="メニュー" (click)="onContextMenu($event, gameObject)">
-        <i class="material-icons" style="font-size: 1em;">settings</i>
+        <i class="material-icons" style="font-size: 1em; pointer-events: none">settings</i>
       </button>
     </div>
     <div class="object-tags-box" [ngClass]="{'is-hide-in': gameObject.isHideIn}">

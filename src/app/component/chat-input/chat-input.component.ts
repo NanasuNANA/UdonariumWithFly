@@ -560,7 +560,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       this.contextMenuService.open(
         position, 
         [
-          { name: '接続情報', action: () => {
+          { name: '接続情報...', action: () => {
             this.panelService.open(PeerMenuComponent, { width: 520, height: 600, top: position.y - 100, left: position.x - 100 });
           } }
         ],
@@ -686,11 +686,11 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         //}
       }
       contextMenuActions.push(ContextMenuSeparator);
-      contextMenuActions.push({ name: '詳細を表示', action: () => { this.showDetail(this.character); } });
+      contextMenuActions.push({ name: '詳細を表示...', action: () => { this.showDetail(this.character); } });
       if (!this.onlyCharacters) {
-        contextMenuActions.push({ name: 'チャットパレットを表示', action: () => { this.showChatPalette(this.character) } });
+        contextMenuActions.push({ name: 'チャットパレットを表示...', action: () => { this.showChatPalette(this.character) } });
       }
-      contextMenuActions.push({ name: 'スタンド設定', action: () => { this.showStandSetting(this.character) } });
+      contextMenuActions.push({ name: 'スタンド設定...', action: () => { this.showStandSetting(this.character) } });
     }
     this.contextMenuService.open(position, contextMenuActions, this.character.name);
   }
