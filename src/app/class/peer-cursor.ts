@@ -93,18 +93,22 @@ export class PeerCursor extends GameObject {
     PeerCursor.myCursor.peerId = Network.peerId;
     PeerCursor.myCursor.initialize();
     try {
-      // 互換のためしばらく残す
-      if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)) {
-        PeerCursor.myCursor.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
-        localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name).catch(e => console.log(e));
-        localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+      // 互換のためしばらく残す ---
+      try {
+        if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)) {
+          PeerCursor.myCursor.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+          localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name);
+          localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+        }
+        if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)) {
+          PeerCursor.myCursor.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+          localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color);
+          localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+        }
+      } catch(e) {
+        console.log(e);
       }
-      if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)) {
-        PeerCursor.myCursor.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
-        localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color).catch(e => console.log(e));
-        localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
-      }
-      
+      // ---
       localForage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).then(name => {
         if (typeof name === 'string') {
           PeerCursor.myCursor.name = name;
@@ -113,8 +117,8 @@ export class PeerCursor extends GameObject {
         }
       });
       localForage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).then(color => {
-        if (typeof color === 'string') {
-          PeerCursor.myCursor.color = color;
+        if (typeof color === 'string' && /^\#[0-9a-f]{6}$/.test(color.trim().toLowerCase())) {
+          PeerCursor.myCursor.color = color.trim().toLowerCase();
         } else {
           localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
         }

@@ -120,7 +120,14 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
   //とりあえず
   private locale = 'en-US';
   
-  logFragment(logForamt: number, tabName: string=null, dateFormat='HH:mm', noImage=true) {
+  plainText(): string {
+    if (this.isSecret && !this.isSendFromSelf) return '（シークレットダイス）';
+    let text = StringUtil.rubyToText(this.text);
+    if (this.isDicebot) text = text.replace(/###(.+?)###/g, '*$1').replace(/\~\~\~(.+?)\~\~\~/g, '~$1');
+    return text;
+  }
+
+  logFragment(logForamt: number, tabName: string=null, dateFormat='HH:mm', noImage=true): string {
     if (logForamt == 0) {
       return this.logFragmentText(tabName, dateFormat);
     } else {

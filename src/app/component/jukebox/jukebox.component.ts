@@ -24,23 +24,35 @@ export class JukeboxComponent implements OnInit, OnDestroy {
 
   get volume(): number { return AudioPlayer.volume; }
   set volume(volume: number) {
-    AudioPlayer.volume = volume;
+    AudioPlayer.volume = volume || 0.5;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
-    localForage.setItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY, volume).catch(e => console.log(e));
+    if (AudioPlayer.volume == 0.5) {
+      localForage.removeItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY, volume).catch(e => console.log(e));
+    }
   }
 
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
   set auditionVolume(auditionVolume: number) { 
-    AudioPlayer.auditionVolume = auditionVolume;
+    AudioPlayer.auditionVolume = auditionVolume || 0.5;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
-    localForage.setItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume).catch(e => console.log(e));
+    if (AudioPlayer.auditionVolume == 0.5) {
+      localForage.removeItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume).catch(e => console.log(e));
+    }
   }
 
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
-    AudioPlayer.soundEffectVolume = soundEffectVolume;
+    AudioPlayer.soundEffectVolume = soundEffectVolume || 0.5;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
-    localForage.setItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
+    if (AudioPlayer.soundEffectVolume == 0.5) {
+      localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
+    }
   }
 
   get audios(): AudioFile[] { return AudioStorage.instance.audios.filter(audio => !audio.isHidden); }

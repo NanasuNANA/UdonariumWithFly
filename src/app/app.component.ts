@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 
 import { ChatTabList } from '@udonarium/chat-tab-list';
-import { AudioPlayer } from '@udonarium/core/file-storage/audio-player';
+import { AudioPlayer, VolumeType } from '@udonarium/core/file-storage/audio-player';
 import { AudioSharingSystem } from '@udonarium/core/file-storage/audio-sharing-system';
 import { AudioStorage } from '@udonarium/core/file-storage/audio-storage';
 import { FileArchiver } from '@udonarium/core/file-storage/file-archiver';
@@ -56,6 +56,8 @@ import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/
 import { SwUpdate } from '@angular/service-worker';
 
 import * as localForage from 'localforage';
+import { ChatMessage } from '@udonarium/chat-message';
+import { ChatTab } from '@udonarium/chat-tab';
 
 @Component({
   selector: 'app-root',
@@ -76,6 +78,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isUpdateCanceled = false;
   
   get otherPeers(): PeerCursor[] { return ObjectStore.instance.getObjects(PeerCursor); }
+
+  private static _noticePlayer: AudioPlayer;
+  static get noticePlayer(): AudioPlayer {
+    if (!AppComponent._noticePlayer) {
+      AppComponent._noticePlayer = new AudioPlayer();
+      AppComponent._noticePlayer.volumeType = VolumeType.SOUND_EFFECT; //ToDo 別の音量設定
+    }
+    return AppComponent._noticePlayer;
+  }
+ 
+  notice(audioIdentifier=PresetSound.puyon) {
+    const audio = AudioStorage.instance.get(audioIdentifier);
+    if (audio && audio.isReady) {
+      EventSystem.unregister(this, 'UPDATE_AUDIO_RESOURE');
+      AppComponent.noticePlayer.play(audio);
+    } else {
+      EventSystem.register(this)
+      .on('UPDATE_AUDIO_RESOURE', -100, event => {
+        this.notice(audioIdentifier);
+      });
+    }
+  }
 
   constructor(
     private swUpdate: SwUpdate,
@@ -360,6 +384,31 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.lazyNgZoneUpdate(event.isSendFromSelf);
         if (event.isSendFromSelf) this.isLoggedin = false;
       })
+      .on('MESSAGE_NORTIFICATION', event => {
+        console.log(event)
+        /* ペンディング
+        try {
+          Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              const tab = <ChatTab>ObjectStore.instance.get(event.data.tabIdentifier);
+              const message = <ChatMessage>ObjectStore.instance.get(event.data.messageIdentifier);
+              if (tab && message) {
+                const option: { body: string, icon?: string, tag?: string } = { body: message.plainText(), tag: 'chat-message' };
+                const image = message.image;
+                if (image) option.icon = message.image.url;
+                const notification = new Notification(tab.name + ' - ' + message.name + (message.toColor ? (' ➡ ' + message.toName + ' (秘匿)') : ''), option);
+                document.addEventListener('visibilitychange', () => {
+                  if (document.visibilityState === 'visible') notification.close();
+                });
+              }
+            }
+          });
+        } catch(e) {
+          console.log(e);
+        }
+        */
+        this.notice();
+      })
       .on('PLAY_CUT_IN', -1000, event => {
         let cutIn = ObjectStore.instance.get<CutIn>(event.data.identifier);
         this.cutInService.play(cutIn, event.data.secret ? event.data.secret : false, event.data.test ? event.data.test : false, event.data.sender);
@@ -383,11 +432,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
   
-  private static readonly beforeUnloadProc = (evt) => {
-    // Cancel the event as stated by the standard.
-    evt.preventDefault();
-    // Chrome requires returnValue to be set.
-    evt.returnValue = '';
+  private static readonly beforeUnloadProc = (event) => {
+    event.preventDefault();
+    event.returnValue = '';
   };
 
   ngOnInit() {
@@ -444,14 +491,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
     // PWA
-    this.swUpdate.versionUpdates.subscribe(evt => {
-      switch (evt.type) {
+    this.swUpdate.versionUpdates.subscribe(event => {
+      switch (event.type) {
         case 'VERSION_DETECTED':
-          console.log(`Downloading new app version: ${evt.version.hash}`);
+          console.log(`Downloading new app version: ${event.version.hash}`);
           break;
         case 'VERSION_READY':
-          console.log(`Current app version: ${evt.currentVersion.hash}`);
-          console.log(`New app version ready for use: ${evt.latestVersion.hash}`);
+          console.log(`Current app version: ${event.currentVersion.hash}`);
+          console.log(`New app version ready for use: ${event.latestVersion.hash}`);
           if (!this.isUpdateCanceled) {
             this.modalService.open(ConfirmationComponent, {
               title: 'Udonarium with Fly の更新', 
@@ -472,7 +519,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           break;
         case 'VERSION_INSTALLATION_FAILED':
-          console.log(`Failed to install app version '${evt.version.hash}': ${evt.error}`);
+          console.log(`Failed to install app version '${event.version.hash}': ${event.error}`);
           break;
       }
     });

@@ -27,6 +27,10 @@ export class ChatTab extends ObjectNode implements InnerXml {
     if (child.parent === this && child instanceof ChatMessage && child.isDisplayable) {
       this._unreadLength++;
       EventSystem.trigger('MESSAGE_ADDED', { tabIdentifier: this.identifier, messageIdentifier: child.identifier });
+      if (!child.isSendFromSelf && !child.isOperationLog && !child.isSystem) {
+        EventSystem.trigger('MESSAGE_NORTIFICATION', { tabIdentifier: this.identifier, messageIdentifier: child.identifier });
+
+      }
     }
   }
 
