@@ -58,7 +58,11 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   set myPeerName(name: string) {
     if (PeerCursor.myCursor) {
       PeerCursor.myCursor.name = name;
-      localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, name).catch(e => console.log(e));
+      if (PeerCursor.myCursor.name === PeerCursor.CHAT_DEFAULT_NAME) {
+        localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      } else {
+        localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name).catch(e => console.log(e));
+      }
     }
   }
 
@@ -67,9 +71,15 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     return PeerCursor.myCursor.color;
   }
   set myPeerColor(color: string) {
-    if (PeerCursor.myCursor) {
-      PeerCursor.myCursor.color = (color == PeerCursor.CHAT_TRANSPARENT_COLOR) ? PeerCursor.CHAT_DEFAULT_COLOR : color; 
-      localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color).catch(e => console.log(e));
+    if (color && PeerCursor.myCursor) {
+      color = color.trim().toLowerCase();
+      if (!/^\#[0-9a-f]{6}$/.test(color)) return; 
+      PeerCursor.myCursor.color = (color == PeerCursor.CHAT_TRANSPARENT_COLOR) ? PeerCursor.CHAT_DEFAULT_COLOR : color;
+      if (PeerCursor.myCursor.color === PeerCursor.CHAT_DEFAULT_COLOR) {
+        localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      } else {
+        localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color).catch(e => console.log(e));
+      }
     }
   }
 
