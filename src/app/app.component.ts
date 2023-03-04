@@ -738,7 +738,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       ContextMenuSeparator,
-      { name: `${ ChatWindowComponent.isNoticeOn ? '☑' : '☐' }チャット受信時に通知音`, 
+      { name: `${ ChatWindowComponent.isNoticeOn ? '☑' : '☐' }チャット受信時に音で通知`, 
         action: () => {
           ChatWindowComponent.isNoticeOn = !ChatWindowComponent.isNoticeOn;
         }
