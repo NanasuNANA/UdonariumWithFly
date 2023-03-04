@@ -727,15 +727,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const isCanBeGone = StandImageComponent.isCanBeGone; 
     this.contextMenuService.open(position, [
       { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }テーブルグリッドを常に表示`, 
-      action: () => {
-        TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;
-        EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelecter.instance.toContext()); 
-      }
+        action: () => {
+          TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;
+          EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelecter.instance.toContext()); 
+        }
       },
       { name: `${ TableSelecter.instance.gridSnap ? '☑' : '☐' }オブジェクト移動時にスナップ`, 
-      action: () => {
-        TableSelecter.instance.gridSnap = !TableSelecter.instance.gridSnap;
-      }
+        action: () => {
+          TableSelecter.instance.gridSnap = !TableSelecter.instance.gridSnap;
+        }
+      },
+      ContextMenuSeparator,
+      { name: `${ ChatWindowComponent.isNoticeOn ? '☑' : '☐' }チャット受信時に通知音`, 
+        action: () => {
+          ChatWindowComponent.isNoticeOn = !ChatWindowComponent.isNoticeOn;
+        }
       },
       ContextMenuSeparator,
       { name: `${ isShowStand ? '☑' : '☐' }スタンド表示`, 
