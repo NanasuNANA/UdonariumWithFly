@@ -20,6 +20,14 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('chatTabComponemt', { static: false }) chatTabComponemt: ChatTabComponent;
   sendFrom: string = 'Guest';
   
+  static isNoticeOn = false;
+  get isNoticeOn(): boolean {
+    return ChatWindowComponent.isNoticeOn;
+  }
+  set isNoticeOn(isNoticeOn: boolean) {
+    ChatWindowComponent.isNoticeOn = isNoticeOn;
+  }
+
   private _isCompact = false;
   get isCompact(): boolean {
     return this._isCompact;

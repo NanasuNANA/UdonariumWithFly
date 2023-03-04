@@ -11,9 +11,21 @@
         <input name="chat-tab" type="radio" value="{{chatTab.identifier}}" ng-control="options" [(ngModel)]="chatTabidentifier">
         <div><span [style.cursor]="chatTabidentifier != chatTab.identifier ? 'pointer' : ''" [style.color]="chatTab.name == '' && chatTabidentifier != chatTab.identifier ? 'gray' : ''">{{chatTab.name == '' ? '(無名のタブ)' : chatTab.name}}</span><i *ngIf="chatTab.isUseStandImage" class="material-icons small-font">how_to_reg</i><i *ngIf="chatTab.recieveOperationLogLevel > 0" class="material-icons small-font">history_edu</i><badge *ngIf="chatTab.hasUnread" class="badge" [count]="chatTab.unreadLength"></badge></div>
       </label>
-      <button class="tab-setting small-font" (click)="showTabSetting()"><i class="material-icons small-font">settings</i>タブ設定</button>
+      <button class="tab-setting small-font" (click)="showTabSetting()"><i class="material-icons small-font">settings</i>タブ</button>
       <button class="tab-setting small-font" (click)="showLogOutput()"><i class="material-icons small-font">history_edu</i>ログ</button>
+      <!--
       <label class="small-font" style="float: right; padding: 1px 4px 1px 2px; margin-left: 2px; height: 24px; box-sizing: border-box"><input name="isCompact" type="checkbox" [(ngModel)]="isCompact" [value]="true" [checked]="isCompact" ><b>簡易表示<sup style="color: red">*</sup></b></label>
+      -->
+      <div style="float: right; padding: 1px 4px 1px 2px; margin-left: 2px; height: 24px; box-sizing: border-box">
+        <button class="indicate" style="font-size: 0.8em; padding: 2px 5px;" title="受信時に通知" [ngClass]="{'is-active': isNoticeOn}" (click)="isNoticeOn = !isNoticeOn">
+          <i class="material-icons" style="font-size: 1em;">{{ isNoticeOn ? 'notifications_active' : 'notifications_off'}}</i>
+          <sup style="color: red">*</sup>
+        </button>
+        <button class="indicate" style="font-size: 0.8em; padding: 2px 5px;" title="簡易表示" [ngClass]="{'is-active': isCompact}" (click)="isCompact = !isCompact">
+          <i class="material-icons" style="font-size: 1em;">{{ isCompact ? 'list' : 'forum'}}</i>
+          <sup style="color: red">*</sup>
+        </button>
+      </div>
     </div>
   </form>
   <chat-input [chatTabidentifier]="chatTabidentifier" [(gameType)]="gameType" [(sendFrom)]="sendFrom" (chat)="sendChat($event)"></chat-input>

@@ -77,6 +77,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoggedin = false;
   isUpdateCanceled = false;
   
+  private noticeIntervalTimer: NodeJS.Timer = null;
+
   get otherPeers(): PeerCursor[] { return ObjectStore.instance.getObjects(PeerCursor); }
 
   private static _noticePlayer: AudioPlayer;
@@ -407,7 +409,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log(e);
         }
         */
-        this.notice();
+        // UIコンポーネントに設定持たせるべきか
+        if (ChatWindowComponent.isNoticeOn) {
+          if (!this.noticeIntervalTimer) {
+            this.noticeIntervalTimer = setTimeout(() => {
+              clearTimeout(this.noticeIntervalTimer);
+              this.noticeIntervalTimer = null;
+            }, 100);
+            this.notice();
+          }
+        } else if (this.noticeIntervalTimer) {
+          clearTimeout(this.noticeIntervalTimer);
+          this.noticeIntervalTimer = null;
+        }
       })
       .on('PLAY_CUT_IN', -1000, event => {
         let cutIn = ObjectStore.instance.get<CutIn>(event.data.identifier);
@@ -527,6 +541,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     EventSystem.unregister(this);
+    if (this.noticeIntervalTimer) clearTimeout(this.noticeIntervalTimer);
   }
 
   open(componentName: string) {
