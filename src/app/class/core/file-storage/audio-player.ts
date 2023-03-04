@@ -4,7 +4,8 @@ import { FileReaderUtil } from './file-reader-util';
 export enum VolumeType {
   MASTER,
   AUDITION,
-  SOUND_EFFECT
+  SOUND_EFFECT,
+  NOTICE
 }
 
 declare global {
@@ -44,6 +45,13 @@ export class AudioPlayer {
     AudioPlayer.soundEffectGainNode.gain.setTargetAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime, 0.01);
   }
 
+  private static _noticeVolume: number = 0.5;
+  static get noticeVolume(): number { return AudioPlayer._noticeVolume; }
+  static set noticeVolume(noticeVolume: number) {
+    AudioPlayer._noticeVolume = noticeVolume;
+    AudioPlayer.noticeGainNode.gain.setTargetAtTime(AudioPlayer._noticeVolume, AudioPlayer.audioContext.currentTime, 0.01);
+  }
+
   private static _masterGainNode: GainNode
   private static get masterGainNode(): GainNode {
     if (!AudioPlayer._masterGainNode) {
@@ -77,9 +85,21 @@ export class AudioPlayer {
     return AudioPlayer._soundEffectGainNode;
   }
 
+  private static _noticeGainNode: GainNode
+  private static get noticeGainNode(): GainNode {
+    if (!AudioPlayer._noticeGainNode) {
+      let noticeGain = AudioPlayer.audioContext.createGain();
+      noticeGain.gain.setValueAtTime(AudioPlayer._noticeVolume, AudioPlayer.audioContext.currentTime);
+      noticeGain.connect(AudioPlayer.audioContext.destination);
+      AudioPlayer._noticeGainNode = noticeGain;
+    }
+    return AudioPlayer._noticeGainNode;
+  }
+
   static get rootNode(): AudioNode { return AudioPlayer.masterGainNode; }
   static get auditionNode(): AudioNode { return AudioPlayer.auditionGainNode; }
   static get soundEffectNode(): AudioNode { return AudioPlayer.soundEffectGainNode; }
+  static get noticeNode(): AudioNode { return AudioPlayer.noticeGainNode; }
 
   private _audioElm: HTMLAudioElement;
   private get audioElm(): HTMLAudioElement {
@@ -161,6 +181,8 @@ export class AudioPlayer {
         return AudioPlayer.auditionNode;
       case VolumeType.SOUND_EFFECT:
         return AudioPlayer.soundEffectNode;
+      case VolumeType.NOTICE:
+        return AudioPlayer.noticeNode;
       default:
         return AudioPlayer.rootNode;
     }

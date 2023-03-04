@@ -83,7 +83,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   static get noticePlayer(): AudioPlayer {
     if (!AppComponent._noticePlayer) {
       AppComponent._noticePlayer = new AudioPlayer();
-      AppComponent._noticePlayer.volumeType = VolumeType.SOUND_EFFECT; //ToDo 別の音量設定
+      AppComponent._noticePlayer.volumeType = VolumeType.NOTICE;
     }
     return AppComponent._noticePlayer;
   }

@@ -47,11 +47,22 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
     AudioPlayer.soundEffectVolume = soundEffectVolume || 0.5;
-    EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.soundEffectVolume == 0.5) {
       localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     } else {
       localForage.setItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
+    }
+  }
+
+  get noticeVolume(): number { return AudioPlayer.noticeVolume; }
+  set noticeVolume(noticeVolume: number) {
+    AudioPlayer.noticeVolume = noticeVolume || 0.5;
+    //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    if (AudioPlayer.noticeVolume == 0.5) {
+      localForage.removeItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY, noticeVolume).catch(e => console.log(e));
     }
   }
 
@@ -67,10 +78,14 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   get percentSoundEffectVolume(): number { return Math.floor(this.soundEffectVolume * 100); }
   set percentSoundEffectVolume(percentSoundEffectVolume: number) { this.soundEffectVolume = percentSoundEffectVolume / 100; }
 
+  get percentNoticeVolume(): number { return Math.floor(this.noticeVolume * 100); }
+  set percentNoticeVolume(percentNoticeVolume: number) { this.noticeVolume = percentNoticeVolume / 100; }
+
   readonly auditionPlayer: AudioPlayer = new AudioPlayer();
   private lazyUpdateTimer: NodeJS.Timer = null;
 
   private readonly soundTestPlayer: AudioPlayer = new AudioPlayer();
+  private readonly noticeTestPlayer: AudioPlayer = new AudioPlayer();
 
   constructor(
     private modalService: ModalService,
@@ -79,6 +94,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     private contextMenuService: ContextMenuService
   ) {
     this.soundTestPlayer.volumeType = VolumeType.SOUND_EFFECT;
+    this.noticeTestPlayer.volumeType = VolumeType.NOTICE;
     try {
       localForage.getItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).then(volume => { 
         if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.volume = volume;
@@ -89,11 +105,15 @@ export class JukeboxComponent implements OnInit, OnDestroy {
       localForage.getItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
         if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.soundEffectVolume = volume;
       });
+      localForage.getItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.noticeVolume = volume;
+      });
     } catch(e) {
       console.log(e);
       localForage.removeItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
       localForage.removeItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
       localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     }
   }
 
@@ -134,6 +154,13 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     input.value = '';
   }
 
+  noticeTest(audioIdentifier=PresetSound.puyon) {
+    const audio = AudioStorage.instance.get(audioIdentifier);
+    if (audio && audio.isReady) {
+      this.noticeTestPlayer.play(audio);
+    }
+  }
+  
   soundTest(event: Event) {
     const button = <HTMLElement>event.target;
     const clientRect = button.getBoundingClientRect();
