@@ -55,10 +55,6 @@ import { CutInList } from '@udonarium/cut-in-list';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { SwUpdate } from '@angular/service-worker';
 
-import * as localForage from 'localforage';
-import { ChatMessage } from '@udonarium/chat-message';
-import { ChatTab } from '@udonarium/chat-tab';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -210,9 +206,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     AudioStorage.instance.get(PresetSound.surprise).isHidden = true;
     AudioStorage.instance.get(PresetSound.coinToss).isHidden = true;
 
-    PeerCursor.createMyCursor();
-    if (!PeerCursor.myCursor.name) PeerCursor.myCursor.name = PeerCursor.CHAT_DEFAULT_NAME;
-    PeerCursor.myCursor.imageIdentifier = noneIconImage.identifier;
+    PeerCursor.createMyCursor().then(() => {
+      if (PeerCursor.myCursor.name == null || PeerCursor.myCursor.name === '') PeerCursor.myCursor.name = PeerCursor.CHAT_DEFAULT_NAME;
+      if (!PeerCursor.myCursor.imageIdentifier) PeerCursor.myCursor.imageIdentifier = noneIconImage.identifier;
+    });
 
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', event => { this.lazyNgZoneUpdate(event.isSendFromSelf); })
@@ -461,48 +458,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.panelService.open(PeerMenuComponent, { width: 520, height: 450, left: 100 });
       this.panelService.open(ChatWindowComponent, { width: 700, height: 400, left: 100, top: 450 });
     });
-
-    // アイコン
-    try { 
-      localForage.getItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY).then(identifierOrImageData => {
-        let blob: Blob = null;
-        if (typeof identifierOrImageData === 'string') {
-          if (identifierOrImageData.startsWith('data:image/')) {
-            const type = identifierOrImageData.substring('data:'.length, identifierOrImageData.indexOf(';'));
-            const bin = atob(identifierOrImageData.replace(/^.*,/, '')); 
-            let buffer = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) {
-              buffer[i] = bin.charCodeAt(i);
-            }
-            blob = new Blob([buffer.buffer], { type: type });
-          } else {
-            const identifier = ImageStorage.instance.images.find(image => image.identifier === identifierOrImageData);
-            if (identifier) {
-              PeerCursor.myCursor.imageIdentifier = identifierOrImageData;
-            } else {
-              localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
-            }
-          }
-        } else if (identifierOrImageData instanceof Blob) {
-          blob = identifierOrImageData;
-        } else {
-          localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
-        }
-        if (blob) {
-          ImageFile.createAsync(blob).then(imageFile => {
-            if (imageFile.state === ImageState.COMPLETE) {
-              ImageStorage.instance.add(imageFile);
-              PeerCursor.myCursor.imageIdentifier = imageFile.identifier;
-            } else {
-              localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
-            }
-          });
-        }
-      }).catch(e => { throw e; });
-    } catch (e) {
-      console.log(e);
-      localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
-    }
     
     // PWA
     this.swUpdate.versionUpdates.subscribe(event => {

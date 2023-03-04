@@ -24,7 +24,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
 
   get volume(): number { return AudioPlayer.volume; }
   set volume(volume: number) {
-    AudioPlayer.volume = volume || 0.5;
+    AudioPlayer.volume = volume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.volume == 0.5) {
       localForage.removeItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
@@ -35,7 +35,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
 
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
   set auditionVolume(auditionVolume: number) { 
-    AudioPlayer.auditionVolume = auditionVolume || 0.5;
+    AudioPlayer.auditionVolume = auditionVolume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.auditionVolume == 0.5) {
       localForage.removeItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
@@ -46,7 +46,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
 
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
-    AudioPlayer.soundEffectVolume = soundEffectVolume || 0.5;
+    AudioPlayer.soundEffectVolume = soundEffectVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.soundEffectVolume == 0.5) {
       localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
@@ -57,7 +57,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
 
   get noticeVolume(): number { return AudioPlayer.noticeVolume; }
   set noticeVolume(noticeVolume: number) {
-    AudioPlayer.noticeVolume = noticeVolume || 0.5;
+    AudioPlayer.noticeVolume = noticeVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.noticeVolume == 0.5) {
       localForage.removeItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));

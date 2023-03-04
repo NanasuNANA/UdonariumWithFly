@@ -1,4 +1,4 @@
-import { ImageFile } from './core/file-storage/image-file';
+import { ImageFile, ImageState } from './core/file-storage/image-file';
 import { ImageStorage } from './core/file-storage/image-storage';
 import { SyncObject, SyncVar } from './core/synchronize-object/decorator';
 import { GameObject, ObjectContext } from './core/synchronize-object/game-object';
@@ -84,7 +84,7 @@ export class PeerCursor extends GameObject {
     return null;
   }
 
-  static createMyCursor(): PeerCursor {
+  static async createMyCursor(): Promise<PeerCursor> {
     if (PeerCursor.myCursor) {
       console.warn('It is already created.');
       return PeerCursor.myCursor;
@@ -97,36 +97,83 @@ export class PeerCursor extends GameObject {
       try {
         if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)) {
           PeerCursor.myCursor.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
-          localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name);
-          localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+          await localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name, () => {
+            localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+          });
         }
+      } catch(e) {
+        console.log(e);
+      }
+      try {
         if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)) {
           PeerCursor.myCursor.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
-          localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color);
-          localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+          await localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color, () => {
+            localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+          });
         }
       } catch(e) {
         console.log(e);
       }
       // ---
-      localForage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).then(name => {
+      await localForage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).then(name => {
         if (typeof name === 'string') {
           PeerCursor.myCursor.name = name;
         } else {
-          localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+          if (name !== undefined) localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
         }
       });
-      localForage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).then(color => {
+      await localForage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).then(color => {
         if (typeof color === 'string' && /^\#[0-9a-f]{6}$/.test(color.trim().toLowerCase())) {
           PeerCursor.myCursor.color = color.trim().toLowerCase();
         } else {
-          localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+          if (color !== undefined) localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
         }
       });
+      // アイコン
+      try { 
+        await localForage.getItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY).then(identifierOrImageData => {
+          let blob: Blob = null;
+          if (typeof identifierOrImageData === 'string') {
+            if (identifierOrImageData.startsWith('data:image/')) {
+              const type = identifierOrImageData.substring('data:'.length, identifierOrImageData.indexOf(';'));
+              const bin = atob(identifierOrImageData.replace(/^.*,/, '')); 
+              let buffer = new Uint8Array(bin.length);
+              for (let i = 0; i < bin.length; i++) {
+                buffer[i] = bin.charCodeAt(i);
+              }
+              blob = new Blob([buffer.buffer], { type: type });
+            } else {
+              const identifier = ImageStorage.instance.images.find(image => image.identifier === identifierOrImageData);
+              if (identifier) {
+                PeerCursor.myCursor.imageIdentifier = identifierOrImageData;
+              } else {
+                localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+              }
+            }
+          } else if (identifierOrImageData instanceof Blob) {
+            blob = identifierOrImageData;
+          } else {
+            localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+          }
+          if (blob) {
+            ImageFile.createAsync(blob).then(imageFile => {
+              if (imageFile.state === ImageState.COMPLETE) {
+                ImageStorage.instance.add(imageFile);
+                PeerCursor.myCursor.imageIdentifier = imageFile.identifier;
+              } else {
+                localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+              }
+            });
+          }
+        }).catch(e => { throw e; });
+      } catch (e) {
+        console.log(e);
+        localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
+      }
     } catch (e) {
       console.log(e);
-      localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
-      localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      await localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      await localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     }
     return PeerCursor.myCursor;
   }
