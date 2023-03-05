@@ -652,8 +652,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     });
     menu.push(ContextMenuSeparator);
-    menu.push({ name: 'カットイン設定', materialIcon: 'movie_creation', action: () => this.open('CutInSettingComponent') });
-    menu.push({ name: 'ダイスボット表設定', materialIcon: 'table_rows', action: () => this.open('DiceRollTableSettingComponent') })
+    menu.push({ name: 'カットイン設定...', materialIcon: 'movie_creation', action: () => this.open('CutInSettingComponent') });
+    menu.push({ name: 'ダイスボット表設定...', materialIcon: 'table_rows', action: () => this.open('DiceRollTableSettingComponent') })
     this.contextMenuService.open(position, menu, 'ツールボックス');
   }
 
