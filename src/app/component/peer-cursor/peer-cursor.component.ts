@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 
 import { EventSystem, Network } from '@udonarium/core/system';
 import { ResettableTimeout } from '@udonarium/core/system/util/resettable-timeout';
@@ -15,7 +15,7 @@ import { PointerCoordinate } from 'service/pointer-device.service';
 })
 export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('cursor') cursorElementRef: ElementRef;
-  @ViewChild('opacity') opacityElementRef: ElementRef;
+  @ViewChildren('opacity') opacityElementRefs: QueryList<ElementRef>;
   @ViewChild('rotate') rotateElementRef: ElementRef;
   @Input() cursor: PeerCursor = PeerCursor.myCursor;
 
@@ -25,10 +25,10 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   get color(): string { return (this.cursor.color && this.cursor.color != '#ffffff') ? this.cursor.color : '#f0dabd'; }
 
   private cursorElement: HTMLElement = null;
-  private opacityElement: HTMLElement = null;
+  private opacityElements: HTMLElement[] = [];
   private rotateElement: HTMLElement = null;
   private fadeOutTimer: ResettableTimeout = null;
-
+  
   private updateInterval: NodeJS.Timer = null;
   private callcack: any = (e) => this.onMouseMove(e);
 
@@ -103,10 +103,11 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     } else {
       this.cursorElement = this.cursorElementRef.nativeElement;
-      this.opacityElement = this.opacityElementRef.nativeElement;
+      this.opacityElements = this.opacityElementRefs.map<HTMLElement>((elementRef) => elementRef.nativeElement);
       this.rotateElement = this.rotateElementRef.nativeElement;
       this.setAnimatedTransition();
       this.setPosition(0, 0, 0);
+      if (this.rotateElement) this.setRotate();
       this.resetFadeOut();
     }
   }
@@ -144,10 +145,14 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private resetFadeOut() {
-    this.opacityElement.style.opacity = '1.0';
+    this.opacityElements.forEach((opacityElement) => {
+      opacityElement.style.opacity = '0.8';
+    });
     if (this.fadeOutTimer == null) {
       this.fadeOutTimer = new ResettableTimeout(() => {
-        this.opacityElement.style.opacity = '0.0';
+        this.opacityElements.forEach((opacityElement) => {
+          opacityElement.style.opacity = '0.0';
+        });
       }, 3000);
     }
     this.fadeOutTimer.reset();

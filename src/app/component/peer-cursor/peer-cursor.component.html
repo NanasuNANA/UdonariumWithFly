@@ -1,13 +1,14 @@
 <ng-container *ngIf="!isMine">
   <div #cursor class="component is-3d is-transition is-pointer-events-none">
     <div #rotate class="is-3d">
-      <div #opacity class="upright-transform is-3d is-transition">
-        <div *ngFor="let cssClass of ['is-front', 'is-back']" class="peer-cursor is-3d" [ngClass]="cssClass" [style.background-color]="color">
-          <div class="icon is-3d" [style.background-image]="'url(' + iconUrl + ')' | safe: 'style'">
-            <div class="name is-center is-3d" [style.background-color]="color">
-              <span style="white-space: nowrap; color: whitesmoke" class="is-3d">{{name}}</span>
+      <div class="upright-transform is-3d">
+        <div #opacity *ngFor="let cssClass of ['is-front', 'is-back']" class="peer-cursor is-3d is-opacity-transition" [ngClass]="cssClass"
+          [style.background-image]="'radial-gradient(circle, transparent 18px, ' + color + ' 18px), radial-gradient(circle, transparent 17px, rgba(240, 218, 189) 17px)'">
+            <div class="icon is-3d" [style.background-image]="'url(' + iconUrl + ')' | safe: 'style'">
+              <div class="name is-center is-3d" [style.background-color]="color">
+                <span style="white-space: nowrap; color: whitesmoke" class="is-3d">{{name}}</span>
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
