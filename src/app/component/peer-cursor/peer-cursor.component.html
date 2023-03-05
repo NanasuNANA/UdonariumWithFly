@@ -3,7 +3,7 @@
     <div #rotate class="is-3d">
       <div class="upright-transform is-3d">
         <div #opacity *ngFor="let cssClass of ['is-front', 'is-back']" class="peer-cursor is-3d is-opacity-transition" [ngClass]="cssClass"
-          [style.background-image]="'radial-gradient(circle, transparent 18px, ' + color + ' 18px), radial-gradient(circle, transparent 17px, rgba(240, 218, 189) 17px)'">
+          [style.background-image]="'radial-gradient(circle, transparent 17px, ' + color + ' 18px), radial-gradient(circle, transparent 16px, rgba(240, 218, 189) 17px)'">
             <div class="icon is-3d" [style.background-image]="'url(' + iconUrl + ')' | safe: 'style'">
               <div class="name is-center is-3d" [style.background-color]="color">
                 <span style="white-space: nowrap; color: whitesmoke" class="is-3d">{{name}}</span>
