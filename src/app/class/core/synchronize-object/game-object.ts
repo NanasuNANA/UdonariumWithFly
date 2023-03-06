@@ -62,10 +62,13 @@ export class GameObject {
   }
 
   clone(): this {
-    let xmlString = this.toXml();
-    return <this>ObjectSerializer.instance.parseXml(xmlString);
+    const xmlString = this.toXml();
+    const object = <this>ObjectSerializer.instance.parseXml(xmlString);
+    object.complement();
+    return object;
   }
-
+  complement(): void {};
+  
   toContext(): ObjectContext {
     return {
       aliasName: this.context.aliasName,

@@ -23,6 +23,17 @@ export class TextNote extends TabletopObject {
   }
   set color(color: string) { this.setCommonValue('color', color); }
 
+  complement(): void {
+    let element = this.getElement('color', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('color', "#555555", { type: 'color' }, 'color_' + this.identifier));
+    }
+    element = this.getElement('altitude', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier));
+    }
+  }
+
   toTopmost() {
     moveToTopmost(this);
   }

@@ -34,9 +34,9 @@ export class GameCharacter extends TabletopObject {
   get size(): number { return this.getCommonValue('size', 1); }
   get height(): number {
     let element = this.getElement('height', this.commonDataElement);
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement));
-    }
+    //if (!element && this.commonDataElement) {
+    //  this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement));
+    //}
     let num = element ? +element.value : 0;
     if (element && element.currentValue) num = (Number.isNaN(num) ? 0 : num) * this.size;
     return Number.isNaN(num) ? 0 : num;
@@ -86,6 +86,17 @@ export class GameCharacter extends TabletopObject {
       if (character.isHideIn && character.isVisible && character.location.name === 'table') return true;
     }
     return false;
+  }
+
+  complement(): void {
+    let element = this.getElement('altitude', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier));
+    }
+    element = this.getElement('height', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement));
+    }
   }
 
   createTestGameDataElement(name: string, size: number, imageIdentifier: string) {

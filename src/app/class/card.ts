@@ -31,18 +31,18 @@ export class Card extends TabletopObject {
 
   get fontsize(): number { 
     let element = this.getElement('fontsize', this.commonDataElement);
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
-    }
+    //if (!element && this.commonDataElement) {
+    //  this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
+    //}
     return element ? +element.value : 18;
   }
   set fontsize(fontsize: number) { this.setCommonValue('fontsize', fontsize); }
   
   get text(): string { 
     let element = this.getElement('text', this.commonDataElement);
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
-    }
+    //if (!element && this.commonDataElement) {
+    //  this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
+    //}
     return element ? element.value + '' : '';
   }
   set text(text: string) { this.setCommonValue('text', text); }
@@ -74,6 +74,21 @@ export class Card extends TabletopObject {
   get isHand(): boolean { return Network.peerContext.userId === this.owner; }
   get isFront(): boolean { return this.state === CardState.FRONT; }
   get isVisible(): boolean { return this.isHand || this.isFront; }
+
+  complement(): void {
+    let element = this.getElement('fontsize', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
+    }
+    element = this.getElement('text', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
+    }
+    element = this.getElement('color', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('color', "#555555", { type: 'color' }, 'color_' + this.identifier));
+    }
+  }
 
   faceUp() {
     this.state = CardState.FRONT;

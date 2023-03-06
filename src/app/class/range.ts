@@ -20,10 +20,7 @@ export class RangeArea extends TabletopObject {
 
   @SyncVar() offSetX: boolean = false;
   @SyncVar() offSetY: boolean = false;
-  //@SyncVar() gridColor: string = "#FFFF00";
-  //@SyncVar() rangeColor: string = "#000000";
   @SyncVar() type: string = 'CORN';
-  //@SyncVar() fillOutLine: boolean = false;
   @SyncVar() subDivisionSnapPolygonal: boolean = true;
   @SyncVar() fillType: number = 1; // 0: 輪郭に合わせて塗る　1: 中心を通る　2:一部を覆う　3:半分を覆う　4:全体を覆う
   @SyncVar() isExpandByFollowing: boolean = false;
@@ -94,7 +91,7 @@ export class RangeArea extends TabletopObject {
 
   following(){
     if(!this.followingCharactor || this.followingCharactor.isHideIn) {
-      console.log('追従対象見失い');
+      //console.log('追従対象見失い');
       this.followingCharactor = null;
       return;
     }

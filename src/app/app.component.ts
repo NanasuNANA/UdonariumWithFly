@@ -384,7 +384,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         if (event.isSendFromSelf) this.isLoggedin = false;
       })
       .on('MESSAGE_NORTIFICATION', event => {
-        console.log(event)
+        //console.log(event)
         /* ペンディング
         try {
           Notification.requestPermission().then((permission) => {

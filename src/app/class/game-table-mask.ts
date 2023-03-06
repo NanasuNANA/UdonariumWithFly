@@ -19,18 +19,18 @@ export class GameTableMask extends TabletopObject {
   
   get fontsize(): number { 
     let element = this.getElement('fontsize', this.commonDataElement);
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
-    }
+    //if (!element && this.commonDataElement) {
+    //  this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
+    //}
     return element ? +element.value : 18;
   }
   set fontsize(fontsize: number) { this.setCommonValue('fontsize', fontsize); }
   
   get text(): string { 
     let element = this.getElement('text', this.commonDataElement);
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
-    }
+    //if (!element && this.commonDataElement) {
+    //  this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
+    //}
     return element ? element.value + '' : '';
   }
   set text(text: string) { this.setCommonValue('text', text); }
@@ -58,6 +58,25 @@ export class GameTableMask extends TabletopObject {
   set bgcolor(bgcolor: string) { 
     let element = this.getElement('color', this.commonDataElement);
     if (element) element.currentValue = bgcolor;
+  }
+
+  complement(): void {
+    let element = this.getElement('fontsize', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
+    }
+    element = this.getElement('text', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
+    }
+    element = this.getElement('color', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('color', "#555555", { type: 'colors', currentValue: '#0a0a0a' }, 'color_' + this.identifier));
+    }
+    element = this.getElement('altitude', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      this.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier));
+    }
   }
 
   static create(name: string, width: number, height: number, opacity: number, identifier?: string): GameTableMask {

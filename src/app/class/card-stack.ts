@@ -47,6 +47,10 @@ export class CardStack extends TabletopObject {
   get isEmpty(): boolean { return this.cards.length < 1 }
   get imageFile(): ImageFile { return this.topCard ? this.topCard.imageFile : null; }
 
+  complement(): void {
+    this.cards.forEach(card => card.complement());
+  }
+
   // ObjectNode Lifecycle
   onChildRemoved(child: ObjectNode) {
     super.onChildRemoved(child);
