@@ -64,7 +64,6 @@ export class GameObject {
   clone(): this {
     const xmlString = this.toXml();
     const object = <this>ObjectSerializer.instance.parseXml(xmlString);
-    object.complement();
     return object;
   }
   complement(): void {};

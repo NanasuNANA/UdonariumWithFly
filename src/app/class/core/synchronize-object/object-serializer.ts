@@ -129,6 +129,12 @@ export class ObjectSerializer {
     if ('parseInnerXml' in gameObject) {
       (<InnerXml>gameObject).parseInnerXml(xmlElement);
     }
+    try {
+      gameObject.complement();
+    } catch(e) {
+      console.log(e);
+    }   
+    
     return gameObject;
   }
 
