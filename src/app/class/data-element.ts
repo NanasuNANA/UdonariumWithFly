@@ -89,4 +89,14 @@ export class DataElement extends ObjectNode {
       return +this.value;
     }
   }
+
+  checkValue(): string {
+    if (!this.isCheckProperty) return '0';
+    let pair = (this.currentValue + '').trim().split(/[|｜]/g, 2);
+    if (pair[1] == null) {
+      pair[1] = '0'
+      if (pair[0] == null || (pair[0] === '' && !/[|｜]/.test(this.currentValue + ''))) pair[0] = '1';
+    } 
+    return pair[ this.value ? 0 : 1 ];
+  }
 }
