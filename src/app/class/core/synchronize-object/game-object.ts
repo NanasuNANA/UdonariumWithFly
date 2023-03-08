@@ -66,6 +66,7 @@ export class GameObject {
     const object = <this>ObjectSerializer.instance.parseXml(xmlString);
     return object;
   }
+  
   complement(): void {};
   
   toContext(): ObjectContext {

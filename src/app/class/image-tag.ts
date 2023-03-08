@@ -1,10 +1,8 @@
 import { SyncObject, SyncVar } from './core/synchronize-object/decorator';
 import { ObjectNode } from './core/synchronize-object/object-node';
 import { ObjectStore } from './core/synchronize-object/object-store';
-import { ImageFile } from './core/file-storage/image-file';
-import { ImageStorage } from './core/file-storage/image-storage';
 
-import { EventSystem, Network } from './core/system';
+import { EventSystem } from './core/system';
 import { StringUtil } from './core/system/util/string-util';
 
 @SyncObject('image-tag')
