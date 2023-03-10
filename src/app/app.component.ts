@@ -5,7 +5,7 @@ import { AudioPlayer, VolumeType } from '@udonarium/core/file-storage/audio-play
 import { AudioSharingSystem } from '@udonarium/core/file-storage/audio-sharing-system';
 import { AudioStorage } from '@udonarium/core/file-storage/audio-storage';
 import { FileArchiver } from '@udonarium/core/file-storage/file-archiver';
-import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
+import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ImageSharingSystem } from '@udonarium/core/file-storage/image-sharing-system';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { ObjectFactory } from '@udonarium/core/synchronize-object/object-factory';
@@ -54,6 +54,8 @@ import { CutIn } from '@udonarium/cut-in';
 import { CutInList } from '@udonarium/cut-in-list';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { SwUpdate } from '@angular/service-worker';
+
+import * as localForage from 'localforage';
 
 @Component({
   selector: 'app-root',
@@ -166,6 +168,27 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     fileContext.url = './assets/images/nc96424.png';
     let standNoIconImage = ImageStorage.instance.add(fileContext);
     ImageTag.create(standNoIconImage.identifier).tag = '*default スタンド';
+
+    try {
+      localForage.getItem(AudioPlayer.MAIN_VOLUME_LOCAL_STORAGE_KEY).then(volume => { 
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) AudioPlayer.volume = volume;
+      });
+      localForage.getItem(AudioPlayer.AUDITION_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) AudioPlayer.auditionVolume = volume;
+      });
+      localForage.getItem(AudioPlayer.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) AudioPlayer.soundEffectVolume = volume;
+      });
+      localForage.getItem(AudioPlayer.NOTICE_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
+        if (typeof volume === 'number' && 0 <= volume && volume <= 1) AudioPlayer.noticeVolume = volume;
+      });
+      localForage.getItem(AudioPlayer.MAIN_IS_MUTE_LOCAL_STORAGE_KEY).then(isMute => AudioPlayer.isMute = !!isMute);
+      localForage.getItem(AudioPlayer.AUDITION_IS_MUTE_LOCAL_STORAGE_KEY).then(isMute => AudioPlayer.isAuditionMute = !!isMute);
+      localForage.getItem(AudioPlayer.SOUND_EFFECT_IS_MUTE_LOCAL_STORAGE_KEY).then(isMute => AudioPlayer.isSoundEffectMute = !!isMute);
+      localForage.getItem(AudioPlayer.NOTICE_IS_MUTE_LOCAL_STORAGE_KEY).then(isMute => AudioPlayer.isNoticeMute = !!isMute);
+    } catch(e) {
+      console.log(e);
+    }
 
     AudioPlayer.resumeAudioContext();
     PresetSound.dicePick = AudioStorage.instance.add('./assets/sounds/soundeffect-lab/shoulder-touch1.mp3').identifier;

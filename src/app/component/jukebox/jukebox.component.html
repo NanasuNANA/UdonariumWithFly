@@ -30,7 +30,7 @@
 <div style="font-size: 12px">※「BGM」はルーム内の全員で1つの音楽をループ再生します。</div>
 <div style="font-size: 12px; margin-bottom: 8px">※現行バージョンのセーブデータ（zip）には音楽ファイルは含まれません。（毎回アップロードが必要です）</div>
 
-<div class="footer" style="position: sticky; bottom: 0px">
+<div class="footer" style="position: sticky; bottom: 0px; padding: 2px 0px 0px 3px">
   <div style="display: flex">
     <div style="flex-basis: auto"><b style="white-space: nowrap">試聴音量<sup class="self-only">*</sup>：</b></div>
     <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isAuditionMute = !isAuditionMute">{{ (isAuditionMute || auditionVolume == 0) ? 'volume_off' : auditionVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>

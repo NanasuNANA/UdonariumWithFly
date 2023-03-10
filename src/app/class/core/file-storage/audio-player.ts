@@ -18,6 +18,17 @@ declare global {
 type AudioCache = { url: string, blob: Blob };
 
 export class AudioPlayer {
+
+  static readonly AUDITION_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-audition-volume-local-storage';
+  static readonly MAIN_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-main-volume-local-storage';
+  static readonly SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-sound-effect-volume-local-storage';
+  static readonly NOTICE_VOLUME_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-notice-volume-local-storage';
+
+  static readonly AUDITION_IS_MUTE_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-audition-is-mute-local-storage';
+  static readonly MAIN_IS_MUTE_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-main-is-mute-local-storage';
+  static readonly SOUND_EFFECT_IS_MUTE_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-sound-effect-is-mute-local-storage';
+  static readonly NOTICE_IS_MUTE_LOCAL_STORAGE_KEY = 'udonanaumu-audio-player-notice-is-mute-local-storage';
+
   private static _audioContext: AudioContext
   static get audioContext(): AudioContext {
     if (!AudioPlayer._audioContext) AudioPlayer._audioContext = new (window.AudioContext || window.webkitAudioContext)();

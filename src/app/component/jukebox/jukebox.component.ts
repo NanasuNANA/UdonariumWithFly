@@ -26,6 +26,11 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   set isMute(isMute: boolean) {
     AudioPlayer.isMute = isMute;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    if (!isMute) {
+      localForage.removeItem(AudioPlayer.MAIN_IS_MUTE_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(AudioPlayer.MAIN_IS_MUTE_LOCAL_STORAGE_KEY, isMute).catch(e => console.log(e));
+    }
   }
   get volume(): number { return AudioPlayer.volume; }
   set volume(volume: number) {
@@ -33,9 +38,9 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     AudioPlayer.volume = volume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.volume == 0.5) {
-      localForage.removeItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(AudioPlayer.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     } else {
-      localForage.setItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY, volume).catch(e => console.log(e));
+      localForage.setItem(AudioPlayer.MAIN_VOLUME_LOCAL_STORAGE_KEY, volume).catch(e => console.log(e));
     }
   }
 
@@ -43,6 +48,11 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   set isAuditionMute(isAuditionMute: boolean) { 
     AudioPlayer.isAuditionMute = isAuditionMute;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+    if (!isAuditionMute) {
+      localForage.removeItem(AudioPlayer.AUDITION_IS_MUTE_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(AudioPlayer.AUDITION_IS_MUTE_LOCAL_STORAGE_KEY, isAuditionMute).catch(e => console.log(e));
+    }
   }
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
   set auditionVolume(auditionVolume: number) {
@@ -50,37 +60,51 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     AudioPlayer.auditionVolume = auditionVolume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.auditionVolume == 0.5) {
-      localForage.removeItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(AudioPlayer.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     } else {
-      localForage.setItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume).catch(e => console.log(e));
+      localForage.setItem(AudioPlayer.AUDITION_VOLUME_LOCAL_STORAGE_KEY, auditionVolume).catch(e => console.log(e));
     }
   }
 
   get isSoundEffectMute() { return AudioPlayer.isSoundEffectMute; }
-  set isSoundEffectMute(isSoundEffectMute: boolean) { AudioPlayer.isSoundEffectMute = isSoundEffectMute; }
+  set isSoundEffectMute(isSoundEffectMute: boolean) {
+    AudioPlayer.isSoundEffectMute = isSoundEffectMute;
+    if (!isSoundEffectMute) {
+      localForage.removeItem(AudioPlayer.SOUND_EFFECT_IS_MUTE_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(AudioPlayer.SOUND_EFFECT_IS_MUTE_LOCAL_STORAGE_KEY, isSoundEffectMute).catch(e => console.log(e));
+    }
+  }
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
     this.isSoundEffectMute = false;
     AudioPlayer.soundEffectVolume = soundEffectVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.soundEffectVolume == 0.5) {
-      localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(AudioPlayer.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     } else {
-      localForage.setItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
+      localForage.setItem(AudioPlayer.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
     }
   }
  
   get isNoticeMute() { return AudioPlayer.isNoticeMute; }
-  set isNoticeMute(isNoticeMute: boolean) { AudioPlayer.isNoticeMute = isNoticeMute; }
+  set isNoticeMute(isNoticeMute: boolean) {
+    AudioPlayer.isNoticeMute = isNoticeMute;
+    if (!isNoticeMute) {
+      localForage.removeItem(AudioPlayer.NOTICE_IS_MUTE_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+    } else {
+      localForage.setItem(AudioPlayer.NOTICE_IS_MUTE_LOCAL_STORAGE_KEY, isNoticeMute).catch(e => console.log(e));
+    }
+  }
   get noticeVolume(): number { return AudioPlayer.noticeVolume; }
   set noticeVolume(noticeVolume: number) {
     this.isNoticeMute = false;
     AudioPlayer.noticeVolume = noticeVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.noticeVolume == 0.5) {
-      localForage.removeItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
+      localForage.removeItem(AudioPlayer.NOTICE_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
     } else {
-      localForage.setItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY, noticeVolume).catch(e => console.log(e));
+      localForage.setItem(AudioPlayer.NOTICE_VOLUME_LOCAL_STORAGE_KEY, noticeVolume).catch(e => console.log(e));
     }
   }
 
@@ -113,26 +137,6 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   ) {
     this.soundTestPlayer.volumeType = VolumeType.SOUND_EFFECT;
     this.noticeTestPlayer.volumeType = VolumeType.NOTICE;
-    try {
-      localForage.getItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).then(volume => { 
-        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.volume = volume;
-      });
-      localForage.getItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
-        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.auditionVolume = volume;
-      });
-      localForage.getItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
-        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.soundEffectVolume = volume;
-      });
-      localForage.getItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).then(volume => {
-        if (typeof volume === 'number' && 0 <= volume && volume <= 1) this.noticeVolume = volume;
-      });
-    } catch(e) {
-      console.log(e);
-      localForage.removeItem(Jukebox.MAIN_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
-      localForage.removeItem(Jukebox.AUDITION_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
-      localForage.removeItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
-      localForage.removeItem(Jukebox.NOTICE_VOLUME_LOCAL_STORAGE_KEY).catch(e => console.log(e));
-    }
   }
 
   ngOnInit() {
