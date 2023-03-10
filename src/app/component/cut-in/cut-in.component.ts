@@ -444,6 +444,9 @@ export class CutInComponent implements OnInit, OnDestroy {
   onPlayerStateChange($event) {
     const state = $event.data;
     //console.log($event.data)
+    if (state == 0) {
+      if (!this.cutIn.isLoop) this.stop();
+    }
     if (state == 1) {
       this.videoStateTransition = true;
       this._timeoutIdVideo = setTimeout(() => {
