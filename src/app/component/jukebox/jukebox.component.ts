@@ -22,8 +22,14 @@ import * as localForage from 'localforage';
 })
 export class JukeboxComponent implements OnInit, OnDestroy {
 
+  get isMute() { return AudioPlayer.isMute; }
+  set isMute(isMute: boolean) {
+    AudioPlayer.isMute = isMute;
+    EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+  }
   get volume(): number { return AudioPlayer.volume; }
   set volume(volume: number) {
+    this.isMute = false;
     AudioPlayer.volume = volume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.volume == 0.5) {
@@ -33,8 +39,14 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     }
   }
 
+  get isAuditionMute() { return AudioPlayer.isAuditionMute; }
+  set isAuditionMute(isAuditionMute: boolean) { 
+    AudioPlayer.isAuditionMute = isAuditionMute;
+    EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
+  }
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
-  set auditionVolume(auditionVolume: number) { 
+  set auditionVolume(auditionVolume: number) {
+    this.isAuditionMute = false;
     AudioPlayer.auditionVolume = auditionVolume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.auditionVolume == 0.5) {
@@ -44,8 +56,11 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     }
   }
 
+  get isSoundEffectMute() { return AudioPlayer.isSoundEffectMute; }
+  set isSoundEffectMute(isSoundEffectMute: boolean) { AudioPlayer.isSoundEffectMute = isSoundEffectMute; }
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
+    this.isSoundEffectMute = false;
     AudioPlayer.soundEffectVolume = soundEffectVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.soundEffectVolume == 0.5) {
@@ -54,9 +69,12 @@ export class JukeboxComponent implements OnInit, OnDestroy {
       localForage.setItem(Jukebox.SOUND_EFFECT_VOLUME_LOCAL_STORAGE_KEY, soundEffectVolume).catch(e => console.log(e));
     }
   }
-
+ 
+  get isNoticeMute() { return AudioPlayer.isNoticeMute; }
+  set isNoticeMute(isNoticeMute: boolean) { AudioPlayer.isNoticeMute = isNoticeMute; }
   get noticeVolume(): number { return AudioPlayer.noticeVolume; }
   set noticeVolume(noticeVolume: number) {
+    this.isNoticeMute = false;
     AudioPlayer.noticeVolume = noticeVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.noticeVolume == 0.5) {
@@ -197,7 +215,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
     const audio = AudioStorage.instance.get(audioIdentifier);
     if (audio && audio.isReady) {
       EventSystem.unregister(this, 'UPDATE_AUDIO_RESOURE');
-      this.soundTestPlayer.play(audio);
+      if (!this.isSoundEffectMute) this.soundTestPlayer.play(audio);
     } else {
       EventSystem.register(this)
       .on('UPDATE_AUDIO_RESOURE', -100, event => {

@@ -524,6 +524,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'JukeboxComponent':
         component = JukeboxComponent;
+        option.height = 540;
         break;
       case 'GameCharacterGeneratorComponent':
         component = GameCharacterGeneratorComponent;

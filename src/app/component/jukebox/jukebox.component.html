@@ -1,36 +1,4 @@
-<div class="header" style="position: sticky; top: 0px">
-  <div>
-    <b>試聴音量<sup class="self-only">*</sup>：</b>
-    <i class="material-icons" style="font-size: 22px">{{ auditionVolume == 0 ? 'volume_off' : auditionVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i> 
-    <input [(ngModel)]="auditionVolume" type="range" title="{{percentAuditionVolume + '%'}}" min="0" max="1" step="0.01" style="width:53%" /> 
-    <span style="white-space: nowrap;"><input type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentAuditionVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
-  </div>
-  <div>
-    <b>再生音量<sup class="self-only">*</sup>：</b>
-    <i class="material-icons" style="font-size: 22px">{{ volume == 0 ? 'volume_off' : volume <= 0.5 ? 'volume_down' : 'volume_up' }}</i> 
-    <input [(ngModel)]="volume" type="range" min="0" title="{{percentVolume + '%'}}" max="1" step="0.01" style="width:53%" /> 
-    <span style="white-space: nowrap;"><input type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
-  </div>
-  <hr />
-  <div>
-    <b>通知音量<sup class="self-only">*</sup>：</b>
-    <i class="material-icons" style="font-size: 22px">{{ noticeVolume == 0 ? 'volume_off' : noticeVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i> 
-    <input [(ngModel)]="noticeVolume" (change)="noticeTest()" type="range" min="0" title="{{percentNoticeVolume + '%'}}" max="1" step="0.01" style="width:53%" /> 
-    <span style="white-space: nowrap;"><input (change)="noticeTest()" type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentNoticeVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
-  </div>
-  <div>
-    <b>ＳＥ音量<sup class="self-only">*</sup>：</b>
-    <i class="material-icons" style="font-size: 22px">{{ soundEffectVolume == 0 ? 'volume_off' : soundEffectVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i> 
-    <input [(ngModel)]="soundEffectVolume" type="range" min="0" title="{{percentSoundEffectVolume + '%'}}" max="1" step="0.01" style="width:53%" /> 
-    <span style="white-space: nowrap;"><input type="number" min="0" max="100" step="1" style="width: 3em" [(ngModel)]="percentSoundEffectVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span>
-  </div>
-  <div style="display: flex; justify-content: space-between; padding: 1px 0px 2px 0px">
-    <div><small>※設定した音量はブラウザに保存されます。</small></div>
-    <div><button style="font-size: xx-small; font-weight: bolder; margin-right: 2em" (click)="soundTest($event)">ＳＥテスト<sup style="font-size: larger" class="self-only">*</sup></button></div>
-  </div>
-</div>
-
-<div style="margin-bottom: 3px">
+<div style="margin-bottom: 2px; min-height: 4em">
   <div *ngFor="let audio of audios; last as last" class="box" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden" [ngClass]="{last: last}">
     <button *ngIf="audio !== auditionPlayer?.audio || auditionPlayer?.paused" (click)="play(audio)" [disabled]="!audio.isReady"><i class="material-icons">play_arrow</i>試聴<sup style="font-size: larger" class="self-only">*</sup></button>
     <button *ngIf="audio === auditionPlayer?.audio && !auditionPlayer?.paused" (click)="stop()" [disabled]="!audio.isReady"><i class="material-icons">stop</i>試聴<sup style="font-size: larger" class="self-only">*</sup></button>
@@ -38,8 +6,8 @@
     <button *ngIf="audio === jukebox?.audio" (click)="stopBGM(audio)" [disabled]="!audio.isReady"><i class="material-icons">stop</i>ＢＧＭ</button>
     <span *ngIf="audio === auditionPlayer?.audio && !auditionPlayer?.paused && audio != jukebox?.audio" style="padding-left: 2px"><b>【試聴中】</b></span>
     <ng-container *ngIf="audio === jukebox?.audio">
-      <span *ngIf="audio != auditionPlayer?.audio || (audio == auditionPlayer?.audio && auditionPlayer?.paused)" style="padding-left: 2px"><b>【ＢＧＭ】</b></span>
-      <span *ngIf="audio === auditionPlayer?.audio && !auditionPlayer?.paused" style="padding-left: 2px"><b>【試聴/BGM】</b></span>
+      <span *ngIf="audio != auditionPlayer?.audio || (audio == auditionPlayer?.audio && auditionPlayer?.paused)" style="padding-left: 2px"><i class="material-icons" style="font-size: 16px; vertical-align: middle">volume_up</i></span>
+      <span *ngIf="audio === auditionPlayer?.audio && !auditionPlayer?.paused" style="padding-left: 2px"><i class="material-icons" style="font-size: 16px; vertical-align: middle">volume_up</i><b>【試聴中】</b></span>
     </ng-container>
     <span style="font-size: smaller" style="padding-left: 2px" [style.font-weight]="audio === jukebox?.audio ? 'bolder': 'normal'">{{audio.name}}</span>
   </div>
@@ -58,6 +26,38 @@
       <br>１ファイルにつき10MBまで</div>
   </div>
 </label>
-<div style="font-size: 12px; margin-top: 3px">※「試聴<sup class="self-only">*</sup>」「SEテスト<sup class="self-only">*</sup>」は自分のスピーカーだけで音楽を1回再生します。</div>
+<div style="font-size: 12px; margin-top: 3px">※「試聴<sup class="self-only">*</sup>」「SEテスト<sup class="self-only">*</sup>」は自分の環境で音楽を1回再生します。</div>
 <div style="font-size: 12px">※「BGM」はルーム内の全員で1つの音楽をループ再生します。</div>
-<div style="font-size: 12px">※現行バージョンのセーブデータ（zip）には音楽ファイルは含まれません。（毎回アップロードが必要です）</div>
+<div style="font-size: 12px; margin-bottom: 8px">※現行バージョンのセーブデータ（zip）には音楽ファイルは含まれません。（毎回アップロードが必要です）</div>
+
+<div class="footer" style="position: sticky; bottom: 0px">
+  <div style="display: flex">
+    <div style="flex-basis: auto"><b style="white-space: nowrap">試聴音量<sup class="self-only">*</sup>：</b></div>
+    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isAuditionMute = !isAuditionMute">{{ (isAuditionMute || auditionVolume == 0) ? 'volume_off' : auditionVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: 100%"><input [(ngModel)]="auditionVolume" type="range" [title]="isAuditionMute ? '' : percentAuditionVolume + '%'" min="0" max="1" step="0.01" style="width: 100%" /></div>
+    <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentAuditionVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
+  </div>
+  <div style="display: flex">
+    <div style="flex-basis: auto"><b style="white-space: nowrap">再生音量<sup class="self-only">*</sup>：</b></div>
+    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isMute = !isMute">{{ (isMute || volume == 0) ? 'volume_off' : volume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: 100%"><input [(ngModel)]="volume" type="range" min="0" [title]="isMute ? '' : percentVolume + '%'" max="1" step="0.01" style="width: 100%" /></div>
+    <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
+  </div>
+  <hr />
+  <div style="display: flex">
+    <div style="flex-basis: auto"><b style="white-space: nowrap">通知音量<sup class="self-only">*</sup>：</b></div>
+    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isNoticeMute = !isNoticeMute">{{ (isNoticeMute || noticeVolume == 0) ? 'volume_off' : noticeVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: 100%"><input [(ngModel)]="noticeVolume" (change)="noticeTest()" type="range" min="0" [title]="isNoticeMute ? '' : percentNoticeVolume + '%'" max="1" step="0.01" style="width: 100%" /></div>
+    <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input (change)="noticeTest()" type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentNoticeVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
+  </div>
+  <div style="display: flex">
+    <div style="flex-basis: auto"><b style="white-space: nowrap">ＳＥ音量<sup class="self-only">*</sup>：</b></div>
+    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isSoundEffectMute = !isSoundEffectMute">{{ (isSoundEffectMute || soundEffectVolume == 0) ? 'volume_off' : soundEffectVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: 100%"><input [(ngModel)]="soundEffectVolume" type="range" min="0" [title]="isSoundEffectMute ? '' : percentSoundEffectVolume + '%'" max="1" step="0.01" style="width: 100%" /></div>
+    <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentSoundEffectVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
+  </div>
+  <div style="display: flex; justify-content: space-between; padding: 1px 0px 2px 0px">
+    <div><small>※設定した音量はブラウザに保存されます。</small></div>
+    <div><button style="font-size: xx-small; font-weight: bolder; margin-right: 2em; white-space: nowrap" (click)="soundTest($event)">ＳＥテスト<sup style="font-size: larger" class="self-only">*</sup></button></div>
+  </div>
+</div>

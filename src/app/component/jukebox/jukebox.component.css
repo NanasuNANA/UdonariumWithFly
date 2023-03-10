@@ -1,5 +1,6 @@
 :host {
   display: block;
+  height: 100%;
 }
 
 .drop-zone {
@@ -59,7 +60,7 @@ button .material-icons {
   font-size: 12px;
 }
 
-.header {
+.footer {
   background: linear-gradient(-30deg, rgba(240,218,189, 0.9), rgba(255, 244, 232, 0.9));
-  border-bottom: dotted 1px #888;
+  border-top: dotted 1px #888;
 }

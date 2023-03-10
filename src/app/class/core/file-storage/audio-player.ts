@@ -24,32 +24,60 @@ export class AudioPlayer {
     return AudioPlayer._audioContext;
   }
 
+  private static _isMute: boolean = false;
+  static get isMute(): boolean { return AudioPlayer._isMute; }
+  static set isMute(isMute: boolean) {
+    AudioPlayer._isMute = isMute;
+    AudioPlayer.volume = AudioPlayer._volume;
+  }
+
   private static _volume: number = 0.5;
   static get volume(): number { return AudioPlayer._volume; }
   static set volume(volume: number) {
     AudioPlayer._volume = volume;
-    AudioPlayer.masterGainNode.gain.setTargetAtTime(AudioPlayer._volume, AudioPlayer.audioContext.currentTime, 0.01);
+    AudioPlayer.masterGainNode.gain.setTargetAtTime(AudioPlayer.isMute ? 0 : AudioPlayer._volume, AudioPlayer.audioContext.currentTime, 0.01);
+  }
+
+  private static _isAuditionMute: boolean = false;
+  static get isAuditionMute(): boolean { return AudioPlayer._isAuditionMute; }
+  static set isAuditionMute(isAuditionMute: boolean) {
+    AudioPlayer._isAuditionMute = isAuditionMute;
+    AudioPlayer.auditionVolume = AudioPlayer._auditionVolume;
   }
 
   private static _auditionVolume: number = 0.5;
   static get auditionVolume(): number { return AudioPlayer._auditionVolume; }
   static set auditionVolume(auditionVolume: number) {
     AudioPlayer._auditionVolume = auditionVolume;
-    AudioPlayer.auditionGainNode.gain.setTargetAtTime(AudioPlayer._auditionVolume, AudioPlayer.audioContext.currentTime, 0.01);
+    AudioPlayer.auditionGainNode.gain.setTargetAtTime(AudioPlayer.isAuditionMute ? 0 : AudioPlayer._auditionVolume, AudioPlayer.audioContext.currentTime, 0.01);
+  }
+
+  private static _isSoundEffectMute: boolean = false;
+  static get isSoundEffectMute(): boolean { return AudioPlayer._isSoundEffectMute; }
+  static set isSoundEffectMute(isSoundEffectMute: boolean) { 
+    AudioPlayer._isSoundEffectMute = isSoundEffectMute; 
+    AudioPlayer.soundEffectVolume = AudioPlayer._soundEffectVolume;
   }
 
   private static _soundEffectVolume: number = 0.5;
   static get soundEffectVolume(): number { return AudioPlayer._soundEffectVolume; }
   static set soundEffectVolume(soundEffectVolume: number) {
     AudioPlayer._soundEffectVolume = soundEffectVolume;
-    AudioPlayer.soundEffectGainNode.gain.setTargetAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime, 0.01);
+    AudioPlayer.soundEffectGainNode.gain.setTargetAtTime(AudioPlayer.isSoundEffectMute ? 0 : AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime, 0.01);
+  }
+
+  private static _isNoticeMute: boolean = false;
+  static get isNoticeMute(): boolean { return AudioPlayer._isNoticeMute; }
+  static set isNoticeMute(isNoticeMute: boolean) { 
+    AudioPlayer._isNoticeMute = isNoticeMute;
+    AudioPlayer.noticeVolume = AudioPlayer._noticeVolume;
   }
 
   private static _noticeVolume: number = 0.5;
   static get noticeVolume(): number { return AudioPlayer._noticeVolume; }
   static set noticeVolume(noticeVolume: number) {
     AudioPlayer._noticeVolume = noticeVolume;
-    AudioPlayer.noticeGainNode.gain.setTargetAtTime(AudioPlayer._noticeVolume, AudioPlayer.audioContext.currentTime, 0.01);
+    AudioPlayer.noticeGainNode.gain.setTargetAtTime(AudioPlayer.isNoticeMute ? 0 : AudioPlayer._noticeVolume, AudioPlayer.audioContext.currentTime, 0.01);
   }
 
   private static _masterGainNode: GainNode
