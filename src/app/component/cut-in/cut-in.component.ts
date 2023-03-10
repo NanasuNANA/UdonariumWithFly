@@ -342,7 +342,10 @@ export class CutInComponent implements OnInit, OnDestroy {
   }
 */
   get videoVolume(): number {
-    return (this.isTest ? AudioPlayer.auditionVolume : AudioPlayer.volume) * 100;
+    if (this.isTest) {
+      return AudioPlayer.isAuditionMute ? 0 : AudioPlayer.auditionVolume * 100;
+    }
+    return AudioPlayer.isMute ? 0 : AudioPlayer.volume * 100;
   }
 
   get isBordered(): boolean { return this.cutIn && this.cutIn.borderStyle > 0; }
@@ -388,7 +391,7 @@ export class CutInComponent implements OnInit, OnDestroy {
           this.stop();
           clearTimeout(this._timeoutId);
           this._timeoutId = null;
-        }, this.cutIn.duration * 1000);
+        }, (this.cutIn.videoId ? 10 : this.cutIn.duration) * 1000);
       }
     }
   }
@@ -449,7 +452,22 @@ export class CutInComponent implements OnInit, OnDestroy {
           this._timeoutIdVideo = null;
         });
       }, 200);
-      if (this.cutIn) EventSystem.trigger('PLAY_VIDEO_CUT_IN', {identifier: this.cutIn.identifier})
+      //Timeoutの変更
+      if (this.cutIn.duration > 0) {
+        clearTimeout(this._timeoutId);
+        const timeLimit = this.cutIn.duration - this.videoPlayer.getCurrentTime() + (this.cutIn.videoStart ? parseInt(this.cutIn.videoStart) : 0);
+        //console.log(timeLimit)
+        if (timeLimit <= 0) {
+          this.stop();
+        } else {
+          this._timeoutId = setTimeout(() => {
+            this.stop();
+            clearTimeout(this._timeoutId);
+            this._timeoutId = null;
+          }, timeLimit * 1000);
+        }
+      }
+      if (this.cutIn) EventSystem.trigger('PLAY_VIDEO_CUT_IN', {identifier: this.cutIn.identifier});
     }
     if (state == 2) {
       this.videoStateTransition = true;
