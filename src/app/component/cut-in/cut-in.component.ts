@@ -391,7 +391,7 @@ export class CutInComponent implements OnInit, OnDestroy {
           this.stop();
           clearTimeout(this._timeoutId);
           this._timeoutId = null;
-        }, (this.cutIn.videoId ? 10 : this.cutIn.duration) * 1000);
+        }, (this.cutIn.videoId ? 12 : this.cutIn.duration) * 1000);
       }
     }
   }
@@ -464,7 +464,7 @@ export class CutInComponent implements OnInit, OnDestroy {
             this.stop();
             clearTimeout(this._timeoutId);
             this._timeoutId = null;
-          }, timeLimit * 1000);
+          }, (this.cutIn.duration > timeLimit ? timeLimit : this.cutIn.duration) * 1000);
         }
       }
       if (this.cutIn) EventSystem.trigger('PLAY_VIDEO_CUT_IN', {identifier: this.cutIn.identifier});
