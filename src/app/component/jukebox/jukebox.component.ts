@@ -186,7 +186,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   soundTest(event: Event) {
     const button = <HTMLElement>event.target;
     const clientRect = button.getBoundingClientRect();
-    const position = { x: window.pageXOffset + clientRect.left, y: window.pageYOffset + clientRect.top + button.clientHeight };
+    const position = { x: window.pageXOffset + clientRect.left + button.clientWidth, y: window.pageYOffset + clientRect.top };
     const menu: ContextMenuAction[] = [
       { name: 'キャラクター・地形', subActions: [
         { name: 'キャラクターの移動開始', action: () => { this.playSETest(PresetSound.piecePick); }},
