@@ -33,30 +33,30 @@
 <div class="footer" style="position: sticky; bottom: 0px; padding: 2px 0px 0px 3px">
   <div style="display: flex">
     <div style="flex-basis: auto"><b style="white-space: nowrap">試聴音量<sup class="self-only">*</sup>：</b></div>
-    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isAuditionMute = !isAuditionMute">{{ (isAuditionMute || auditionVolume == 0) ? 'volume_off' : auditionVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: auto"><button class="button-mute" (click)="isAuditionMute = !isAuditionMute"><i class="material-icons" style="font-size: 22px">{{ isAuditionMute ? 'volume_off' : auditionVolume == 0 ? 'volume_mute' : auditionVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></button></div>
     <div style="flex-basis: 100%"><input [(ngModel)]="auditionVolume" type="range" [title]="isAuditionMute ? '' : percentAuditionVolume + '%'" min="0" max="1" step="0.01" style="width: 100%" /></div>
     <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentAuditionVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
   </div>
   <div style="display: flex">
     <div style="flex-basis: auto"><b style="white-space: nowrap">再生音量<sup class="self-only">*</sup>：</b></div>
-    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isMute = !isMute">{{ (isMute || volume == 0) ? 'volume_off' : volume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: auto"><button class="button-mute" (click)="isMute = !isMute"><i class="material-icons" style="font-size: 22px">{{ isMute ? 'volume_off' : volume == 0 ? 'volume_mute' : volume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></button></div>
     <div style="flex-basis: 100%"><input [(ngModel)]="volume" type="range" min="0" [title]="isMute ? '' : percentVolume + '%'" max="1" step="0.01" style="width: 100%" /></div>
     <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
   </div>
   <hr />
   <div style="display: flex">
     <div style="flex-basis: auto"><b style="white-space: nowrap">通知音量<sup class="self-only">*</sup>：</b></div>
-    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isNoticeMute = !isNoticeMute">{{ (isNoticeMute || noticeVolume == 0) ? 'volume_off' : noticeVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: auto"><button class="button-mute" (click)="isNoticeMute = !isNoticeMute"><i class="material-icons" style="font-size: 22px">{{ isNoticeMute ? 'volume_off' : noticeVolume == 0 ? 'volume_mute' : noticeVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></button></div>
     <div style="flex-basis: 100%"><input [(ngModel)]="noticeVolume" (change)="noticeTest()" type="range" min="0" [title]="isNoticeMute ? '' : percentNoticeVolume + '%'" max="1" step="0.01" style="width: 100%" /></div>
     <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input (change)="noticeTest()" type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentNoticeVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
   </div>
   <div style="display: flex">
     <div style="flex-basis: auto"><b style="white-space: nowrap">ＳＥ音量<sup class="self-only">*</sup>：</b></div>
-    <div style="flex-basis: auto"><i class="material-icons" style="font-size: 22px; cursor: pointer" (click)="isSoundEffectMute = !isSoundEffectMute">{{ (isSoundEffectMute || soundEffectVolume == 0) ? 'volume_off' : soundEffectVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></div>
+    <div style="flex-basis: auto"><button class="button-mute" (click)="isSoundEffectMute = !isSoundEffectMute"><i class="material-icons" style="font-size: 22px">{{ isSoundEffectMute ? 'volume_off' : soundEffectVolume == 0 ? 'volume_mute' : soundEffectVolume <= 0.5 ? 'volume_down' : 'volume_up' }}</i></button></div>
     <div style="flex-basis: 100%"><input [(ngModel)]="soundEffectVolume" type="range" min="0" [title]="isSoundEffectMute ? '' : percentSoundEffectVolume + '%'" max="1" step="0.01" style="width: 100%" /></div>
     <div style="flex-basis: auto; padding-right: 1em"><span style="white-space: nowrap; padding-left: 4px"><input type="number" min="0" max="100" step="1" style="width: 3.2em" [(ngModel)]="percentSoundEffectVolume"><b style="font-size: smaller; padding-left: 3px;">%</b></span></div>
   </div>
-  <div style="display: flex; justify-content: space-between; padding: 1px 0px 2px 0px">
+  <div style="display: flex; justify-content: space-between; padding-bottom: 2px">
     <div><small>※設定した音量はブラウザに保存されます。</small></div>
     <div><button style="font-size: xx-small; font-weight: bolder; margin-right: 2em; white-space: nowrap" (click)="soundTest($event)">ＳＥテスト<sup style="font-size: larger" class="self-only">*</sup></button></div>
   </div>

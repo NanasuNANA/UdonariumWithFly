@@ -64,3 +64,17 @@ button .material-icons {
   background: linear-gradient(-30deg, rgba(240,218,189, 0.9), rgba(255, 244, 232, 0.9));
   border-top: dotted 1px #888;
 }
+
+.button-mute {
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  padding: 1px;
+  display: inline-block;
+  background-color: transparent;
+  border-color: transparent;
+}
+.button-mute:hover, .button-mute:active, .button-mute::selection {
+  background-color: #eee;
+  border-color: #ccc;
+} 

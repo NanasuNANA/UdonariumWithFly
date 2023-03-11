@@ -34,7 +34,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   }
   get volume(): number { return AudioPlayer.volume; }
   set volume(volume: number) {
-    this.isMute = false;
+    this.isMute = (volume == 0);
     AudioPlayer.volume = volume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.volume == 0.5) {
@@ -56,7 +56,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   }
   get auditionVolume(): number { return AudioPlayer.auditionVolume; }
   set auditionVolume(auditionVolume: number) {
-    this.isAuditionMute = false;
+    this.isAuditionMute = (auditionVolume == 0);
     AudioPlayer.auditionVolume = auditionVolume;
     EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.auditionVolume == 0.5) {
@@ -77,7 +77,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   }
   get soundEffectVolume(): number { return AudioPlayer.soundEffectVolume; }
   set soundEffectVolume(soundEffectVolume: number) {
-    this.isSoundEffectMute = false;
+    this.isSoundEffectMute = (soundEffectVolume == 0);
     AudioPlayer.soundEffectVolume = soundEffectVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.soundEffectVolume == 0.5) {
@@ -98,7 +98,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   }
   get noticeVolume(): number { return AudioPlayer.noticeVolume; }
   set noticeVolume(noticeVolume: number) {
-    this.isNoticeMute = false;
+    this.isNoticeMute = (noticeVolume == 0);
     AudioPlayer.noticeVolume = noticeVolume;
     //EventSystem.trigger('CHANGE_JUKEBOX_VOLUME', null);
     if (AudioPlayer.noticeVolume == 0.5) {
