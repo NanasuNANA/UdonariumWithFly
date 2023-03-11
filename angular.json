@@ -39,7 +39,11 @@
               "file-saver",
               "msgpack-lite",
               "lzbase62",
-              "pako"
+              "pako",
+              "jszip",
+              "events",
+              "localforage",
+              "vkbeautify"
             ]
           },
           "configurations": {
@@ -144,6 +148,5 @@
         }
       }
     }
-  },
-  "defaultProject": "udonarium"
+  }
 }
