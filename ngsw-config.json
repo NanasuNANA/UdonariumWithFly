@@ -19,7 +19,7 @@
       }
     },
     {
-      "name": "assets",
+      "name": "libs",
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
@@ -55,6 +55,17 @@
         "maxAge": "7d",
         "timeout": "5s",
         "strategy": "performance"
+      }
+    },
+    {
+      "name": "configs",
+      "urls": [
+        "/assets/config.yaml"
+      ],
+      "cacheConfig": {
+        "maxSize": 0,
+        "maxAge": "3h",
+        "strategy": "freshness"
       }
     }
   ]
