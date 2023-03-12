@@ -7,12 +7,14 @@
       "installMode": "prefetch",
       "resources": {
         "files": [
-          "/favicon.ico",
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",
           "/*.js",
-          "card.png"
+          "/assets/images/**",
+          "/assets/sounds/**",
+          "/assets/styles.css",
+          "!/assets/**/*.txt"
         ]
       }
     },
@@ -22,9 +24,37 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/**",
-          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+          "/lib/**",
+          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)",
+          "!/card.png"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "scripts",
+      "urls": [
+        "https://cdn.webrtc.ecl.ntt.com/skyway-latest.min.js",
+        "https://www.youtube.com/iframe_api"
+      ],
+      "cacheConfig": {
+        "maxSize": 1,
+        "maxAge": "1d",
+        "timeout": "5s",
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "material-icons",
+      "urls": [
+        "https://fonts.googleapis.com/icon?family=Material+Icons"
+      ],
+      "cacheConfig": {
+        "maxSize": 1,
+        "maxAge": "7d",
+        "timeout": "5s",
+        "strategy": "performance"
       }
     }
   ]
