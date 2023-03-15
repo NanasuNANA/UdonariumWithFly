@@ -21,7 +21,6 @@ import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem } from '@udonarium/core/system';
 import { ResettableTimeout } from '@udonarium/core/system/util/resettable-timeout';
 import { setZeroTimeout } from '@udonarium/core/system/util/zero-timeout';
-import { PeerCursor } from '@udonarium/peer-cursor';
 
 import { PanelService } from 'service/panel.service';
 
