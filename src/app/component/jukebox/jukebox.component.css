@@ -76,6 +76,6 @@ button .material-icons {
 }
 .button-mute:hover, .button-mute:active, .button-mute::selection {
   background-color: #666;
-  border-color: #666;
+  border-color: #ccc;
   color: snow;
 } 
