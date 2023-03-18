@@ -350,7 +350,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     let text = this.text;
     let matchMostLongText = '';
     let standIdentifier = null;
-    let loggingText = null;
 
     if (this.character) {
       text = this.character.chatPalette.evaluate(text, this.character.rootDataElement);
@@ -360,67 +359,102 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         let commandText = '';
         text = text.replace(/[:：](:?[^\s]+|$)/, (match) => { commandText = match; return ''; }).trimLeft();
         if (commandText != '') {
-          let commands = StringUtil.toHalfWidth(commandText).split(':').slice(1);
-          console.log(commands)
-          commands.forEach((command) => {
-            // ステータス操作のみ
-            let ary = command.split(/([+\-=])/);
-            if (ary.length >= 3) { 
-              const operandName = ary[0];
-              const operator = ary[1];
-              console.log(ary)
-              const operateValue = ary.slice(2).join('');
-              //ToDO 計算
-              let value = operateValue;
-              let oldValue;
-              let operand;
-              if (operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName)) {
-                oldValue = operand.loggingValue;
-                if (operand.isNumberResource) {
-                  operand.currentValue = parseInt(operand.currentValue && operator !== '=' ? operand.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                } else if (operand.isSimpleNumber) {
-                  operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                } else if (operand.isCheckProperty && operator == '=') {
-                  operand.value = !!value ? operand.name : '';
-                } else if (operator == '=') {
-                  operand.value = value;
-                } else if (operator == '+') {
-                  operand.value = operand.value + value;
-                }
-              } else if ((
-                operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^最大/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^Max[\:\_\-\s]*/i)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^初期/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /初期値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /最大値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^基本/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^原/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^\^/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /基本値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /原点$/)
-              ) && (operand.isNumberResource || operand.isAbilityScore)) { // 互換のためにいったん残し、将来リソースのみにするかも？
-                //ret = element.value;
-                oldValue = operand.loggingValue;
-                operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-              }
-              if (operand) {
-                let newValue = operand.loggingValue;
-                if (newValue !== oldValue) {
-                  //this.chatMessageService.sendOperationLog();
-                  if (loggingText == null) loggingText = '';
-                  if (loggingText && loggingText.trim() != '') loggingText += "\n";
-                  loggingText += `${this.character.name == '' ? `(無名のキャラクター)` : this.character.name} の ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
-                  if (operand.isSimpleNumber || operand.isNumberResource || operand.isAbilityScore) {
-                    loggingText += ` ${oldValue} → ${newValue}`;
-                  } else if (operand.isCheckProperty) {
-                    loggingText += ` ${newValue}`
+          (async () => {
+            let commands = StringUtil.toHalfWidth(commandText).split(':').slice(1);
+            let loggingTexts = [];
+            for (let i = 0; i < commands.length; i++) {
+              let rollResult = null;
+              // ステータス操作のみ
+              const command = commands[i];
+              const ary = command.split(/([+\-=])/);
+              //console.log(ary)
+              if (ary[1]) {
+                const operandName = ary[0];
+                const operator = ary[1];
+                const operateValue = ary.slice(2).join('');
+                //console.log([operandName, operator, operateValue].join());
+                //ToDO 計算
+                let value = null;
+                if (operateValue != '' && !/^[\+\-]?\d+$/.test(operateValue)) {
+                  if (/^[\d\+\-\*\/\(\)]+$/.test(operateValue)) {
+                    rollResult = await DiceBot.diceRollAsync(`C(${operateValue})`, 'DiceBot');
                   } else {
-                    loggingText += ` '${oldValue}' → '${newValue}'`;
+                    rollResult = await DiceBot.diceRollAsync(operateValue, 'DiceBot');
+                  }
+                  if (rollResult) {
+                    console.log(rollResult.result)
+                    let match = null;
+                    if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
+                      value = match[1];
+                    }
+                  }
+                } else {
+                  value = operateValue.trim();
+                }
+                if (value == null) {
+                  loggingTexts.push('エラー：' + command);
+                  continue;
+                }
+                console.log(value)
+                let oldValue;
+                let operand;
+                if (operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName)) {
+                  oldValue = operand.loggingValue;
+                  if (operand.isNumberResource) {
+                    operand.currentValue = parseInt(operand.currentValue && operator !== '=' ? operand.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                  } else if (operand.isSimpleNumber) {
+                    operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                  } else if (operand.isCheckProperty && operator == '=') {
+                    operand.value = (value == '0' || value.toLowerCase() == 'off') ? '' : operand.name;
+                  } else if (operator == '=') {
+                    operand.value = value;
+                  } else if (operator == '+') {
+                    operand.value = operand.value + value;
+                  }
+                } else if ((
+                  operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^最大/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^Max[\:\_\-\s]*/i)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^初期/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /初期値$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /最大値$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^基本/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^原/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^\^/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /基本値$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /原点$/)
+                ) && (operand.isNumberResource || operand.isAbilityScore)) {
+                  //ret = element.value;
+                  oldValue = operand.loggingValue;
+                  operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                }
+                if (operand) {
+                  let newValue = operand.loggingValue;
+                  if (newValue !== oldValue) {
+                    //this.chatMessageService.sendOperationLog();
+                    let loggingText = `${this.character.name == '' ? `(無名のキャラクター)` : this.character.name} の ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
+                    if (operand.isSimpleNumber || operand.isNumberResource || operand.isAbilityScore) {
+                      loggingText += ` ${oldValue} → ${newValue}`;
+                    } else if (operand.isCheckProperty) {
+                      loggingText += ` ${newValue}`
+                    } else {
+                      loggingText += ` '${oldValue}' → '${newValue}'`;
+                    }
+                    if (rollResult) loggingText += ` （${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') }）`;
+                    loggingTexts.push(loggingText);
+                    if (!rollResult.isEmptyDice) {
+                      if (Math.random() < 0.5) {
+                        SoundEffect.play(PresetSound.diceRoll1);
+                      } else {
+                        SoundEffect.play(PresetSound.diceRoll2);
+                      }
+                    }
                   }
                 }
               }
             }
-          });
+            console.log(loggingTexts)
+            if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
+          })();
         }
       }
 
@@ -590,7 +624,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     textArea.value = '';
     this.calcFitHeight();
     EventSystem.trigger('MESSAGE_EDITING_START', null);
-    if (loggingText != null) this.chatMessageService.sendOperationLog(loggingText);
   }
 
   calcFitHeight() {

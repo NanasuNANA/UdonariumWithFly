@@ -19,7 +19,7 @@ export namespace StringUtil {
   }
 
   export function cr(str: string): string {
-    if (!str) return '';
+    if (str == null || str == '') return '';
     let ret = '';
     let flg = '';
     [...str].forEach(c => {
@@ -43,7 +43,7 @@ export namespace StringUtil {
         ret += c;
       }
     });
-    return ret;
+    return ret + flg;
   }
 
   export function validUrl(url: string): boolean {
