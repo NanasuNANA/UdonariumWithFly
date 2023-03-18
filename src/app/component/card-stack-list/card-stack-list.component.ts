@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 
-import { Card } from '@udonarium/card';
+import { Card, CardState } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
 import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
@@ -22,6 +22,9 @@ export class CardStackListComponent implements OnInit, OnDestroy {
   @Input() cardStack: CardStack = null;
 
   owner: string = Network.peerContext.userId;
+  
+  readonly CardStateFront = CardState.FRONT;
+  readonly CardStateBack = CardState.BACK;
 
   constructor(
     private panelService: PanelService,

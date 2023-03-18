@@ -22,7 +22,7 @@ import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { ModalService } from 'service/modal.service';
-import { Card } from '@udonarium/card';
+import { Card, CardState } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
 import { DiceSymbol } from '@udonarium/dice-symbol';
 import { RangeArea } from '@udonarium/range';
@@ -60,6 +60,11 @@ export class OverviewPanelComponent implements AfterViewInit, OnDestroy {
   @Input() left: number = 0;
   @Input() top: number = 0;
 
+  @Input() cardState: CardState = null;
+
+  readonly CardStateFront = CardState.FRONT;
+  readonly CardStateBack = CardState.BACK;
+
   gridSize = 50;
   naturalWidth = 0;
   naturalHeight = 0;
@@ -88,8 +93,12 @@ export class OverviewPanelComponent implements AfterViewInit, OnDestroy {
       }
       return this._imageFile.url;
     }
-    if (this.tabletopObject instanceof Card && this.tabletopObject.isGMMode) {
-      return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url : '';
+    if (this.tabletopObject instanceof Card) { 
+      if (this.cardState !== null) {
+        if (this.cardState === this.CardStateFront) return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url : '';
+        if (this.cardState === this.CardStateBack) return this.tabletopObject.backImage ? this.tabletopObject.backImage.url : '';
+      }
+      if (this.tabletopObject.isGMMode) return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url : '';
     }
     return this.tabletopObject.imageFile ? this.tabletopObject.imageFile.url : '';
   }

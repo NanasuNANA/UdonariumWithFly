@@ -8,6 +8,7 @@ import {
   OnInit,
   ViewContainerRef,
 } from '@angular/core';
+import { CardState } from '@udonarium/card';
 import { EventSystem } from '@udonarium/core/system';
 import { TabletopObject } from '@udonarium/tabletop-object';
 import { OverviewPanelComponent } from 'component/overview-panel/overview-panel.component';
@@ -21,6 +22,7 @@ export class TooltipDirective implements OnInit, AfterViewInit, OnDestroy {
   private static activeTooltips: ComponentRef<OverviewPanelComponent>[] = [];
 
   @Input('appTooltip') tabletopObject: TabletopObject;
+  @Input('cardState') cardState: CardState;
 
   private callbackOnMouseEnter = (e) => this.onMouseEnter(e);
   private callbackOnMouseLeave = (e) => this.onMouseLeave(e);
@@ -115,6 +117,7 @@ export class TooltipDirective implements OnInit, AfterViewInit, OnDestroy {
     this.tooltipComponentRef.instance.tabletopObject = this.tabletopObject;
     this.tooltipComponentRef.instance.left = this.pointerDeviceService.pointerX;
     this.tooltipComponentRef.instance.top = this.pointerDeviceService.pointerY;
+    this.tooltipComponentRef.instance.cardState = this.cardState;
 
     this.addEventListeners(this.tooltipComponentRef.location.nativeElement);
     this.ngZone.runOutsideAngular(() => {

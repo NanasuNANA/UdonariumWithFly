@@ -24,3 +24,12 @@
   background-repeat: no-repeat;
   background-size: contain;
 }
+
+button {
+  font-size: smaller;
+  height: 2.2em;
+  padding: 0px 8px;
+  min-width: 2.2em;
+  margin: 1px;
+  vertical-align: baseline;
+}

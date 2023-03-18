@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Card } from '@udonarium/card';
+import { Card, CardState } from '@udonarium/card';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 
 @Component({
@@ -11,6 +11,9 @@ export class CardListImageComponent implements OnInit {
   @Input() card: Card = null;
   @ViewChild('cardImage', { static: true }) cardImageElement: ElementRef;
   
+  readonly CardStateFront = CardState.FRONT;
+  readonly CardStateBack = CardState.BACK;
+
   gridSize = 50;
   naturalWidth = 0;
   naturalHeight = 0;

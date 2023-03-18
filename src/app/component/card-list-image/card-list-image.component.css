@@ -18,32 +18,72 @@
 }
 
 .text {
-    transform-origin: left top;
-  
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-  
-    font-weight: bolder;
-    text-align: center;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    font-size: 24px;
-    color: #444;
-    z-index: 5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-shadow: 
-    #fff 0px 0px 2px, 
-    #fff 0px 0px 2px, 
-    #fff 0px 0px 2px, 
-    #fff 0px 0px 2px, 
-    #fff 0px 0px 2px, 
-    #fff 0px 0px 2px,
-    #fff 0px 0px 2px,
-    #fff 0px 0px 2px;
-  }
+  transform-origin: left top;
+
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  font-weight: bolder;
+  text-align: center;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 24px;
+  color: #444;
+  z-index: 5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 
+  #fff 0px 0px 2px, 
+  #fff 0px 0px 2px, 
+  #fff 0px 0px 2px, 
+  #fff 0px 0px 2px, 
+  #fff 0px 0px 2px, 
+  #fff 0px 0px 2px,
+  #fff 0px 0px 2px,
+  #fff 0px 0px 2px;
+}
+
+.back {
+  background-color: #555;
+}
+
+.indicate-text {
+  font-size: xx-small;
+  display: inline-block;
+  position: absolute;
+  opacity: 80%;
+  bottom: 1px;
+  left: 1px;
+  color: #000;
+  text-shadow: 
+  #fff 0px 0px 1px, 
+  #fff 0px 0px 1px, 
+  #fff 0px 0px 1px, 
+  #fff 0px 0px 1px, 
+  #fff 0px 0px 1px, 
+  #fff 0px 0px 1px,
+  #fff 0px 0px 1px,
+  #fff 0px 0px 1px;
+}
+.indicate-text::first-letter {
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 
+  #000 0px 0px 1px, 
+  #000 0px 0px 1px, 
+  #000 0px 0px 1px, 
+  #000 0px 0px 1px, 
+  #000 0px 0px 1px, 
+  #000 0px 0px 1px,
+  #000 0px 0px 1px,
+  #000 0px 0px 1px;
+}
+
+.reverse {
+  transform: rotate(180deg);
+}
