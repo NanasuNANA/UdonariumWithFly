@@ -349,43 +349,118 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
     let text = this.text;
     let matchMostLongText = '';
-    // スタンド
     let standIdentifier = null;
-    // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
-    if (this.character && (StringUtil.cr(text).trim() || this.standName)) {
-      text = this.character.chatPalette.evaluate(this.text, this.character.rootDataElement);
-      // 立ち絵
-      if (this.character.standList) {
-        let imageIdentifier = null;
-        if (this.isUseFaceIcon && this.character.faceIcon) {
-          imageIdentifier = this.character.faceIcon.identifier;
-        } else {
-          imageIdentifier = this.character.imageFile ? this.character.imageFile.identifier : null;
-        }
-        const standInfo = this.character.standList.matchStandInfo(text, imageIdentifier, this.standName);
-        if (this.isUseStandImage && this.isUseStandImageOnChatTab) {
-          if (standInfo.farewell) {
-            this.farewellStand();
-          } else if (standInfo.standElementIdentifier) {
-            standIdentifier = standInfo.standElementIdentifier;
-            const sendObj = {
-              characterIdentifier: this.character.identifier, 
-              standIdentifier: standInfo.standElementIdentifier, 
-              color: this.character.chatPalette ? this.character.chatPalette.color : PeerCursor.CHAT_DEFAULT_COLOR,
-              secret: this.sendTo ? true : false
-            };
-            if (sendObj.secret) {
-              const targetPeer = ObjectStore.instance.get<PeerCursor>(this.sendTo);
-              if (targetPeer) {
-                if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
-                EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+    let loggingText = null;
+
+    if (this.character) {
+      text = this.character.chatPalette.evaluate(text, this.character.rootDataElement);
+      // ステータス操作
+      if (text && StringUtil.toHalfWidth(text.trimLeft()).startsWith(':')) {
+        // 切り出し
+        let commandText = '';
+        text = text.replace(/[:：](:?[^\s]+|$)/, (match) => { commandText = match; return ''; }).trimLeft();
+        if (commandText != '') {
+          let commands = StringUtil.toHalfWidth(commandText).split(':').slice(1);
+          console.log(commands)
+          commands.forEach((command) => {
+            // ステータス操作のみ
+            let ary = command.split(/([+\-=])/);
+            if (ary.length >= 3) { 
+              const operandName = ary[0];
+              const operator = ary[1];
+              console.log(ary)
+              const operateValue = ary.slice(2).join('');
+              //ToDO 計算
+              let value = operateValue;
+              let oldValue;
+              let operand;
+              if (operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName)) {
+                oldValue = operand.loggingValue;
+                if (operand.isNumberResource) {
+                  operand.currentValue = parseInt(operand.currentValue && operator !== '=' ? operand.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                } else if (operand.isSimpleNumber) {
+                  operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                } else if (operand.isCheckProperty && operator == '=') {
+                  operand.value = !!value ? operand.name : '';
+                } else if (operator == '=') {
+                  operand.value = value;
+                } else if (operator == '+') {
+                  operand.value = operand.value + value;
+                }
+              } else if ((
+                operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^最大/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^Max[\:\_\-\s]*/i)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^初期/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /初期値$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /最大値$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^基本/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^原/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^\^/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /基本値$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /原点$/)
+              ) && (operand.isNumberResource || operand.isAbilityScore)) { // 互換のためにいったん残し、将来リソースのみにするかも？
+                //ret = element.value;
+                oldValue = operand.loggingValue;
+                operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
               }
-            } else {
-              EventSystem.call('POPUP_STAND_IMAGE', sendObj);
+              if (operand) {
+                let newValue = operand.loggingValue;
+                if (newValue !== oldValue) {
+                  //this.chatMessageService.sendOperationLog();
+                  if (loggingText == null) loggingText = '';
+                  if (loggingText && loggingText.trim() != '') loggingText += "\n";
+                  loggingText += `${this.character.name == '' ? `(無名のキャラクター)` : this.character.name} の ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
+                  if (operand.isSimpleNumber || operand.isNumberResource || operand.isAbilityScore) {
+                    loggingText += ` ${oldValue} → ${newValue}`;
+                  } else if (operand.isCheckProperty) {
+                    loggingText += ` ${newValue}`
+                  } else {
+                    loggingText += ` '${oldValue}' → '${newValue}'`;
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      // スタンド
+      // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
+      if (StringUtil.cr(text).trim() || this.standName) {
+        
+        // 立ち絵
+        if (this.character.standList) {
+          let imageIdentifier = null;
+          if (this.isUseFaceIcon && this.character.faceIcon) {
+            imageIdentifier = this.character.faceIcon.identifier;
+          } else {
+            imageIdentifier = this.character.imageFile ? this.character.imageFile.identifier : null;
+          }
+          const standInfo = this.character.standList.matchStandInfo(text, imageIdentifier, this.standName);
+          if (this.isUseStandImage && this.isUseStandImageOnChatTab) {
+            if (standInfo.farewell) {
+              this.farewellStand();
+            } else if (standInfo.standElementIdentifier) {
+              standIdentifier = standInfo.standElementIdentifier;
+              const sendObj = {
+                characterIdentifier: this.character.identifier, 
+                standIdentifier: standInfo.standElementIdentifier, 
+                color: this.character.chatPalette ? this.character.chatPalette.color : PeerCursor.CHAT_DEFAULT_COLOR,
+                secret: this.sendTo ? true : false
+              };
+              if (sendObj.secret) {
+                const targetPeer = ObjectStore.instance.get<PeerCursor>(this.sendTo);
+                if (targetPeer) {
+                  if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
+                  EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+                }
+              } else {
+                EventSystem.call('POPUP_STAND_IMAGE', sendObj);
+              }
             }
           }
+          matchMostLongText = standInfo.matchMostLongText;
         }
-        matchMostLongText = standInfo.matchMostLongText;
       }
     }
     // カットイン
@@ -481,7 +556,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       EventSystem.trigger('CHANGE_GM_MODE', null);
     }
 
-    if (StringUtil.cr(text).trim()) {
+    if (this.text != '') {
       ChatInputComponent.history = ChatInputComponent.history.filter(string => string !== this.text);
       ChatInputComponent.history.unshift(this.text);
       if (ChatInputComponent.history.length >= ChatInputComponent.MAX_HISTORY_NUM) {
@@ -489,6 +564,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       }
       this.currentHistoryIndex = -1;
       this.tmpText = null;
+    }
+
+    if (StringUtil.cr(text).trim()) {
       this.chat.emit({
         text: text,
         gameType: this.gameType,
@@ -512,6 +590,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     textArea.value = '';
     this.calcFitHeight();
     EventSystem.trigger('MESSAGE_EDITING_START', null);
+    if (loggingText != null) this.chatMessageService.sendOperationLog(loggingText);
   }
 
   calcFitHeight() {

@@ -62,7 +62,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
     const LoggingValueMap = LoggingInputDirective.LoggingValueMap;
     const identifier = this.dataElement.identifier;
     const loggingNativeElement = this.elementRef.nativeElement;
-    LoggingValueMap.set(identifier, { oldValue: this.loggingValue });
+    LoggingValueMap.set(identifier, { oldValue: this.dataElement.loggingValue });
     // input 試してダメだったらイベントで制御考える
     /*
     LoggingValueMap.set(identifier, { oldValue: this.loggingValue, isEditing: false });
@@ -110,7 +110,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
       LoggingValueMap.get(identifier).timerId = null;
     }
     const oldValue = LoggingValueMap.get(identifier).oldValue;
-    const value = this.loggingValue;
+    const value = this.dataElement.loggingValue;
     const dataElement = this.dataElement;
     if (!this.isDisable && value != oldValue) {
       let text = `${this.name == '' ? `(無名の${this.type})` : this.name} の ${dataElement.name == '' ? '(無名の変数)' : dataElement.name} を変更`;
@@ -122,26 +122,6 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
       this.chatMessageService.sendOperationLog(text);
     }
     LoggingValueMap.get(identifier).oldValue = value;
-  }
-
-  get loggingValue(): string {
-    const dataElement = this.dataElement;
-    if (!dataElement) return;
-    let ret: string;
-    if (dataElement.isSimpleNumber) {
-      ret = `${dataElement.value}`;
-    } else if (dataElement.isNumberResource) {
-      ret = `${dataElement.currentValue}/${dataElement.value && dataElement.value != 0 ? dataElement.value : '???'}`;
-    } else if (dataElement.isCheckProperty) {
-      ret = `${dataElement.value ? ' → ✔ON' : ' → OFF'}`;
-    } else if (dataElement.isAbilityScore) {
-      const modifire = dataElement.calcAbilityScore();
-      ret = `${dataElement.value}`;
-      if (dataElement.currentValue) ret += `(${modifire >= 0 ? '+' : ''}${modifire})`;
-    } else {
-      ret = dataElement.value ? dataElement.value.toString() : '';
-    }
-    return ret;
   }
 
   constructor(
