@@ -360,58 +360,26 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         text = text.replace(/[:：](:?[^\s]+|$)/, (match) => { commandText = match; return ''; }).trimLeft();
         if (commandText != '') {
           (async () => {
-            let commands = StringUtil.toHalfWidth(commandText).split(':').slice(1);
-            let loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド操作 ${commandText}`];
+            let commands = commandText.split(/[:：]/).slice(1);
+            let loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド操作${commandText}`];
             for (let i = 0; i < commands.length; i++) {
               let rollResult = null;
               // ステータス操作のみ
               const command = commands[i];
-              const ary = command.split(/([+\-=])/);
+              const ary = command.split(/([＋＝+\-=―ー—‐－])/);
               //console.log(ary)
               if (ary[1]) {
                 const operandName = ary[0];
-                const operator = ary[1];
+                const operator = StringUtil.toHalfWidth(ary[1].replace(/[―ー—‐]/g, '-'));
                 const operateValue = ary.slice(2).join('');
-                //console.log([operandName, operator, operateValue].join());
-                //ToDO 計算
-                let value = null;
-                if (operateValue != '' && !/^[\+\-]?\d+$/.test(operateValue)) {
-                  if (/^[\d\+\-\*\/\(\)]+$/.test(operateValue)) {
-                    rollResult = await DiceBot.diceRollAsync(`C(${operateValue})`, this.gameType ? this.gameType : 'DiceBot');
-                  } else {
-                    rollResult = await DiceBot.diceRollAsync(operateValue, this.gameType ? this.gameType : 'DiceBot');
-                  }
-                  if (rollResult) {
-                    //console.log(rollResult.result)
-                    let match = null;
-                    if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
-                      value = match[1];
-                    }
-                  }
-                } else {
-                  value = operateValue.trim();
-                }
-                if (value == null) {
-                  loggingTexts.push('エラー：' + command);
-                  continue;
-                }
-                //console.log(value)
                 let oldValue;
                 let operand;
+                let isOperateNumber = false;
+                let isOperateMaxValue = false;
+
                 if (operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName)) {
-                  oldValue = operand.loggingValue;
-                  if (operand.isNumberResource) {
-                    operand.currentValue = parseInt(operand.currentValue && operator !== '=' ? operand.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                  } else if (operand.isSimpleNumber) {
-                    operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                  } else if (operand.isCheckProperty && operator == '=') {
-                    operand.value = (value == '0' || value.toLowerCase() == 'off') ? '' : operand.name;
-                  } else if (operator == '=') {
-                    operand.value = value;
-                  } else if (operator == '+') {
-                    operand.value = operand.value + value;
-                  }
-                } else if ((
+                  if (operand.isNumberResource || operand.isSimpleNumber || operand.isAbilityScore) isOperateNumber = true;
+                } else if (
                   operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^最大/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^Max[\:\_\-\s]*/i)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^初期/)
@@ -422,25 +390,67 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /\^$/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /基本値$/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /原点$/)
-                ) && (operand.isNumberResource || operand.isAbilityScore)) {
-                  //ret = element.value;
-                  oldValue = operand.loggingValue;
-                  operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                ) {
+                  if (operand.isNumberResource || operand.isAbilityScore) {
+                    isOperateNumber = true;
+                    isOperateMaxValue = true;
+                  } else {
+                    operand = null;
+                  }
                 }
                 if (operand) {
-                  let newValue = operand.loggingValue;
-                  if (rollResult || newValue !== oldValue) {
-                    //this.chatMessageService.sendOperationLog();
-                    let loggingText = `→ ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
-                    if (operand.isSimpleNumber || operand.isNumberResource || operand.isAbilityScore) {
-                      loggingText += ` ${oldValue} → ${newValue}`;
-                    } else if (operand.isCheckProperty) {
-                      loggingText += ` ${newValue}`
+                  oldValue = operand.loggingValue;
+                  let value = null;
+                  const rollText = StringUtil.toHalfWidth(operateValue.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-')).trim();
+                  if (isOperateNumber && !/^[\+\-]?\d+$/.test(rollText)) {
+                    if (/^[\d\+\-\*\/\(\)]+$/.test(rollText)) {
+                      rollResult = await DiceBot.diceRollAsync(`C(${rollText})`, this.gameType ? this.gameType : 'DiceBot');
                     } else {
-                      loggingText += ` '${oldValue}' → '${newValue}'`;
+                      rollResult = await DiceBot.diceRollAsync(rollText, this.gameType ? this.gameType : 'DiceBot');
                     }
                     if (rollResult) {
-                      loggingText += `（${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲' + this.gameType + ':') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') }）`;
+                      //console.log(rollResult.result)
+                      let match = null;
+                      if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
+                        value = match[1];
+                      }
+                    }
+                  } else {
+                    value = (isOperateNumber || operand.isCheckProperty) ? rollText : operateValue;
+                  }
+                  if (value == null) {
+                    loggingTexts.push('コマンドエラー：' + command);
+                    continue;
+                  }
+
+                  if (operand.isNumberResource && !isOperateMaxValue) {
+                    operand.currentValue = parseInt(operand.currentValue && operator !== '=' ? operand.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                  } else if (isOperateNumber) {
+                    operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                  } else if (operand.isCheckProperty && operator == '=') {
+                    operand.value = (value == '' || value == '0' || value.toLowerCase() == 'off') ? '' : operand.name;
+                  } else if (operator == '=') {
+                    operand.value = value;
+                  } else if (operator == '+') {
+                    operand.value = operand.value + value;
+                  } else {
+                    loggingTexts.push('コマンドエラー：' + command);
+                    continue;
+                  }
+
+                  const newValue = operand.loggingValue;
+                  //if (rollResult || newValue !== oldValue) {
+                    //this.chatMessageService.sendOperationLog();
+                    let loggingText = `→ ${operand.name == '' ? '(無名の変数)' : operand.name} を操作`;
+                    if (isOperateNumber) {
+                      loggingText += ` ${oldValue} → ${oldValue === newValue ? '変更なし' : newValue}`;
+                    } else if (operand.isCheckProperty) {
+                      loggingText += ` ${oldValue === newValue ? '変更なし' : newValue}`
+                    } else {
+                      loggingText += ` "${oldValue}" → ${oldValue === newValue ? '変更なし' : '"' + newValue + '"'}`;
+                    }
+                    if (rollResult) {
+                      loggingText += ` (${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲' + this.gameType + '：') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
                       if (!rollResult.isEmptyDice) {
                         if (Math.random() < 0.5) {
                           SoundEffect.play(PresetSound.diceRoll1);
@@ -450,7 +460,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                       }
                     }
                     loggingTexts.push(loggingText);
-                  }
+                  //}
+                } else {
+                  loggingTexts.push(`→ エラー：${(operandName == null || operandName.trim() == '') ? '(無名の変数)' : operandName} は見つからなかった`);
                 }
               }
             }
@@ -463,7 +475,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       // スタンド
       // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
       if (StringUtil.cr(text).trim() || this.standName) {
-        
         // 立ち絵
         if (this.character.standList) {
           let imageIdentifier = null;
