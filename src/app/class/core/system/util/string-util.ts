@@ -31,7 +31,11 @@ export namespace StringUtil {
             break;
           case '\\':
           case '￥':
-            ret += c;
+            if (c == flg) {
+              ret += c;
+            } else {
+              ret += (flg + c);
+            }
             break;
           default:
             ret += (flg + c);
