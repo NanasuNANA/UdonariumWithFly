@@ -429,7 +429,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 }
                 if (operand) {
                   let newValue = operand.loggingValue;
-                  if (newValue !== oldValue) {
+                  if (rollResult || newValue !== oldValue) {
                     //this.chatMessageService.sendOperationLog();
                     let loggingText = `→ ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
                     if (operand.isSimpleNumber || operand.isNumberResource || operand.isAbilityScore) {
@@ -439,15 +439,17 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     } else {
                       loggingText += ` '${oldValue}' → '${newValue}'`;
                     }
-                    if (rollResult) loggingText += `（${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲' + this.gameType + ':') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') }）`;
-                    loggingTexts.push(loggingText);
-                    if (rollResult && !rollResult.isEmptyDice) {
-                      if (Math.random() < 0.5) {
-                        SoundEffect.play(PresetSound.diceRoll1);
-                      } else {
-                        SoundEffect.play(PresetSound.diceRoll2);
+                    if (rollResult) {
+                      loggingText += `（${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲' + this.gameType + ':') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') }）`;
+                      if (!rollResult.isEmptyDice) {
+                        if (Math.random() < 0.5) {
+                          SoundEffect.play(PresetSound.diceRoll1);
+                        } else {
+                          SoundEffect.play(PresetSound.diceRoll2);
+                        }
                       }
                     }
+                    loggingTexts.push(loggingText);
                   }
                 }
               }
