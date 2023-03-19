@@ -106,7 +106,7 @@ export class ChatPalette extends ObjectNode {
             } else if ((
               element = extendVariables.getFirstElementByNameUnsensitive(name, /^基本/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /^原/)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /^\^/)
+              || extendVariables.getFirstElementByNameUnsensitive(name, /\^$/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /基本値$/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /原点$/)
             ) && (element.isNumberResource || element.isAbilityScore)) {

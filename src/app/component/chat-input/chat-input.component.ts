@@ -361,7 +361,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         if (commandText != '') {
           (async () => {
             let commands = StringUtil.toHalfWidth(commandText).split(':').slice(1);
-            let loggingTexts = [];
+            let loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド操作 ${commandText}`];
             for (let i = 0; i < commands.length; i++) {
               let rollResult = null;
               // ステータス操作のみ
@@ -377,12 +377,12 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 let value = null;
                 if (operateValue != '' && !/^[\+\-]?\d+$/.test(operateValue)) {
                   if (/^[\d\+\-\*\/\(\)]+$/.test(operateValue)) {
-                    rollResult = await DiceBot.diceRollAsync(`C(${operateValue})`, 'DiceBot');
+                    rollResult = await DiceBot.diceRollAsync(`C(${operateValue})`, this.gameType ? this.gameType : 'DiceBot');
                   } else {
-                    rollResult = await DiceBot.diceRollAsync(operateValue, 'DiceBot');
+                    rollResult = await DiceBot.diceRollAsync(operateValue, this.gameType ? this.gameType : 'DiceBot');
                   }
                   if (rollResult) {
-                    console.log(rollResult.result)
+                    //console.log(rollResult.result)
                     let match = null;
                     if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
                       value = match[1];
@@ -395,7 +395,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   loggingTexts.push('エラー：' + command);
                   continue;
                 }
-                console.log(value)
+                //console.log(value)
                 let oldValue;
                 let operand;
                 if (operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName)) {
@@ -419,7 +419,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /最大値$/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^基本/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^原/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^\^/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /\^$/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /基本値$/)
                   || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /原点$/)
                 ) && (operand.isNumberResource || operand.isAbilityScore)) {
@@ -431,7 +431,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   let newValue = operand.loggingValue;
                   if (newValue !== oldValue) {
                     //this.chatMessageService.sendOperationLog();
-                    let loggingText = `${this.character.name == '' ? `(無名のキャラクター)` : this.character.name} の ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
+                    let loggingText = `→ ${operand.name == '' ? '(無名の変数)' : operand.name} を変更`;
                     if (operand.isSimpleNumber || operand.isNumberResource || operand.isAbilityScore) {
                       loggingText += ` ${oldValue} → ${newValue}`;
                     } else if (operand.isCheckProperty) {
@@ -439,9 +439,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     } else {
                       loggingText += ` '${oldValue}' → '${newValue}'`;
                     }
-                    if (rollResult) loggingText += ` （${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') }）`;
+                    if (rollResult) loggingText += `（${ rollResult.result.split(/ ＞ /g).map((str, j) => (j == 0 ? ((rollResult.isEmptyDice ? '' : '🎲' + this.gameType + ':') + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') }）`;
                     loggingTexts.push(loggingText);
-                    if (!rollResult.isEmptyDice) {
+                    if (rollResult && !rollResult.isEmptyDice) {
                       if (Math.random() < 0.5) {
                         SoundEffect.play(PresetSound.diceRoll1);
                       } else {
@@ -452,7 +452,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 }
               }
             }
-            console.log(loggingTexts)
+            //console.log(loggingTexts)
             if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
           })();
         }
