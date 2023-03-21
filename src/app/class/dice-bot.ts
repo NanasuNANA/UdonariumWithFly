@@ -361,7 +361,7 @@ export class DiceBot extends GameObject {
         gameType = gameType ? gameType : 'DiceBot';
         try {
           const finalResult = await DiceBot.rollCommandAsync(chatMessage.text, gameType, true);
-          if (!finalResult.result) return;
+          if (!finalResult || !finalResult.result) return;
           this.sendResultMessage(finalResult, chatMessage);
           /*
           const text: string = StringUtil.toHalfWidth(chatMessage.text).replace("\u200b", ''); //ゼロ幅スペース削除
