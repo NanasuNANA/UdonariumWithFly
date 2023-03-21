@@ -116,7 +116,8 @@ export class ChatMessageService {
         imageIdentifier: PeerCursor.myCursor.imageIdentifier,
         timestamp: this.calcTimeStamp(chatTab),
         tag: 'opelog',
-        text: StringUtil.cr(text),
+        //text: StringUtil.cr(text),
+        text: text,
         color: PeerCursor.myCursor.color
       };
 

@@ -487,6 +487,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       switch (event.type) {
         case 'VERSION_DETECTED':
           console.log(`Downloading new app version: ${event.version.hash}`);
+          Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              new Notification('Udonarium with Fly', { 
+                body: 'Udonarium with Fly の新しいバージョンをダウンロード中です。',
+                icon: 'card.png'
+              });
+            }
+          });
           break;
         case 'VERSION_READY':
           console.log(`Current app version: ${event.currentVersion.hash}`);
@@ -494,8 +502,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           if (!this.isUpdateCanceled) {
             this.modalService.open(ConfirmationComponent, {
               title: 'Udonarium with Fly の更新', 
-              text: 'Udonarium with Fly の新しいバージョンが公開されています。更新を行いますか？',
-              help: '更新の際にページを再読み込みします。手動で再読み込みを行うことでも更新可能です。',
+              text: 'Udonarium with Fly の新しいバージョンをダウンロードしました。更新を行いますか？',
+              helpHtml: '<b style="color: red">更新の際にページを再読み込みします。</b>あとで手動で再読み込みを行うことでも更新可能です。',
               type: ConfirmationType.OK_CANCEL,
               materialIcon: 'browser_updated',
               action: () => {
