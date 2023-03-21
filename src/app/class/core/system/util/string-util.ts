@@ -142,20 +142,18 @@ export namespace StringUtil {
       }
     }
 
-    //let endStringPart = ''
     const flagment = quoteChar + currentPart + escapeChar;
     switch (state) {
     case 0:
       if (flagment == '') break;
       command.operandName = flagment;
-      //endStringPart = quoteChar + currentPart + escapeChar;
       commandString += flagment;
       command.isIncomplete = true;
       commands.push(command);
       break;
     case 1:
       command.value = flagment;
-      if (/^\\[^\\\s]/.test(this.toHalfWidth(command.value).trimLeft())) {
+      if (/^\\[^\\]/.test(this.toHalfWidth(command.value).trimLeft())) {
         command.isEscapeRoll = true;
         command.value = command.value.replace(/[\\￥]/, '');
       }
