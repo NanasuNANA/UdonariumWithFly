@@ -1,5 +1,5 @@
 export interface OperateCommand {
-  operandName?: string,
+  targetName?: string,
   operator?: string,
   value?: string,
   isEscapeRoll?: boolean,
@@ -66,7 +66,7 @@ export namespace StringUtil {
 
   export function parseCommands(input: string, quote=false): OperateCommandsInfo {
     const separatorRegExp = /[:：]/;
-    const operatorRegExp = /[＋＝+\-=―ー—‐－]/; 
+    const operatorRegExp = /[＋＝+\-=―ー—‐－>＞]/; 
     const spaceRegExp = /[\s　]/; 
     const endRegExp = /[:：\s　]/; 
     const qupteOpenTestRegExps = [separatorRegExp, operatorRegExp];
@@ -117,16 +117,16 @@ export namespace StringUtil {
         tmpCommandString += char;
         switch (state) {
         case 0:
-          command.operandName = quoteChar + currentPart;
+          command.targetName = quoteChar + currentPart;
           command.operator = this.toHalfWidth(char.replace(/[―ー—‐]/g, '-'));
           state = 1;
           break;
         case 1:
           command.value = quoteChar + currentPart;
-          if (/^\\[^\\\s]/.test(this.toHalfWidth(command.value).trimLeft())) {
-            command.isEscapeRoll = true;
-            command.value = command.value.replace(/[\\￥]/, '');
-          }
+          //if (/^\\[^\\\s]/.test(this.toHalfWidth(command.value).trimLeft())) {
+          //  command.isEscapeRoll = true;
+          //  command.value = command.value.replace(/[\\￥]/, '');
+          //}
           commands.push(command);
           command = {};
           state = 0;
@@ -146,17 +146,17 @@ export namespace StringUtil {
     switch (state) {
     case 0:
       if (flagment == '') break;
-      command.operandName = flagment;
+      command.targetName = flagment;
       commandString += flagment;
       command.isIncomplete = true;
       commands.push(command);
       break;
     case 1:
       command.value = flagment;
-      if (/^\\[^\\]/.test(this.toHalfWidth(command.value).trimLeft())) {
-        command.isEscapeRoll = true;
-        command.value = command.value.replace(/[\\￥]/, '');
-      }
+      //if (/^\\[^\\]/.test(this.toHalfWidth(command.value).trimLeft())) {
+      //  command.isEscapeRoll = true;
+      //  command.value = command.value.replace(/[\\￥]/, '');
+      //}
       commandString += flagment;
       commands.push(command);
       break;

@@ -355,75 +355,65 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       text = this.character.chatPalette.evaluate(text, this.character.rootDataElement);
       // ステータス操作
       if (text && /^[\\￥]+[:：]/.test(text)) {
+        // コマンド全体のエスケープ
         text = text.replace(/[\\￥]([:：])/, '$1');
       } else if (text && StringUtil.toHalfWidth(text).startsWith(':')) {
         // 切り出し
-        console.log(StringUtil.parseCommands(text.substring(1)));
+        //console.log(StringUtil.parseCommands(text.substring(1)));
         const commandsInfo = StringUtil.parseCommands(text.substring(1));
-        //let commandText = '';
-        //text = text.replace(/[:：](:?[^\s　]+|$)/, (match) => { commandText = match; return ''; }).replace(/^[ 　]+/, '');
         text = commandsInfo.endString;
         if (commandsInfo.commands.length) {
           (async () => {
-            //let commands = commandText.split(/[:：]/).slice(1);
             let loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド：${commandsInfo.commandString}`];
             for (let i = 0; i < commandsInfo.commands.length; i++) {
               let rollResult = null;
               // ステータス操作のみ
               const command = commandsInfo.commands[i];
               if (command.isIncomplete) {
-                loggingTexts.push('→ コマンドエラー：コマンド不完全：' + command.operandName);
+                loggingTexts.push('→ コマンドエラー：コマンド不完全：' + command.targetName);
                 continue;
               }
-              //const ary = command.split(/([＋＝+\-=―ー—‐－])/);
-              //console.log(ary)
-              //if (ary[1]) {
-              const operandName = command.operandName;
+              const targetName = command.targetName;
               const operator = StringUtil.toHalfWidth(command.operator);
               const operateValue = command.value;
               let oldValue;
-              let operand;
+              let target;
               let isOperateNumber = false;
               let isOperateMaxValue = false;
 
-              //const operandNameEscaped = StringUtil.cr(operandName);
-              if (operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName)) {
-                if (operand.isNumberResource || operand.isSimpleNumber || operand.isAbilityScore) isOperateNumber = true;
+              if (target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName)) {
+                if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
               } else if (
-                operand = this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^最大/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^Max[\:\_\-\s]*/i)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^初期/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /初期値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /最大値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^基本/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /^原/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /\^$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /基本値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(operandName, /原点$/)
+                target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$/)
+                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$/)
               ) {
-                if (operand.isNumberResource || operand.isAbilityScore) {
+                if (target.isNumberResource || target.isAbilityScore) {
                   isOperateNumber = true;
                   isOperateMaxValue = true;
                 } else {
-                  operand = null;
+                  target = null;
                 }
               }
-              if (!operand) {
-                loggingTexts.push(`→ コマンドエラー：${(operandName == null || operandName.trim() == '') ? '(無名の変数)' : operandName} は見つからなかった`);
-                continue;
-              } else if (operand.isUrl) {
-                loggingTexts.push('→ コマンドエラー：参照URLはコマンドで操作できない');
+              if (!target) {
+                loggingTexts.push(`→ コマンドエラー：${(targetName == null || targetName.trim() == '') ? '(無名の変数)' : targetName} は見つからなかった`);
                 continue;
               } else {
-                oldValue = operand.loggingValue;
+                oldValue = target.loggingValue;
                 let value = null;
-                if (command.isEscapeRoll) {
+                if (command.isEscapeRoll || operator === '>') {
                   value = operateValue;
                 } else {
                   const rollText = StringUtil.toHalfWidth(operateValue.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-')).trim();
                   if (rollText == '') {
                     value = '';
-                  //} else if (!/^[\+\-]?\d+$/.test(rollText)) {
                   } else {
                     if (/^[\+\-]?\d+$/.test(rollText)) {
                       value = parseInt(rollText);
@@ -433,58 +423,88 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                       rollResult = await DiceBot.rollCommandAsync(rollText, this.gameType ? this.gameType : 'DiceBot');
                     } else {
                       value = operateValue;
-                      //rollResult = await DiceBot.rollCommandAsync(rollText, this.gameType ? this.gameType : 'DiceBot');
                     }
                     if (rollResult) {
                       console.log(rollResult.result)
                       let match = null;
                       if (isOperateNumber && rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
                         value = match[1];
-                      } else if (operand.isCheckProperty) {
+                      } else if (target.isCheckProperty) {
                         value = rollResult.isSuccess ? '1' : '0';
                       } else if (rollResult.result.length > 0) {
                         value = rollResult.isDiceRollTable ? rollResult.result.split(/\s＞\s/).slice(1).join('') : rollResult.result.split(/\s＞\s/).slice(-1)[0];
                       }
                     }
-                  //} else {
-                  //  value = rollText;
                   }
                 }
                 console.log(value)
                 if (value == null) {
-                  loggingTexts.push(`→ ${operand.name == '' ? '(無名の変数)' : operand.name} を操作 → コマンドエラー：` + command.operator + command.value);
+                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
                   continue;
                 }
                 if (rollResult && rollResult.isDiceRollTable && rollResult.isFailure) {
-                  loggingTexts.push(`→ ${operand.name == '' ? '(無名の変数)' : operand.name} を操作 → コマンドエラー：` + command.operator + command.value);
+                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
                   continue;
                 }
                 if (isOperateNumber && value !== '' && isNaN(value)) {
-                  loggingTexts.push(`→ ${operand.name == '' ? '(無名の変数)' : operand.name} を操作 → コマンドエラー：` + command.operator + command.value);
+                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
                   continue;
                 }
 
-                if (operand.isNumberResource && !isOperateMaxValue) {
-                  if (value != '') operand.currentValue = parseInt(operand.currentValue && operator !== '=' ? operand.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                if (operator === '>') {
+                  if (isOperateNumber) {
+                    if (!isNaN(value)) {
+                      loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
+                      continue;
+                    }
+                    if (target.isNumberResource && !isOperateMaxValue) {
+                      target.currentValue = parseInt(value);
+                    } else {
+                      target.value = parseInt(value);
+                    }
+                  } else if (target.isCheckProperty) {
+                    target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
+                  } else if (target.isNote) {
+                    target.value = StringUtil.cr(value);
+                  } else if (target.isUrl) {
+                    if (!StringUtil.validUrl(StringUtil.cr(value))) {
+                      loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value);
+                      continue;
+                    }
+                    target.value = StringUtil.cr(value);
+                  } else {
+                    target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ');
+                  }
+                } else if (target.isNumberResource && !isOperateMaxValue) {
+                  if (value != '') target.currentValue = parseInt(target.currentValue && operator !== '=' ? target.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
                 } else if (isOperateNumber) {
-                  if (value != '') operand.value = parseInt(operand.value && operator !== '=' ? operand.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                } else if (operand.isCheckProperty && operator == '=') {
-                  operand.value = (value == '' || parseInt(value) == 0 || value.toLowerCase() == 'off') ? '' : operand.name;
-                } else if (operator == '=') {
-                  operand.value = isNaN(value) ? StringUtil.cr(value) : parseInt(value);
+                  if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                } else if (target.isCheckProperty && operator == '=') {
+                  target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
+                } else if (operator === '=') {
+                  if (target.isUrl) {
+                    if (!StringUtil.validUrl(StringUtil.cr(value))) {
+                      loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value);
+                      continue;
+                    }
+                    target.value = StringUtil.cr(value);
+                  } else if (target.isNote) {
+                    target.value = isNaN(value) ? StringUtil.cr(value) : parseInt(value);
+                  } else {
+                    target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ') : parseInt(value);
+                  }
                 } else {
-                  loggingTexts.push(`→ ${operand.name == '' ? '(無名の変数)' : operand.name} を操作 → コマンドエラー：` + command.operator + command.value);
+                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
                   continue;
                 }
-                const newValue = operand.loggingValue;
+                const newValue = target.loggingValue;
 
-                let loggingText = `→ ${operand.name == '' ? '(無名の変数)' : operand.name} を操作`;
+                let loggingText = `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作`;
                 if (isOperateNumber) {
                   loggingText += ` ${oldValue} → ${oldValue === newValue ? '変更なし' : newValue}`;
-                } else if (operand.isCheckProperty) {
+                } else if (target.isCheckProperty) {
                   loggingText += `${oldValue === newValue ? ' 変更なし' : newValue}`
                 } else {
-                  //loggingText += ` "${oldValue}" → ${oldValue === newValue ? '変更なし' : '"' + newValue + '"'}`;
                   loggingText += ` "${oldValue}" → ${oldValue === newValue ? '変更なし' : '"' + newValue + '"'}`;
                 }
                 if (rollResult) {
@@ -503,9 +523,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 }
                 loggingTexts.push(loggingText);
               }
-            //}
             }
-            //console.log(loggingTexts)
             if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
           })();
         }
