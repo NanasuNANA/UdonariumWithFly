@@ -25,6 +25,7 @@ import { StandSettingComponent } from 'component/stand-setting/stand-setting.com
 import { PeerMenuComponent } from 'component/peer-menu/peer-menu.component';
 import { ChatTab } from '@udonarium/chat-tab';
 import { CutInList } from '@udonarium/cut-in-list';
+import { DiceRollTableList } from '@udonarium/dice-roll-table-list';
 
 interface StandGroup {
   name: string,
@@ -351,24 +352,27 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     let matchMostLongText = '';
     let standIdentifier = null;
 
-    if (this.character) {
-      text = this.character.chatPalette.evaluate(text, this.character.rootDataElement);
-      // ステータス操作
-      if (text && /^[\\￥]+[:：]/.test(text)) {
-        // コマンド全体のエスケープ
-        text = text.replace(/[\\￥]([:：])/, '$1');
-      } else if (text && StringUtil.toHalfWidth(text).startsWith(':')) {
-        // 切り出し
-        //console.log(StringUtil.parseCommands(text.substring(1)));
-        const commandsInfo = StringUtil.parseCommands(text.substring(1));
-        text = commandsInfo.endString;
+    if (this.character) text = this.character.chatPalette.evaluate(text, this.character.rootDataElement);
+    // ステータス操作
+    if (text && /^[\\￥]+[:：]/.test(text)) {
+      // コマンド全体のエスケープ
+      text = text.replace(/[\\￥]([:：])/, '$1');
+    } else if (text && StringUtil.toHalfWidth(text).startsWith(':')) {
+      // 切り出し
+      //console.log(StringUtil.parseCommands(text.substring(1)));
+      const commandsInfo = StringUtil.parseCommands(text.substring(1));
+      text = commandsInfo.endString;
+      //let loggingTexts = [];
+      if (!this.character) {
+        this.chatMessageService.sendOperationLog('コマンドエラー：対象がキャラクターではない');
+      } else {
         if (commandsInfo.commands.length) {
           (async () => {
-            let loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド：${commandsInfo.commandString}`];
+            const loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド：${commandsInfo.commandString}`];
             for (let i = 0; i < commandsInfo.commands.length; i++) {
               let rollResult = null;
               // ステータス操作のみ
-               try {
+                try {
                 const command = commandsInfo.commands[i];
                 if (command.isIncomplete) throw '→ コマンドエラー：コマンド不完全：' + command.targetName;
 
@@ -409,21 +413,23 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 if (command.isEscapeRoll || operator === '>') {
                   value = operateValue;
                 } else {
-                  const rollText = StringUtil.toHalfWidth(operateValue.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-')).trim();
-                  if (rollText == '') {
+                  const testHalfWidthText = StringUtil.toHalfWidth(operateValue.replace(/[―ー—‐]/g, '-')).trim();
+                  //const rollText = StringUtil.toHalfWidth(operateValue.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-')).trim();
+                  if (StringUtil.cr(testHalfWidthText) == '') {
                     value = '';
                   } else {
-                    if (/^[\+\-]?\d+$/.test(rollText)) {
-                      value = parseInt(rollText);
-                    } else if (/^[\d\+\-\*\/\(\)]+$/.test(rollText)) {
-                      rollResult = await DiceBot.rollCommandAsync(`C(${rollText})`, this.gameType ? this.gameType : 'DiceBot');
-                    } else if (/choice\d*\[.*\]/i.test(rollText) || /^[a-zA-Z0-9!-/:-@¥[-`{-~\}]+$/.test(rollText)) {
-                      rollResult = await DiceBot.rollCommandAsync(rollText, this.gameType ? this.gameType : 'DiceBot');
+                    if (/^[\+\-]?\d+$/.test(testHalfWidthText)) {
+                      value = parseInt(testHalfWidthText);
+                    } else if (/^[\d\+\-\*\/\(\)]+$/.test(testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/'))) {
+                      rollResult = await DiceBot.rollCommandAsync(`C(${testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/')})`, this.gameType ? this.gameType : 'DiceBot');
+                    } else if (/^[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ]/i.test(operateValue) || /^[a-zA-Z0-9!-/:-@¥[-`{-~\}]+$/.test(testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/'))
+                      || DiceRollTableList.instance.diceRollTables.some(diceRollTable => { diceRollTable.command != null && (new RegExp(StringUtil.toHalfWidth('^' + diceRollTable.command.replace(/[―ー—‐]/g, '-').toUpperCase().trim()) + '([=+-]\d*|$)')).test(testHalfWidthText.toUpperCase()) })) {
+                      rollResult = await DiceBot.rollCommandAsync(operateValue, this.gameType ? this.gameType : 'DiceBot');
                     } else {
                       value = operateValue;
                     }
                     if (rollResult) {
-                      console.log(rollResult.result)
+                      //console.log(rollResult.result)
                       let match = null;
                       if (isOperateNumber && rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
                         value = match[1];
@@ -511,7 +517,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           })();
         }
       }
-
+    }
+    if (this.character) {
       // スタンド
       // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
       if (StringUtil.cr(text).trim() || this.standName) {

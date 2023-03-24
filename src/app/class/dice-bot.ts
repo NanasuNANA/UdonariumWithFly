@@ -224,8 +224,8 @@ export class DiceBot extends GameObject {
       let modifier = 0;
       let modStr = '';
       let isFixedRef = false;
-      const commandStr = StringUtil.toHalfWidth(diceRollTable.command.replace(/[―ー—‐]/g, '-').trim()).toUpperCase();
-      const rollTextStr = StringUtil.toHalfWidth(rollText.replace(/[―ー—‐]/g, '-').trim()).toUpperCase();
+      const commandStr = StringUtil.toHalfWidth(diceRollTable.command.replace(/[―ー—‐]/g, '-')).trim().toUpperCase();
+      const rollTextStr = StringUtil.toHalfWidth(rollText.replace(/[―ー—‐]/g, '-')).trim().toUpperCase();
       if (rollTextStr.startsWith('S' + commandStr) && (!rollTextStr[('S' + commandStr).length] || /[ \=\+\-]/.test(rollTextStr.charAt(('S' + commandStr).length)))) {
         isDiceRollTableMatch = true;
         isSecret = true;
@@ -254,7 +254,7 @@ export class DiceBot extends GameObject {
         const diceRollTableRows = diceRollTable.parseText();
         for (let i = 0; i < repeat && i < 32; i++) {
           let rollResultNumber = null;
-          let rollResult = await DiceBot.diceRollAsync(isFixedRef ? `C(${modStr.substring(1)})` : StringUtil.toHalfWidth(diceRollTable.dice).replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-'), 'DiceBot', 1);
+          let rollResult = await DiceBot.diceRollAsync(isFixedRef ? `C(${modStr.substring(1)})` : StringUtil.toHalfWidth(diceRollTable.dice).trim().replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-'), 'DiceBot', 1);
           finalResult.isEmptyDice = finalResult.isEmptyDice && rollResult.isEmptyDice;
           let match = null;
           if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
@@ -273,7 +273,7 @@ export class DiceBot extends GameObject {
                     finalResult.result += ('指定=' + rollResultNumber + "\n" + StringUtil.cr(diceRollTableRow.result));
                   }
                 } else {
-                  finalResult.result = (isFixedRef ? '指定=' : '') + rollResultNumber + ' ＞ ' + diceRollTableRow.result;
+                  finalResult.result = (isFixedRef ? '指定=' : '') + rollResultNumber + (isFixedRef ? '' : modStr) + ' ＞ ' + diceRollTableRow.result;
                 }
                 isRowMatch = true;
                 break;
@@ -281,11 +281,11 @@ export class DiceBot extends GameObject {
             }
           }
           if (!isRowMatch) {
-            finalResult.isFailure = true;
             if (rollResultNumber == null) {
+              finalResult.isFailure = true;
               finalResult.result += ('（エラー：ダイスロールから数字が取得できません）' + "\n" + '(結果なし)');
             } else if (!isFixedRef) {
-              finalResult.result += (rollResult.result + modStr  + (modStr ? ` → ${rollResultNumber + modifier}`: '') + "\n" + '(結果なし)');
+              finalResult.result += (rollResult.result + modStr + (modStr ? ` → ${rollResultNumber + modifier}`: '') + "\n" + '(結果なし)');
             } else {
               finalResult.result += ('指定=' + rollResultNumber + "\n" + '(結果なし)');
             }
@@ -301,10 +301,12 @@ export class DiceBot extends GameObject {
       let isChoice = false;
       //ToDO バージョン調べる
       let choiceMatch;
-      if (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[ 　]+)([^\n]*)/ig.exec(rollText.trim())) {
+      if (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*)([ 　]+|[\\￥][sｓ])([^\n]*)/ig.exec(rollText.trim())) {
         //if (choiceMatch[2] && choiceMatch[2] !== '' && !DiceRollTableList.instance.diceRollTables.map(diceRollTable => diceRollTable.command).some(command => command != null && command.trim().toUpperCase() === choiceMatch[1].toUpperCase())) {
-          rollText = StringUtil.toHalfWidth(choiceMatch[1]);
-          if (choiceMatch[2] != null) rollText += choiceMatch[2].trim().replace(/[　\s]+/g, ' ');
+          rollText = StringUtil.toHalfWidth(choiceMatch[1] + StringUtil.cr(choiceMatch[2])) ;
+          if (choiceMatch[2] != null) {
+            rollText += (StringUtil.toHalfWidth(choiceMatch[3]).trim() === '' ? choiceMatch[3] : StringUtil.cr(choiceMatch[3])).trim().replace(/[　\s]+/g, ' ');
+          }
           isChoice = true;
         //}
       }
@@ -321,7 +323,7 @@ export class DiceBot extends GameObject {
       if (!isChoice) {
         rollText = StringUtil.toHalfWidth(rollText).trim().split(/\s+/)[0].replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-');
       }
-      console.log(rollText);
+      //console.log(rollText);
       if (DiceBot.apiUrl) {
         //rollText = StringUtil.toHalfWidth(rollText).trim().split(/\s+/)[0].replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-');
         // すべてBCDiceに投げずに回数が1回未満かchoice[]が含まれるか英数記号以外は門前払い
