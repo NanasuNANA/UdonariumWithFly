@@ -204,15 +204,16 @@ export class DiceBot extends GameObject {
   }
 
   static async rollCommandAsync(diceCommand: string, gameType='DiceBot', isTableFormat=false): Promise<DiceRollResult> {
-    const text: string = StringUtil.toHalfWidth(diceCommand).replace("\u200b", ''); //ゼロ幅スペース削除
-    const regArray = /^((srepeat|repeat|srep|rep|sx|x)?(\d+)?[ 　]+)?([^\n]*)?/ig.exec(text);
-    const repCommand = regArray[2];
-    const isRepSecret = repCommand && repCommand.toUpperCase().indexOf('S') === 0;
-    const repeat: number = (regArray[3] != null) ? Number(regArray[3]) : 1;
+    //const text: string = StringUtil.toHalfWidth(diceCommand).replace("\u200b", ''); //ゼロ幅スペース削除
+    const text: string = diceCommand.replace("\u200b", ''); //ゼロ幅スペース削除
+    const regArray = /^(([sＳｓ][rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[sＳｓ][rＲｒ][eＥｅ][pＰｐ]|[rＲｒ][eＥｅ][pＰｐ]|[sＳｓ][xＸｘ]|[xＸｘ])?([\d０-９]+)?[ 　]+)?([^\n]*)?/ig.exec(text);
+    const repCommand =  StringUtil.toHalfWidth(regArray[2]);
+    const isRepSecret = repCommand && StringUtil.toHalfWidth(repCommand).toUpperCase().indexOf('S') === 0;
+    const repeat: number = (regArray[3] != null) ? Number(StringUtil.toHalfWidth(regArray[3])) : 1;
     let rollText: string = (regArray[4] != null) ? regArray[4] : text;
     let finalResult: DiceRollResult = { id: 'DiceBot', result: '', isSecret: false, isDiceRollTable: false, isEmptyDice: true,
       isSuccess: false, isFailure: true, isCritical: false, isFumble: false };
-    
+
     if (!rollText || repeat <= 0) return finalResult;
 
     //ダイスボット表
@@ -296,41 +297,44 @@ export class DiceBot extends GameObject {
       }
     }
     if (!isDiceRollTableMatch) {
-      // 読み込まれていないダイスボットのロード、COMMAND_PATTERN使用
-      if (!DiceBot.apiUrl) {
-        const gameSystem =  await DiceBot.loadGameSystemAsync(gameType);
-        if (!gameSystem.COMMAND_PATTERN.test(rollText)) return;
-      }
       // スペース区切りのChoiceコマンドへの対応
       let isChoice = false;
       //ToDO バージョン調べる
       let choiceMatch;
-      if (choiceMatch = /^(S?CHOICE\d*)[ 　]+([^ 　]*)/ig.exec(rollText.trim())) {
+      if (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[ 　]+)([^\n]*)/ig.exec(rollText.trim())) {
         //if (choiceMatch[2] && choiceMatch[2] !== '' && !DiceRollTableList.instance.diceRollTables.map(diceRollTable => diceRollTable.command).some(command => command != null && command.trim().toUpperCase() === choiceMatch[1].toUpperCase())) {
-          rollText = rollText.trim().replace(/[　\s]+/g, ' ');
+          rollText = StringUtil.toHalfWidth(choiceMatch[1]);
+          if (choiceMatch[2] != null) rollText += choiceMatch[2].trim().replace(/[　\s]+/g, ' ');
           isChoice = true;
         //}
       }
       if (!isChoice) {
-        if ((choiceMatch = /^(S?CHOICE\d*\[[^\[\]]+\])/ig.exec(rollText.trim())) || (choiceMatch = /^(S?CHOICE\d*\([^\(\)]+\))/ig.exec(rollText.trim()))) {
-          if (!DiceRollTableList.instance.diceRollTables.map(diceRollTable => diceRollTable.command).some(command => command != null && command.trim().toUpperCase() === choiceMatch[1].toUpperCase())) {
-            rollText = choiceMatch[1];
+        if ((choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[\[［])([^\]］]+)([\]］])/ig.exec(rollText.trim())) 
+          || (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[\(（])([^\)）]+)([\)）])/ig.exec(rollText.trim()))) {
+          //if (!DiceRollTableList.instance.diceRollTables.map(diceRollTable => StringUtil.toHalfWidth(diceRollTable.command).trim().toUpperCase()).some(command => command === StringUtil.toHalfWidth(choiceMatch[1]).trim().toUpperCase())) {
+            console.log(choiceMatch);
+            rollText = StringUtil.toHalfWidth(choiceMatch[1]) + (choiceMatch[2] != null ? choiceMatch[2].replace(/，/g, ','): '') + StringUtil.toHalfWidth(choiceMatch[3]);
             isChoice = true;
-          }
+          //}
         }
       }
       if (!isChoice) {
-        rollText = rollText.trim().split(/\s+/)[0].replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-');
+        rollText = StringUtil.toHalfWidth(rollText).trim().split(/\s+/)[0].replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-');
       }
+      console.log(rollText);
       if (DiceBot.apiUrl) {
+        //rollText = StringUtil.toHalfWidth(rollText).trim().split(/\s+/)[0].replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-');
         // すべてBCDiceに投げずに回数が1回未満かchoice[]が含まれるか英数記号以外は門前払い
         //ToDO APIのバージョン調べて新しければCOMMAND_PATTERN使う？（いつ読み込もう？）
-        if (!isChoice && !(/choice\d*\[.*\]/i.test(rollText) || /^[a-zA-Z0-9!-/:-@¥[-`{-~\}]+$/.test(rollText))) return;
+        if (!isChoice && !/^[a-zA-Z0-9!-/:-@¥[-`{-~\}]+$/.test(rollText)) return;
         //BCDice-API の繰り返し機能を利用する、結果の形式が縦に長いのと、更新していないBCDice-APIサーバーもありそうなのでまだ実装しない
         //finalResult = await DiceBot.diceRollAsync(repCommand ? (repCommand + repeat + ' ' + rollText) : rollText, gameType, repCommand ? 1 : repeat);
         finalResult = await DiceBot.diceRollAsync(rollText, gameType, repeat);
         finalResult.isSecret = finalResult.isSecret || isRepSecret;
       } else {
+        // 読み込まれていないダイスボットのロード、COMMAND_PATTERN使用
+        const gameSystem = await DiceBot.loadGameSystemAsync(gameType);
+        if (!gameSystem.COMMAND_PATTERN.test(rollText)) return;
         for (let i = 0; i < repeat && i < 32; i++) {
           let rollResult = await DiceBot.diceRollAsync(rollText, gameType, repeat);
           if (rollResult.result.length < 1) break;
