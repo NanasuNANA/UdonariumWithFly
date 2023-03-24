@@ -368,44 +368,42 @@ export class ChatInputComponent implements OnInit, OnDestroy {
             for (let i = 0; i < commandsInfo.commands.length; i++) {
               let rollResult = null;
               // ステータス操作のみ
-              const command = commandsInfo.commands[i];
-              if (command.isIncomplete) {
-                loggingTexts.push('→ コマンドエラー：コマンド不完全：' + command.targetName);
-                continue;
-              }
-              const targetName = command.targetName;
-              const operator = StringUtil.toHalfWidth(command.operator);
-              const operateValue = command.value;
-              let oldValue;
-              let target;
-              let isOperateNumber = false;
-              let isOperateMaxValue = false;
+               try {
+                const command = commandsInfo.commands[i];
+                if (command.isIncomplete) throw '→ コマンドエラー：コマンド不完全：' + command.targetName;
 
-              if (target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName)) {
-                if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
-              } else if (
-                target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$/)
-                || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$/)
-              ) {
-                if (target.isNumberResource || target.isAbilityScore) {
-                  isOperateNumber = true;
-                  isOperateMaxValue = true;
-                } else {
-                  target = null;
+                const targetName = command.targetName;
+                const operator = StringUtil.toHalfWidth(command.operator);
+                const operateValue = command.value;
+                let oldValue;
+                let target;
+                let isOperateNumber = false;
+                let isOperateMaxValue = false;
+
+                if (target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName)) {
+                  if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
+                } else if (
+                  target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$/)
+                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$/)
+                ) {
+                  if (target.isNumberResource || target.isAbilityScore) {
+                    isOperateNumber = true;
+                    isOperateMaxValue = true;
+                  } else {
+                    target = null;
+                  }
                 }
-              }
-              if (!target) {
-                loggingTexts.push(`→ コマンドエラー：${(targetName == null || targetName.trim() == '') ? '(無名の変数)' : targetName} は見つからなかった`);
-                continue;
-              } else {
+                
+                if (!target) throw `→ コマンドエラー：${(StringUtil.cr(targetName).trim() == '') ? '(無名の変数)' : StringUtil.cr(targetName).trim()} は見つからなかった`;
+
                 oldValue = target.loggingValue;
                 let value = null;
                 if (command.isEscapeRoll || operator === '>') {
@@ -437,40 +435,27 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                   }
                 }
-                console.log(value)
-                if (value == null) {
-                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
-                  continue;
-                }
-                if (rollResult && rollResult.isDiceRollTable && rollResult.isFailure) {
-                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
-                  continue;
-                }
-                if (isOperateNumber && value !== '' && isNaN(value)) {
-                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
-                  continue;
+                //console.log(value)
+                if (value == null 
+                  || (rollResult && rollResult.isDiceRollTable && rollResult.isFailure) 
+                  || (isOperateNumber && value !== '' && isNaN(value))) {
+                  throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
+                } else if (target.isUrl && !StringUtil.validUrl(StringUtil.cr(value))) {
+                  throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value;
                 }
 
                 if (operator === '>') {
                   if (isOperateNumber) {
-                    if (!isNaN(value)) {
-                      loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
-                      continue;
-                    }
-                    if (target.isNumberResource && !isOperateMaxValue) {
-                      target.currentValue = parseInt(value);
-                    } else {
-                      target.value = parseInt(value);
+                    if (value != '') {
+                      if (target.isNumberResource && !isOperateMaxValue) {
+                        target.currentValue = parseInt(value);
+                      } else {
+                        target.value = parseInt(value);
+                      }
                     }
                   } else if (target.isCheckProperty) {
                     target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
-                  } else if (target.isNote) {
-                    target.value = StringUtil.cr(value);
-                  } else if (target.isUrl) {
-                    if (!StringUtil.validUrl(StringUtil.cr(value))) {
-                      loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value);
-                      continue;
-                    }
+                  } else if (target.isNote || target.isUrl) {
                     target.value = StringUtil.cr(value);
                   } else {
                     target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ');
@@ -482,20 +467,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 } else if (target.isCheckProperty && operator == '=') {
                   target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
                 } else if (operator === '=') {
-                  if (target.isUrl) {
-                    if (!StringUtil.validUrl(StringUtil.cr(value))) {
-                      loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value);
-                      continue;
-                    }
-                    target.value = StringUtil.cr(value);
-                  } else if (target.isNote) {
-                    target.value = isNaN(value) ? StringUtil.cr(value) : parseInt(value);
+                  if (target.isNote || target.isUrl) {
+                    target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
                   } else {
                     target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ') : parseInt(value);
                   }
                 } else {
-                  loggingTexts.push(`→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value);
-                  continue;
+                  throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
                 }
                 const newValue = target.loggingValue;
 
@@ -522,6 +500,11 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   }
                 }
                 loggingTexts.push(loggingText);
+              } catch (error) {
+                // 横着、例外設計すべき
+                if (error instanceof Error) throw error;
+                loggingTexts.push(error);
+                continue;
               }
             }
             if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
