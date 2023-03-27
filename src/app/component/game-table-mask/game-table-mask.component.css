@@ -53,7 +53,6 @@
   visibility: visible;
 }
 
-
 .is-center {
   position: absolute;
   top: 0;
@@ -63,18 +62,14 @@
   margin: auto;
 }
 
-.border {
-  box-sizing: border-box;
-  border: 2px solid transparent;
-}
-
 .image.border {
   border-width: 0px;
 } 
 
 .component:hover .border, .component:active .border,
 .is-grab .border {
-  border: 2px solid #cccccc !important;
+  outline: 2px solid #CCC !important;
+  outline-offset: -2px;
 }
 
 .is-fit-full {
@@ -132,3 +127,11 @@
 .is-inverse {
   transform: rotateZ(180deg);
 }
+/*
+.mask {
+  mask: radial-gradient(black, black) 0px 0px / 50px 50px,
+        radial-gradient(black, black) 50px 50px / 50px 50px;
+  mask-origin: content-box;
+  mask-repeat: no-repeat;
+  mask-composite: add;
+}*/
