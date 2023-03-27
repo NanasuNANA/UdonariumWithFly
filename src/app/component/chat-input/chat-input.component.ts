@@ -342,313 +342,22 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     this.calcFitHeight();
   }
 
-  sendChat(event: KeyboardEvent) {
+   sendChat(event: KeyboardEvent) {
     if (event) event.preventDefault();
     //if (!this.text.length) return;
     if (event && event.keyCode !== 13) return;
     if (!this.sendFrom.length) this.sendFrom = this.myPeer.identifier;
-
+    
     let text = this.text;
-    let matchMostLongText = '';
-    let standIdentifier = null;
-
-    if (this.character) text = this.character.chatPalette.evaluate(text, this.character.rootDataElement);
-    // ステータス操作
-    if (text && /^[\\￥]+[:：]/.test(text)) {
-      // コマンド全体のエスケープ
-      text = text.replace(/[\\￥]([:：])/, '$1');
-    } else if (text && StringUtil.toHalfWidth(text).startsWith(':')) {
-      // 切り出し
-      //console.log(StringUtil.parseCommands(text.substring(1)));
-      const commandsInfo = StringUtil.parseCommands(text.substring(1));
-      text = commandsInfo.endString;
-      //let loggingTexts = [];
-      if (!this.character) {
-        this.chatMessageService.sendOperationLog('コマンドエラー：対象がキャラクターではない');
-      } else {
-        if (commandsInfo.commands.length) {
-          (async () => {
-            const loggingTexts: string[] = [`${this.character.name == '' ? '(無名のキャラクター)' : this.character.name} へのコマンド：${commandsInfo.commandString}`];
-            for (let i = 0; i < commandsInfo.commands.length; i++) {
-              let rollResult = null;
-              // ステータス操作のみ
-                try {
-                const command = commandsInfo.commands[i];
-                if (command.isIncomplete) throw '→ コマンドエラー：コマンド不完全：' + command.targetName;
-
-                const targetName = command.targetName;
-                const operator = StringUtil.toHalfWidth(command.operator);
-                const operateValue = command.value;
-                let oldValue;
-                let target;
-                let isOperateNumber = false;
-                let isOperateMaxValue = false;
-
-                if (target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName)) {
-                  if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
-                } else if (
-                  target = this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$/)
-                  || this.character.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$/)
-                ) {
-                  if (target.isNumberResource || target.isAbilityScore) {
-                    isOperateNumber = true;
-                    isOperateMaxValue = true;
-                  } else {
-                    target = null;
-                  }
-                }
-                
-                if (!target) throw `→ コマンドエラー：${(StringUtil.cr(targetName).trim() == '') ? '(無名の変数)' : StringUtil.cr(targetName).trim()} は見つからなかった`;
-
-                oldValue = target.loggingValue;
-                let value = null;
-                if (command.isEscapeRoll || operator === '>') {
-                  value = operateValue;
-                } else {
-                  const testHalfWidthText = StringUtil.toHalfWidth(operateValue.replace(/[―ー—‐]/g, '-')).trim();
-                  //const rollText = StringUtil.toHalfWidth(operateValue.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-')).trim();
-                  if (StringUtil.cr(testHalfWidthText) == '') {
-                    value = '';
-                  } else {
-                    if (/^[\+\-]?\d+$/.test(testHalfWidthText)) {
-                      value = parseInt(testHalfWidthText);
-                    } else if (/^[\d\+\-\*\/\(\)]+$/.test(testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/'))) {
-                      rollResult = await DiceBot.rollCommandAsync(`C(${testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/')})`, this.gameType ? this.gameType : 'DiceBot');
-                    } else if (/^[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ]/i.test(operateValue) || /^[a-zA-Z0-9!-/:-@¥[-`{-~\}]+$/.test(testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/'))
-                      || DiceRollTableList.instance.diceRollTables.some(diceRollTable => diceRollTable.command != null && (new RegExp('^' + StringUtil.toHalfWidth(diceRollTable.command.replace(/[―ー—‐]/g, '-')).toUpperCase().trim() + '([=+\\-]\\d*)?$')).test(testHalfWidthText.toUpperCase()))) {
-                      rollResult = await DiceBot.rollCommandAsync(operateValue, this.gameType ? this.gameType : 'DiceBot');
-                    } else {
-                      value = operateValue;
-                    }
-                    if (rollResult) {
-                      //console.log(rollResult.result)
-                      let match = null;
-                      if (isOperateNumber && rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
-                        value = match[1];
-                      } else if (target.isCheckProperty) {
-                        value = rollResult.isSuccess ? '1' : '0';
-                      } else if (rollResult.result.length > 0) {
-                        value = rollResult.isDiceRollTable ? rollResult.result.split(/\s＞\s/).slice(1).join('') : rollResult.result.split(/\s＞\s/).slice(-1)[0];
-                      }
-                    }
-                  }
-                }
-                //console.log(value)
-                if (value == null 
-                  || (rollResult && rollResult.isDiceRollTable && rollResult.isFailure) 
-                  || (isOperateNumber && value !== '' && isNaN(value))) {
-                  throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
-                } else if (target.isUrl && !StringUtil.validUrl(StringUtil.cr(value))) {
-                  throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value;
-                }
-
-                if (operator === '>') {
-                  if (isOperateNumber) {
-                    if (value != '') {
-                      if (target.isNumberResource && !isOperateMaxValue) {
-                        target.currentValue = parseInt(value);
-                      } else {
-                        target.value = parseInt(value);
-                      }
-                    }
-                  } else if (target.isCheckProperty) {
-                    target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
-                  } else if (target.isNote || target.isUrl) {
-                    target.value = StringUtil.cr(value);
-                  } else {
-                    target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ');
-                  }
-                } else if (target.isNumberResource && !isOperateMaxValue) {
-                  if (value != '') target.currentValue = parseInt(target.currentValue && operator !== '=' ? target.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                } else if (isOperateNumber) {
-                  if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
-                } else if (target.isCheckProperty && operator == '=') {
-                  target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
-                } else if (operator === '=') {
-                  if (target.isNote || target.isUrl) {
-                    target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
-                  } else {
-                    target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ') : parseInt(value);
-                  }
-                } else {
-                  throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
-                }
-                const newValue = target.loggingValue;
-
-                let loggingText = `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作`;
-                if (isOperateNumber) {
-                  loggingText += ` ${oldValue} → ${oldValue === newValue ? '変更なし' : newValue}`;
-                } else if (target.isCheckProperty) {
-                  loggingText += `${oldValue === newValue ? ' 変更なし' : newValue}`
-                } else {
-                  loggingText += ` "${oldValue}" → ${oldValue === newValue ? '変更なし' : '"' + newValue + '"'}`;
-                }
-                if (rollResult) {
-                  if (rollResult.isDiceRollTable) {
-                    loggingText += ` (${rollResult.tableName}：${rollResult.isEmptyDice ? '' : '🎲'}${rollResult.result.split(/\s＞\s/)[0]})`;
-                  } else {
-                    loggingText += ` (${ rollResult.result.split(/\s＞\s/g).map((str, j) => (j == 0 ? (rollResult.isEmptyDice ? '' : '🎲' + '：' + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
-                  }
-                  if (!rollResult.isEmptyDice) {
-                    if (Math.random() < 0.5) {
-                      SoundEffect.play(PresetSound.diceRoll1);
-                    } else {
-                      SoundEffect.play(PresetSound.diceRoll2);
-                    }
-                  }
-                }
-                loggingTexts.push(loggingText);
-              } catch (error) {
-                // 横着、例外設計すべき
-                if (error instanceof Error) throw error;
-                loggingTexts.push(error);
-                continue;
-              }
-            }
-            if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
-          })();
-        }
-      }
-    }
-    if (this.character) {
-      // スタンド
-      // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
-      if (StringUtil.cr(text).trim() || this.standName) {
-        // 立ち絵
-        if (this.character.standList) {
-          let imageIdentifier = null;
-          if (this.isUseFaceIcon && this.character.faceIcon) {
-            imageIdentifier = this.character.faceIcon.identifier;
-          } else {
-            imageIdentifier = this.character.imageFile ? this.character.imageFile.identifier : null;
-          }
-          const standInfo = this.character.standList.matchStandInfo(text, imageIdentifier, this.standName);
-          if (this.isUseStandImage && this.isUseStandImageOnChatTab) {
-            if (standInfo.farewell) {
-              this.farewellStand();
-            } else if (standInfo.standElementIdentifier) {
-              standIdentifier = standInfo.standElementIdentifier;
-              const sendObj = {
-                characterIdentifier: this.character.identifier, 
-                standIdentifier: standInfo.standElementIdentifier, 
-                color: this.character.chatPalette ? this.character.chatPalette.color : PeerCursor.CHAT_DEFAULT_COLOR,
-                secret: this.sendTo ? true : false
-              };
-              if (sendObj.secret) {
-                const targetPeer = ObjectStore.instance.get<PeerCursor>(this.sendTo);
-                if (targetPeer) {
-                  if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
-                  EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
-                }
-              } else {
-                EventSystem.call('POPUP_STAND_IMAGE', sendObj);
-              }
-            }
-          }
-          matchMostLongText = standInfo.matchMostLongText;
-        }
-      }
-    }
-    // カットイン
-    const cutInInfo = CutInList.instance.matchCutInInfo(text);
-    if (this.isUseStandImageOnChatTab && cutInInfo) {
-      for (const identifier of cutInInfo.identifiers) {
-        const sendObj = {
-          identifier: identifier, 
-          secret: this.sendTo ? true : false,
-          sender: PeerCursor.myCursor.peerId
-        };
-        if (sendObj.secret) {
-          const targetPeer = ObjectStore.instance.get<PeerCursor>(this.sendTo);
-          if (targetPeer) {
-            if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('PLAY_CUT_IN', sendObj, targetPeer.peerId);
-            EventSystem.call('PLAY_CUT_IN', sendObj, PeerCursor.myCursor.peerId);
-          }
-        } else {
-          EventSystem.call('PLAY_CUT_IN', sendObj);
-        }
-      }
-      if (cutInInfo.names && cutInInfo.names.length && !this.sendTo) {
-        const counter = new Map();
-        for (const name of cutInInfo.names) {
-          let count = counter.get(name) || 0;
-          count += 1;
-          counter.set(name == '' ? '(無名のカットイン)' : name, count);
-        }
-        const text = `${[...counter.keys()].map(key => counter.get(key) > 1 ? `${key}×${counter.get(key)}` : key).join('、')}`;
-        this.chatMessageService.sendOperationLog(text + ' が起動した');
-      }
-    }
-    // 切り取り
-    if (matchMostLongText.length < cutInInfo.matchMostLongText.length) matchMostLongText = cutInInfo.matchMostLongText;
-    text = text.slice(0, text.length - matchMostLongText.length);
-    // 💭
-    if (this.isUseStandImageOnChatTab && this.character && StringUtil.cr(text).trim()) {
-      // CHOICEコマンドの引数は💭としない
-      const regArray = /^((srepeat|repeat|srep|rep|sx|x)?(\d+)?[ 　]+)?([^\n]*)?/ig.exec(text);
-      let dialogText = (regArray[4] != null) ? regArray[4].trim() : text.trim();
-      let choiceMatch;
-      if (/^(S?CHOICE\d*)[ 　]+([^ 　]*)/ig.test(dialogText)) {
-        dialogText = '';
-      } else if ((choiceMatch = /^(S?CHOICE\d*\[[^\[\]]+\])/ig.exec(dialogText)) || (choiceMatch = /^(S?CHOICE\d*\([^\(\)]+\))/ig.exec(dialogText))) {
-        dialogText = dialogText.slice(choiceMatch[1].length)
-      }
-      //console.log(dialogText)
-      //💭はEvant機能使うようにする
-      const dialogRegExp = /「+([\s\S]+?)」/gm;
-      // const dialogRegExp = /(?:^|[^\￥])「([\s\S]+?[^\￥])」/gm; 
-      //ToDO ちゃんとパースする
-      let match;
-      let dialog = [];
-      while ((match = dialogRegExp.exec(dialogText)) !== null) {
-        dialog.push(match[1]);
-      }
-      if (dialog.length === 0) {
-        const emoteTest = dialogText.split(/[\s　]/).slice(-1)[0];
-        if (StringUtil.isEmote(emoteTest)) {
-          dialog.push(emoteTest);
-        }
-      }
-      if (dialog.length > 0) {
-        //連続💭とりあえずやめる（複数表示できないかな）
-        //const dialogs = [...dialog, null];
-        //const gameCharacter = this.character;
-        //const color = this.color;
-        
-        const dialogObj = {
-          characterIdentifier: this.character.identifier, 
-          text: dialog.join("\n\n"),
-          faceIconIdentifier: (this.isUseFaceIcon && this.character.faceIcon) ? this.character.faceIcon.identifier : null,
-          color: this.color,
-          secret: this.sendTo ? true : false
-        };
-        if (dialogObj.secret) {
-          const targetPeer = ObjectStore.instance.get<PeerCursor>(this.sendTo);
-          if (targetPeer) {
-            if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, targetPeer.peerId);
-            EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, PeerCursor.myCursor.peerId);
-          }
-        } else {
-          EventSystem.call('POPUP_CHAT_BALLOON', dialogObj);
-        }
-      } else if (StringUtil.cr(text).trim() && this.character.text) {
-        EventSystem.call('FAREWELL_CHAT_BALLOON', { characterIdentifier: this.character.identifier });
-      }
-    }
-
-    if (PeerCursor.isGMHold && !this.sendTo && !PeerCursor.myCursor.isGMMode && /GM(?:モード)?にな(?:ります|る)/i.test(StringUtil.toHalfWidth(text))) {
-      PeerCursor.myCursor.isGMMode = true;
-      this.chatMessageService.sendOperationLog('GMモードになった');
-      EventSystem.trigger('CHANGE_GM_MODE', null);
-    }
+    let targetCharacter = this.character;
+    const gameType = this.gameType;
+    const sendFrom = this.sendFrom;
+    const sendTo = this.sendTo;
+    const color = this.color;
+    const isUseFaceIcon = this.isUseFaceIcon;
+    const standName = this.standName;
+    const isUseStandImage = this.isUseStandImage;
+    const isUseStandImageOnChatTab = this.isUseStandImageOnChatTab;
 
     if (this.text != '') {
       ChatInputComponent.history = ChatInputComponent.history.filter(string => string !== this.text);
@@ -660,30 +369,335 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       this.tmpText = null;
     }
 
-    if (StringUtil.cr(text).trim()) {
-      this.chat.emit({
-        text: text,
-        gameType: this.gameType,
-        sendFrom: this.sendFrom,
-        sendTo: this.sendTo,
-        color: this.color, 
-        isInverse: this.character ? this.character.isInverse : false,
-        isHollow: this.character ? this.character.isHollow : false,
-        isBlackPaint: this.character ? this.character.isBlackPaint : false,
-        aura: this.character ? this.character.aura : -1,
-        isUseFaceIcon: this.isUseFaceIcon,
-        characterIdentifier: this.character ? this.character.identifier : null,
-        standIdentifier: standIdentifier,
-        standName: this.standName,
-        isUseStandImage: (this.isUseStandImage && this.isUseStandImageOnChatTab)
-      });
-    }
     this.text = '';
     this.previousWritingLength = this.text.length;
-    let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
-    textArea.value = '';
+    const textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+    if (textArea) textArea.value = '';
     this.calcFitHeight();
     EventSystem.trigger('MESSAGE_EDITING_START', null);
+
+    (async () => {  
+      let matchMostLongText = '';
+      let standIdentifier = null;
+      const delayRefMap = new Map<string, string>;
+
+      // ステータス操作
+      if (text != '' && /^[\\￥]+[:：]/.test(text)) {
+        // コマンド全体のエスケープ
+        text = text.replace(/[\\￥]([:：])/, '$1');
+      } else if (text != '' && StringUtil.toHalfWidth(text).startsWith(':')) {
+        // 切り出し
+        //console.log(StringUtil.parseCommands(text.substring(1)));
+        const commandsInfo = StringUtil.parseCommands(text.substring(1));
+        text = commandsInfo.endString;
+        //let loggingTexts = [];
+        if (!targetCharacter) {
+          this.chatMessageService.sendOperationLog('コマンドエラー：対象がキャラクターではない');
+        } else {
+          if (commandsInfo.commands.length) {
+            //await (async () => {
+              const loggingTexts: string[] = [`${targetCharacter.name == '' ? '(無名のキャラクター)' : targetCharacter.name} へのコマンド：${commandsInfo.commandString}`];
+              for (let i = 0; i < commandsInfo.commands.length; i++) {
+                let rollResult = null;
+                // ステータス操作のみ
+                  try {
+                  const command = commandsInfo.commands[i];
+                  if (command.isIncomplete) throw '→ コマンドエラー：コマンド不完全：' + command.targetName;
+
+                  const targetName = targetCharacter.chatPalette.evaluate(command.targetName);
+                  const operator = StringUtil.toHalfWidth(command.operator);
+                  const operateValue = targetCharacter.chatPalette.evaluate(command.value);
+                  let oldValue;
+                  let target;
+                  let isOperateNumber = false;
+                  let isOperateMaxValue = false;
+
+                  if (target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName)) {
+                    if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
+                  } else if (
+                    target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$/)
+                  ) {
+                    if (target.isNumberResource || target.isAbilityScore) {
+                      isOperateNumber = true;
+                      isOperateMaxValue = true;
+                    } else {
+                      target = null;
+                    }
+                  }
+                  
+                  if (!target) throw `→ コマンドエラー：${(StringUtil.cr(targetName).trim() == '') ? '(無名の変数)' : StringUtil.cr(targetName).trim()} は見つからなかった`;
+
+                  oldValue = target.loggingValue;
+                  let value = null;
+                  if (command.isEscapeRoll || operator === '>') {
+                    value = operateValue;
+                  } else {
+                    const testHalfWidthText = StringUtil.toHalfWidth(operateValue.replace(/[―ー—‐]/g, '-')).trim();
+                    //const rollText = StringUtil.toHalfWidth(operateValue.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/').replace(/[―ー—‐]/g, '-')).trim();
+                    if (StringUtil.cr(testHalfWidthText) == '') {
+                      value = '';
+                    } else {
+                      if (/^[\+\-]?\d+$/.test(testHalfWidthText)) {
+                        value = parseInt(testHalfWidthText);
+                      } else if (/^[\d\+\-\*\/\(\)]+$/.test(testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/'))) {
+                        rollResult = await DiceBot.rollCommandAsync(`C(${testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/')})`, gameType ? gameType : 'DiceBot');
+                      } else if (/^[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ]/i.test(operateValue) || /^[a-zA-Z0-9!-/:-@¥[-`{-~\}]+$/.test(testHalfWidthText.replace(/[ⅮÐ]/g, 'D').replace(/\×/g, '*').replace(/\÷/g, '/'))
+                        || DiceRollTableList.instance.diceRollTables.some(diceRollTable => diceRollTable.command != null && (new RegExp('^' + StringUtil.toHalfWidth(diceRollTable.command.replace(/[―ー—‐]/g, '-')).toUpperCase().trim() + '([=+\\-]\\d*)?$')).test(testHalfWidthText.toUpperCase()))) {
+                        rollResult = await DiceBot.rollCommandAsync(operateValue, gameType ? gameType : 'DiceBot');
+                      } else {
+                        value = operateValue;
+                      }
+                      if (rollResult) {
+                        //console.log(rollResult.result)
+                        let match = null;
+                        if (isOperateNumber && rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
+                          value = match[1];
+                        } else if (target.isCheckProperty) {
+                          value = rollResult.isSuccess ? '1' : '0';
+                        } else if (rollResult.result.length > 0) {
+                          value = rollResult.isDiceRollTable ? rollResult.result.split(/\s＞\s/).slice(1).join('') : rollResult.result.split(/\s＞\s/).slice(-1)[0];
+                        }
+                      }
+                    }
+                  }
+                  //console.log(value)
+                  if (value == null 
+                    || (rollResult && rollResult.isDiceRollTable && rollResult.isFailure) 
+                    || (isOperateNumber && value !== '' && isNaN(value))) {
+                    throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
+                  } else if (target.isUrl && !StringUtil.validUrl(StringUtil.cr(value))) {
+                    throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value;
+                  }
+
+                  if (operator === '>') {
+                    if (isOperateNumber) {
+                      if (value != '') {
+                        if (target.isNumberResource && !isOperateMaxValue) {
+                          target.currentValue = parseInt(value);
+                        } else {
+                          target.value = parseInt(value);
+                        }
+                      }
+                    } else if (target.isCheckProperty) {
+                      target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
+                    } else if (target.isNote || target.isUrl) {
+                      target.value = StringUtil.cr(value);
+                    } else {
+                      target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ');
+                    }
+                  } else if (target.isNumberResource && !isOperateMaxValue) {
+                    if (value != '') target.currentValue = parseInt(target.currentValue && operator !== '=' ? target.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                  } else if (isOperateNumber) {
+                    if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                  } else if (target.isCheckProperty && operator == '=') {
+                    target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
+                  } else if (operator === '=') {
+                    if (target.isNote || target.isUrl) {
+                      target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
+                    } else {
+                      target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ') : parseInt(value);
+                    }
+                  } else {
+                    throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
+                  }
+                  const newValue = target.loggingValue;
+
+                  let loggingText = `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作`;
+                  if (isOperateNumber) {
+                    loggingText += ` ${oldValue} → ${oldValue === newValue ? '変更なし' : newValue}`;
+                  } else if (target.isCheckProperty) {
+                    loggingText += `${oldValue === newValue ? ' 変更なし' : newValue}`
+                  } else {
+                    loggingText += ` "${oldValue}" → ${oldValue === newValue ? '変更なし' : '"' + newValue + '"'}`;
+                  }
+                  if (rollResult) {
+                    if (rollResult.isDiceRollTable) {
+                      loggingText += ` (${rollResult.tableName}：${rollResult.isEmptyDice ? '' : '🎲'}${rollResult.result.split(/\s＞\s/)[0]})`;
+                    } else {
+                      loggingText += ` (${ rollResult.result.split(/\s＞\s/g).map((str, j) => (j == 0 ? (rollResult.isEmptyDice ? '' : '🎲' + '：' + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
+                    }
+                    if (!rollResult.isEmptyDice) {
+                      if (Math.random() < 0.5) {
+                        SoundEffect.play(PresetSound.diceRoll1);
+                      } else {
+                        SoundEffect.play(PresetSound.diceRoll2);
+                      }
+                    }
+                  }
+                  loggingTexts.push(loggingText);
+                } catch (error) {
+                  // 横着、例外設計すべき
+                  if (error instanceof Error) throw error;
+                  loggingTexts.push(error);
+                  continue;
+                }
+              }
+              if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
+            //})();
+          }
+        }
+      }
+      if (targetCharacter) {
+        text = targetCharacter.chatPalette.evaluate(text, targetCharacter.rootDataElement, delayRefMap);
+        // スタンド
+        // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
+        if (StringUtil.cr(text).trim() || standName) {
+          // 立ち絵
+          if (targetCharacter.standList) {
+            let imageIdentifier = null;
+            if (isUseFaceIcon && targetCharacter.faceIcon) {
+              imageIdentifier = targetCharacter.faceIcon.identifier;
+            } else {
+              imageIdentifier = targetCharacter.imageFile ? targetCharacter.imageFile.identifier : null;
+            }
+            const standInfo = targetCharacter.standList.matchStandInfo(text, imageIdentifier, standName);
+            if (isUseStandImage && isUseStandImageOnChatTab) {
+              if (standInfo.farewell) {
+                this.farewellStand(targetCharacter);
+              } else if (standInfo.standElementIdentifier) {
+                standIdentifier = standInfo.standElementIdentifier;
+                const sendObj = {
+                  characterIdentifier: targetCharacter.identifier, 
+                  standIdentifier: standInfo.standElementIdentifier, 
+                  color: targetCharacter.chatPalette ? targetCharacter.chatPalette.color : PeerCursor.CHAT_DEFAULT_COLOR,
+                  secret: sendTo ? true : false
+                };
+                if (sendObj.secret) {
+                  const targetPeer = ObjectStore.instance.get<PeerCursor>(sendTo);
+                  if (targetPeer) {
+                    if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
+                    EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+                  }
+                } else {
+                  EventSystem.call('POPUP_STAND_IMAGE', sendObj);
+                }
+              }
+            }
+            matchMostLongText = standInfo.matchMostLongText;
+          }
+        }
+      }
+      // カットイン
+      const cutInInfo = CutInList.instance.matchCutInInfo(text);
+      if (isUseStandImageOnChatTab && cutInInfo) {
+        for (const identifier of cutInInfo.identifiers) {
+          const sendObj = {
+            identifier: identifier, 
+            secret: sendTo ? true : false,
+            sender: PeerCursor.myCursor.peerId
+          };
+          if (sendObj.secret) {
+            const targetPeer = ObjectStore.instance.get<PeerCursor>(sendTo);
+            if (targetPeer) {
+              if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('PLAY_CUT_IN', sendObj, targetPeer.peerId);
+              EventSystem.call('PLAY_CUT_IN', sendObj, PeerCursor.myCursor.peerId);
+            }
+          } else {
+            EventSystem.call('PLAY_CUT_IN', sendObj);
+          }
+        }
+        if (cutInInfo.names && cutInInfo.names.length && !sendTo) {
+          const counter = new Map();
+          for (const name of cutInInfo.names) {
+            let count = counter.get(name) || 0;
+            count += 1;
+            counter.set(name == '' ? '(無名のカットイン)' : name, count);
+          }
+          const text = `${[...counter.keys()].map(key => counter.get(key) > 1 ? `${key}×${counter.get(key)}` : key).join('、')}`;
+          this.chatMessageService.sendOperationLog(text + ' が起動した');
+        }
+      }
+      // 切り取り
+      if (matchMostLongText.length < cutInInfo.matchMostLongText.length) matchMostLongText = cutInInfo.matchMostLongText;
+      text = text.slice(0, text.length - matchMostLongText.length);
+      // 💭
+      if (isUseStandImageOnChatTab && targetCharacter && StringUtil.cr(text).trim()) {
+        // CHOICEコマンドの引数は💭としない
+        const regArray = /^((srepeat|repeat|srep|rep|sx|x)?(\d+)?[ 　]+)?([^\n]*)?/ig.exec(text);
+        let dialogText = (regArray[4] != null) ? regArray[4].trim() : text.trim();
+        let choiceMatch;
+        if (/^(S?CHOICE\d*)[ 　]+([^ 　]*)/ig.test(dialogText)) {
+          dialogText = '';
+        } else if ((choiceMatch = /^(S?CHOICE\d*\[[^\[\]]+\])/ig.exec(dialogText)) || (choiceMatch = /^(S?CHOICE\d*\([^\(\)]+\))/ig.exec(dialogText))) {
+          dialogText = dialogText.slice(choiceMatch[1].length)
+        }
+        //console.log(dialogText)
+        //💭はEvant機能使うようにする
+        const dialogRegExp = /「+([\s\S]+?)」/gm;
+        // const dialogRegExp = /(?:^|[^\￥])「([\s\S]+?[^\￥])」/gm; 
+        //ToDO ちゃんとパースする
+        let match;
+        let dialog = [];
+        while ((match = dialogRegExp.exec(dialogText)) !== null) {
+          dialog.push(match[1]);
+        }
+        if (dialog.length === 0) {
+          const emoteTest = dialogText.split(/[\s　]/).slice(-1)[0];
+          if (StringUtil.isEmote(emoteTest)) {
+            dialog.push(emoteTest);
+          }
+        }
+        if (dialog.length > 0) {
+          //連続💭とりあえずやめる（複数表示できないかな）
+          //const dialogs = [...dialog, null];
+          //const gameCharacter = this.character;
+          //const color = this.color;
+          
+          const dialogObj = {
+            characterIdentifier: targetCharacter.identifier, 
+            text: dialog.join("\n\n"),
+            faceIconIdentifier: (isUseFaceIcon && targetCharacter.faceIcon) ? targetCharacter.faceIcon.identifier : null,
+            color: color,
+            secret: sendTo ? true : false
+          };
+          if (dialogObj.secret) {
+            const targetPeer = ObjectStore.instance.get<PeerCursor>(sendTo);
+            if (targetPeer) {
+              if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, targetPeer.peerId);
+              EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, PeerCursor.myCursor.peerId);
+            }
+          } else {
+            EventSystem.call('POPUP_CHAT_BALLOON', dialogObj);
+          }
+        } else if (StringUtil.cr(text).trim() && targetCharacter.text) {
+          EventSystem.call('FAREWELL_CHAT_BALLOON', { characterIdentifier: targetCharacter.identifier });
+        }
+      }
+
+      if (PeerCursor.isGMHold && !sendTo && !PeerCursor.myCursor.isGMMode && /GM(?:モード)?にな(?:ります|る)/i.test(StringUtil.toHalfWidth(text))) {
+        PeerCursor.myCursor.isGMMode = true;
+        this.chatMessageService.sendOperationLog('GMモードになった');
+        EventSystem.trigger('CHANGE_GM_MODE', null);
+      }
+
+      if (StringUtil.cr(text).trim()) {
+        this.chat.emit({
+          text: text,
+          gameType: gameType,
+          sendFrom: sendFrom,
+          sendTo: sendTo,
+          color: color, 
+          isInverse: targetCharacter ? targetCharacter.isInverse : false,
+          isHollow: targetCharacter? targetCharacter.isHollow : false,
+          isBlackPaint: targetCharacter ? targetCharacter.isBlackPaint : false,
+          aura: targetCharacter ? targetCharacter.aura : -1,
+          isUseFaceIcon: isUseFaceIcon,
+          characterIdentifier: targetCharacter ? targetCharacter.identifier : null,
+          standIdentifier: standIdentifier,
+          standName: standName,
+          isUseStandImage: (isUseStandImage && isUseStandImageOnChatTab)
+        });
+      }
+    })();
   }
 
   calcFitHeight() {
@@ -867,7 +881,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     this.contextMenuService.open(position, contextMenuActions, this.character.name);
   }
 
-  farewellStand() {
+  farewellStand(targetCharacter: GameCharacter=null) {
+    if (!targetCharacter) targetCharacter = this.character;
     if (this.character) {
       const sendObj = {
         characterIdentifier: this.character.identifier
