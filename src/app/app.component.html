@@ -92,3 +92,7 @@
 </ui-panel>
 <div #modalLayer></div>
 <network-indicator class="networkIndicator"></network-indicator>
+<div *ngIf="imageUrl" class="image-view-background is-fill" (click)="chanageImageView('')" [@fadeInOut]="'in'">
+  <div class="close-button is-pointer-events-none" style="z-index: 10"><i class="material-icons">close</i></div>
+  <img class="contain-image" [src]="imageUrl | safe: 'resourceUrl'" draggable="false" />
+</div>

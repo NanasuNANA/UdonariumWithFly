@@ -2,6 +2,19 @@
   display: block;
 }
 
+.component {
+  position: absolute;
+  max-height: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+  color: #444;
+  z-index: 9000;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
 .drop-zone {
   border: 2px dashed #555;
   -moz-border-radius: 5px;
@@ -150,4 +163,25 @@
   text-shadow: 0px 0px 2px crimson,
   0px 0px 4px white;
   font-weight: bolder;
+}
+
+.zoom-button {
+  width: 24px;
+  height: 24px; 
+  border-radius: 100px; 
+  padding: 1px;
+  pointer-events: auto;
+}
+
+.zoom-button > .material-icons {
+  display:inline-block;
+  font-size: 16px;
+  vertical-align: bottom;
+}
+
+.zoom-in {
+  visibility: hidden;
+}
+.image:hover .zoom-in {
+  visibility: visible;
 }

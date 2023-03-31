@@ -50,6 +50,11 @@
           <s class="grow" style="color:gray; display: block; padding-left: 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">No Tag</s>
         </div>
       </ng-template>
+      <div class="zoom-in" style="z-index: 10; position: absolute; right: 0px; bottom: 1px">
+        <button class="zoom-button" (click)="chanageImageView(file.url)">
+          <i class="material-icons">zoom_in</i>
+        </button>
+      </div>
     </div>
     <div *ngIf="getHidden(file)" style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
       <i class="material-icons red-eye" style="z-index: 5; margin-right: 2px; font-size: 16px; display: block">visibility</i>

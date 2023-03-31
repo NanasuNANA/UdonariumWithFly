@@ -13,6 +13,7 @@ import { UUID } from '@udonarium/core/system/util/uuid';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { ModalService } from 'service/modal.service';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'file-storage',
@@ -347,5 +348,9 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   suggestWords(): string[] {
     const selectedWords = this.selectedImagesOwnWords(true);
     return Array.from(new Set(this.allImagesOwnWords.concat(this.deletedWords))).filter(word => word.indexOf('*') !== 0 && !selectedWords.includes(word));
+  }
+
+  chanageImageView(imageUrl: string) {
+    AppComponent.imageUrl = imageUrl;
   }
 }

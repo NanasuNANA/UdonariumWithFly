@@ -17,6 +17,7 @@ import { ImageTagList } from '@udonarium/image-tag-list';
 import { trigger, transition, animate, keyframes, style } from '@angular/animations';
 import { FileStorageComponent } from 'component/file-storage/file-storage.component';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'file-selector',
@@ -256,5 +257,9 @@ export class FileSelecterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   identify(index, image){
     return image.identifier;
+  }
+
+  chanageImageView(imageUrl: string) {
+    AppComponent.imageUrl = imageUrl;
   }
 }

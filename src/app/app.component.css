@@ -104,3 +104,45 @@ nav ul a, nav ul a:hover, nav ul a:active, nav ul a:visited {
 .horizontal .self-only-indicater {
   display: none;
 }
+
+.image-view-background {
+  color: #CCC;
+  background-color: rgba(30, 30, 30, 0.3);
+  z-index: 100000000000;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-view-background .close-button {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}
+
+.image-view-background .close-button > .material-icons {
+  font-size: 36px;
+}
+
+.contain-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 150px;
+  min-height: 150px;
+  box-sizing: border-box;
+  padding: 16px;
+  object-fit: contain;
+}

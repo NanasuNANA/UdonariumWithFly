@@ -135,3 +135,24 @@
   0px 0px 4px white;
   font-weight: bolder;
 }
+
+.zoom-button {
+  width: 24px;
+  height: 24px; 
+  border-radius: 100px; 
+  padding: 1px;
+  pointer-events: auto;
+}
+
+.zoom-button > .material-icons {
+  display:inline-block;
+  font-size: 16px;
+  vertical-align: bottom;
+}
+
+.zoom-in {
+  visibility: hidden;
+}
+.image:hover .zoom-in {
+  visibility: visible;
+}
