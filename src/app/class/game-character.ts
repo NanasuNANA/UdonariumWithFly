@@ -158,12 +158,11 @@ export class GameCharacter extends TabletopObject {
     palette.setPalette(`チャットパレット入力例：
 2d6+1 ダイスロール
 １ｄ２０＋{敏捷}＋｛格闘｝　{name}の格闘！
-:HP={最大HP} HPフル回復！
-:ｍｐ-{消費Ｍｐ} 2d20KH1+{器用度}+2>=15 《{Lv1}》を使用　MP-{消費MP}
+:ｈｐ-3d6 2d20KH1+{器用度}+2>=15 《{Lv1}》を使用　HP｛＄1｝
+:HP={最大HP}:MP-10 HP全回復！ MP{$2}、HP{HP} → {$HP}（{$1}点回復）
 //敏捷=10+{敏捷A}
 //敏捷A=10
-//格闘＝１
-//消費MP=１６`);
+//格闘＝１`);
     palette.initialize();
     this.appendChild(palette);
 

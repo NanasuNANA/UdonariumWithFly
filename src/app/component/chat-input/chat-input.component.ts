@@ -26,6 +26,7 @@ import { PeerMenuComponent } from 'component/peer-menu/peer-menu.component';
 import { ChatTab } from '@udonarium/chat-tab';
 import { CutInList } from '@udonarium/cut-in-list';
 import { DiceRollTableList } from '@udonarium/dice-roll-table-list';
+import { DataElement } from '@udonarium/data-element';
 
 interface StandGroup {
   name: string,
@@ -379,24 +380,21 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     (async () => {  
       let matchMostLongText = '';
       let standIdentifier = null;
-      const delayRefMap = new Map<string, string>;
-
+      const delayRefs: string[] = [];
       // ステータス操作
       if (text != '' && /^[\\￥]+[:：]/.test(text)) {
         // コマンド全体のエスケープ
         text = text.replace(/[\\￥]([:：])/, '$1');
       } else if (text != '' && StringUtil.toHalfWidth(text).startsWith(':')) {
-        // 切り出し
-        //console.log(StringUtil.parseCommands(text.substring(1)));
-        const commandsInfo = StringUtil.parseCommands(text.substring(1));
-        text = commandsInfo.endString;
-        //let loggingTexts = [];
         if (!targetCharacter) {
           this.chatMessageService.sendOperationLog('コマンドエラー：対象がキャラクターではない');
         } else {
+          const commandsInfo = StringUtil.parseCommands(targetCharacter.chatPalette.evaluate(text.substring(1), targetCharacter.rootDataElement));
+          text = commandsInfo.endString;
           if (commandsInfo.commands.length) {
             //await (async () => {
               const loggingTexts: string[] = [`${targetCharacter.name == '' ? '(無名のキャラクター)' : targetCharacter.name} へのコマンド：${commandsInfo.commandString}`];
+              let isDiceRoll = false;
               for (let i = 0; i < commandsInfo.commands.length; i++) {
                 let rollResult = null;
                 // ステータス操作のみ
@@ -404,11 +402,12 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   const command = commandsInfo.commands[i];
                   if (command.isIncomplete) throw '→ コマンドエラー：コマンド不完全：' + command.targetName;
 
-                  const targetName = targetCharacter.chatPalette.evaluate(command.targetName);
+                  const targetName = targetCharacter.chatPalette.evaluate(command.targetName, targetCharacter.rootDataElement, delayRefs);
                   const operator = StringUtil.toHalfWidth(command.operator);
-                  const operateValue = targetCharacter.chatPalette.evaluate(command.value);
-                  let oldValue;
-                  let target;
+                  const operateValue = targetCharacter.chatPalette.evaluate(command.value, targetCharacter.rootDataElement, delayRefs);
+                  let oldValue: string;
+                  let target: DataElement;
+                  let delayRef: string;
                   let isOperateNumber = false;
                   let isOperateMaxValue = false;
 
@@ -482,10 +481,16 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     if (isOperateNumber) {
                       if (value != '') {
                         if (target.isNumberResource && !isOperateMaxValue) {
+                          const dValue: number = parseInt(target.currentValue + '');
                           target.currentValue = parseInt(value);
+                          delayRef = (parseInt(value) - dValue).toString();
                         } else {
+                          const dValue = target.value == null ? 0 : parseInt(target.value + '');
                           target.value = parseInt(value);
+                          delayRef = (parseInt(value) - dValue).toString();
                         }
+                      } else {
+                        delayRef = '0';
                       }
                     } else if (target.isCheckProperty) {
                       target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
@@ -495,9 +500,24 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                       target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ');
                     }
                   } else if (target.isNumberResource && !isOperateMaxValue) {
-                    if (value != '') target.currentValue = parseInt(target.currentValue && operator !== '=' ? target.currentValue : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                    if (value != '') { 
+                      const dValue: number = parseInt(target.currentValue + '');
+                      const result: number = parseInt((target.currentValue && operator !== '=') ? target.currentValue.toString() : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                      if (result <= parseInt(target.currentValue + '')) {
+                        target.currentValue = result;
+                      } else if (result > parseInt(target.value + '') && parseInt(target.currentValue + '') < parseInt(target.value + '') && parseInt(target.value + '') != 0) {
+                        target.currentValue = target.value;
+                      } else if (result <= parseInt(target.value + '') || parseInt(target.value + '') == 0) {
+                        target.currentValue = result;
+                      }
+                      delayRef = (parseInt(target.currentValue + '') - dValue).toString();
+                    } else {
+                      delayRef = '0';
+                    }
                   } else if (isOperateNumber) {
-                    if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                    const dValue: number = target.currentValue == null ? 0 : parseInt(target.value.toString());
+                    if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                    delayRef = (parseInt(target.value + '') - dValue).toString();
                   } else if (target.isCheckProperty && operator == '=') {
                     target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
                   } else if (operator === '=') {
@@ -510,7 +530,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
                   }
                   const newValue = target.loggingValue;
-
                   let loggingText = `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作`;
                   if (isOperateNumber) {
                     loggingText += ` ${oldValue} → ${oldValue === newValue ? '変更なし' : newValue}`;
@@ -523,31 +542,36 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     if (rollResult.isDiceRollTable) {
                       loggingText += ` (${rollResult.tableName}：${rollResult.isEmptyDice ? '' : '🎲'}${rollResult.result.split(/\s＞\s/)[0]})`;
                     } else {
-                      loggingText += ` (${ rollResult.result.split(/\s＞\s/g).map((str, j) => (j == 0 ? (rollResult.isEmptyDice ? '' : '🎲' + '：' + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
+                      loggingText += ` (${ rollResult.result.split(/\s＞\s/g).map((str, j) => (j == 0 ? (rollResult.isEmptyDice ? '' : '🎲' + gameType + '：' + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
                     }
-                    if (!rollResult.isEmptyDice) {
-                      if (Math.random() < 0.5) {
-                        SoundEffect.play(PresetSound.diceRoll1);
-                      } else {
-                        SoundEffect.play(PresetSound.diceRoll2);
-                      }
-                    }
+                    if (!rollResult.isEmptyDice) isDiceRoll = true;
                   }
+                  console.log(delayRef)
                   loggingTexts.push(loggingText);
+                  delayRefs.push(delayRef != null ? delayRef : '');
+                  console.log(delayRefs)
                 } catch (error) {
                   // 横着、例外設計すべき
                   if (error instanceof Error) throw error;
                   loggingTexts.push(error);
+                  delayRefs.push('');
                   continue;
                 }
               }
               if (loggingTexts.length) this.chatMessageService.sendOperationLog(loggingTexts.join("\n"));
+              if (isDiceRoll) {
+                if (Math.random() < 0.5) {
+                  SoundEffect.play(PresetSound.diceRoll1);
+                } else {
+                  SoundEffect.play(PresetSound.diceRoll2);
+                }
+              }
             //})();
           }
         }
       }
       if (targetCharacter) {
-        text = targetCharacter.chatPalette.evaluate(text, targetCharacter.rootDataElement, delayRefMap);
+        text = targetCharacter.chatPalette.evaluate(text, targetCharacter.rootDataElement, delayRefs);
         // スタンド
         // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
         if (StringUtil.cr(text).trim() || standName) {

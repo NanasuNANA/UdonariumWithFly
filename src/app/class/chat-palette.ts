@@ -58,16 +58,17 @@ export class ChatPalette extends ObjectNode {
     this.isAnalized = false;
   }
 
-  evaluate(line: PaletteLine, extendVariables?: DataElement): string
-  evaluate(line: string, extendVariables?: DataElement): string
-  evaluate(line: any, extendVariables?: DataElement): string {
+  evaluate(line: PaletteLine, extendVariables?: DataElement, delayRefs?: string[]): string
+  evaluate(line: string, extendVariables?: DataElement, delayRefs?: string[]): string
+  evaluate(line: any, extendVariables?: DataElement, delayRefs?: string[]): string {
     let evaluate: string = '';
     if (typeof line === 'string') {
       evaluate = line;
     } else {
       evaluate = line.palette;
     }
-
+    
+    const delayRefName = [];
     //console.log(evaluate);
     let limit = 128;
     let loop = 0;
@@ -75,7 +76,8 @@ export class ChatPalette extends ObjectNode {
     while (isContinue) {
       loop++;
       isContinue = false;
-      evaluate = evaluate.replace(/[{｛]\s*([^{}｛｝]+)\s*[}｝]/g, (match, name) => {
+      evaluate = evaluate.replace(/[{｛][\s　]*([^{}｛｝]+)[\s　]*[}｝]/g, (match, name) => {
+        if (delayRefName.includes(name)) return match;
         //name = StringUtil.toHalfWidth(name);
         //console.log(name);
         isContinue = true;
@@ -83,7 +85,8 @@ export class ChatPalette extends ObjectNode {
         let ret: number|string = '';
         for (let variable of this.paletteVariables) {
           //if (variable.name == name) ret = variable.value;
-          if (StringUtil.toHalfWidth(variable.name.replace(/[―ー—‐]/g, '-')).toLowerCase() === StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')).toLowerCase()) ret = variable.value;
+          if (StringUtil.cr(StringUtil.toHalfWidth(variable.name.replace(/[―ー—‐]/g, '-')).toLowerCase()).replace(/[\s\r\n]+/, ' ').trim()
+           === StringUtil.cr(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-'))).toLowerCase().replace(/[\s\r\n]+/, ' ').trim()) ret = variable.value;
         }
         if (extendVariables) {
           let element = extendVariables.getFirstElementByNameUnsensitive(name);
@@ -119,6 +122,21 @@ export class ChatPalette extends ObjectNode {
               ret = element.calcAbilityScore();
             }
           }
+          if (ret == '') {
+            let delayMatch;
+            if (delayMatch = /^\$(.+)$/.exec(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')))) { 
+              if (delayRefs) {
+                if (/^\d+$/.test(StringUtil.toHalfWidth(delayMatch[1]))) {
+                  const indexNo = parseInt(StringUtil.toHalfWidth(delayMatch[1]));
+                  return delayRefs[indexNo - 1] != null ? delayRefs[indexNo - 1] : '';
+                }
+                return match.replace(name, delayMatch[1]);
+              } else {
+                delayRefName.push(name);
+                return match;
+              }
+            }
+          }
           return ret + '';
         }
         return '';
@@ -147,7 +165,7 @@ export class ChatPalette extends ObjectNode {
   }
 
   private parseVariable(palette: string): PaletteVariable {
-    let array = /^\s*[/／]{2}([^=＝{}｛｝\s]+)\s*[=＝]\s*(.+)\s*/gi.exec(palette);
+    let array = /^[\s　]*[/／]{2}([^=＝{}｛｝\s　]+)[\s　]*[=＝][\s　]*(.+)[\s　]*/gi.exec(palette);
     if (!array) return null;
     let variable: PaletteVariable = {
       name: StringUtil.toHalfWidth(array[1]),
