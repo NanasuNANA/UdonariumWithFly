@@ -52,7 +52,6 @@
 
 .image img {
   vertical-align: bottom;
-  transition-duration: 120ms;
 }
 
 .image.selected {
