@@ -155,7 +155,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     EventSystem.unregister(this, 'PLAY_VIDEO_CUT_IN');
     clearTimeout(this._timeoutId);
     clearTimeout(this._timeoutIdVideo);
-    if (this.cutInImage.state === ImageState.COMPLETE && this._cutInImgageUrl) URL.revokeObjectURL(this._cutInImgageUrl);
+    URL.revokeObjectURL(this._cutInImgageUrl);
   }
 
   get isPointerDragging(): boolean { return this._dragging; }

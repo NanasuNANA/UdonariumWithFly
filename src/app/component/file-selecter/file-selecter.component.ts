@@ -7,7 +7,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
@@ -259,7 +259,11 @@ export class FileSelecterComponent implements OnInit, OnDestroy, AfterViewInit {
     return image.identifier;
   }
 
-  chanageImageView(imageUrl: string) {
-    AppComponent.imageUrl = imageUrl;
+  chanageImageView(imageFile: ImageFile) {
+    if (imageFile.state === ImageState.COMPLETE) {
+      AppComponent.imageUrl = URL.createObjectURL(imageFile.blob);
+    } else {
+      AppComponent.imageUrl = imageFile.url;
+    }
   }
 }

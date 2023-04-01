@@ -801,8 +801,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isHorizontal = isHorizontal;
   }
 
-  chanageImageView(imageUrl: string) {
-    AppComponent.imageUrl = imageUrl;
+  closeImagePreview() {
+    URL.revokeObjectURL(AppComponent.imageUrl);
+    AppComponent.imageUrl = '';
   }
 }
 
