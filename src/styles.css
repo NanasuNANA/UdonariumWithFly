@@ -209,7 +209,7 @@ a[target=_blank] {
   text-decoration: none;
   word-break: break-all;
 }
-a[target=_blank]:hover {
+a[target=_blank]:hover, a[target=_blank]:active {
   text-decoration: underline;
 }
 a.outer-link::after {
@@ -223,6 +223,27 @@ a.outer-link::after {
   font-size: smaller;
   vertical-align: 25%;
 }
+a.invalid {
+  cursor: auto;
+  text-decoration: none;
+  color: grey;
+}
+a.invalid:hover,
+a.invalid:active {
+  text-decoration: none;
+}
+a.invalid::after {
+  margin-right: 2px;
+  margin-left: 2px;
+  font-family: 'Material Icons';
+  content: '\e16f';
+  font-weight: bolder;
+  text-decoration: none;
+  display: inline-block;
+  font-size: smaller;
+  vertical-align: 25%;
+}
+
 .direct-message a[href] {
   color: #CCF;
 }

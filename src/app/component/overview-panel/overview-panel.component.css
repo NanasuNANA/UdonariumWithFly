@@ -684,6 +684,9 @@ input:focus + .move {
   transform: translateX(0px);
   transition: transform 18ms;
 }
+.url-link {
+  cursor: inherit;
+}
 
 @supports (-moz-user-select: -moz-none) {
   /* 汚いけどとりあえず */

@@ -526,5 +526,5 @@ button.link {
 }
 
 .url-link {
-  cursor: pointer;
+  cursor: inherit;
 }

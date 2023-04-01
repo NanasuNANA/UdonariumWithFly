@@ -304,15 +304,13 @@
         <div class="value">
           <div class="hidden-spacer">{{dataElm.value}}</div>
             <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value == +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
-            <span *ngIf="dataElm.currentValue" style="font-size: smaller;">({{ (dataElm.calcAbilityScore() >= 0 ? '+' : '') + dataElm.calcAbilityScore() }})</span>
+            <span *ngIf="dataElm.currentValue" style="font-size: smaller">({{ (dataElm.calcAbilityScore() >= 0 ? '+' : '') + dataElm.calcAbilityScore() }})</span>
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'url'">
-        <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}</div>
-        <div class="value">
-          <div class="hidden-spacer">{{dataElm.value}}</div>
-          <input class="input" style="width:calc(8em - 1.6rem)" type="url" size="1" [(ngModel)]="dataElm.value" />
-          <button class="link" style="width: 1.6rem" [attr.disabled]="!stringUtil.validUrl(dataElm.value) ? '' : null" (click)="stringUtil.validUrl(dataElm.value) ? openUrl(dataElm.value, name, dataElm.name) : false"><i class="material-icons" style="font-size: 1.0rem">{{ !stringUtil.validUrl(dataElm.value) ? 'link_off' : (stringUtil.sameOrigin(dataElm.value) ? 'link' : 'open_in_new') }}</i></button>
+        <div class="tag">
+          <span *ngIf="!stringUtil.validUrl(dataElm.value)" title="URLが不正です">⚠️</span><a draggable="false" [attr.title]="dataElm.value" [ngClass]="{'outer-link': !stringUtil.sameOrigin(dataElm.value) && stringUtil.validUrl(dataElm.value), 'invalid': !stringUtil.validUrl(dataElm.value)}" target="_blank" [attr.href]="(stringUtil.validUrl(dataElm.value) ? dataElm.value : '') | safe: 'url'" [attr.disabled]="!stringUtil.validUrl(dataElm.value) ? '' : null"
+          (click)="return (stringUtil.validUrl(dataElm.value) ? openUrl(dataElm.value, name, dataElm.name) : false)"><span class="url-link">{{dataElm.name}}</span></a>
         </div>
       </ng-container>
       <ng-container *ngSwitchDefault>

@@ -149,7 +149,7 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'url'">
-        <div class="tag-name"><a [attr.title]="dataElm.value" [ngClass]="{'outer-link': !stringUtil.sameOrigin(dataElm.value)}" target="_blank" [attr.href]="(stringUtil.validUrl(dataElm.value) ? dataElm.value : '') | safe: 'url'" [attr.disabled]="!stringUtil.validUrl(dataElm.value) ? '' : null"
+        <div class="tag-name"><span *ngIf="!stringUtil.validUrl(dataElm.value)" title="URLが不正です">⚠️</span><a draggable="false" [attr.title]="dataElm.value" [ngClass]="{'outer-link': !stringUtil.sameOrigin(dataElm.value) && stringUtil.validUrl(dataElm.value), 'invalid': !stringUtil.validUrl(dataElm.value)}" target="_blank" [attr.href]="(stringUtil.validUrl(dataElm.value) ? dataElm.value : '') | safe: 'url'" [attr.disabled]="!stringUtil.validUrl(dataElm.value) ? '' : null"
           (click)="stringUtil.validUrl(dataElm.value) ? openUrl(dataElm.value, name, dataElm.name) : false"><span class="url-link">{{dataElm.name}}</span></a></div>
       </ng-container>
       <ng-container *ngSwitchCase="'colors'"></ng-container>
