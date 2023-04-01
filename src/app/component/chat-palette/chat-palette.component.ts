@@ -7,8 +7,10 @@ import { DiceBot } from '@udonarium/dice-bot';
 import { GameCharacter } from '@udonarium/game-character';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { ChatInputComponent } from 'component/chat-input/chat-input.component';
+import { TextViewComponent } from 'component/text-view/text-view.component';
 import { ChatMessageService } from 'service/chat-message.service';
-import { PanelService } from 'service/panel.service';
+import { PanelOption, PanelService } from 'service/panel.service';
+import { PointerDeviceService } from 'service/pointer-device.service';
 
 @Component({
   selector: 'chat-palette',
@@ -59,7 +61,8 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   constructor(
     public chatMessageService: ChatMessageService,
-    private panelService: PanelService
+    private panelService: PanelService,
+    private pointerDeviceService: PointerDeviceService
   ) { }
 
   ngOnInit() {
@@ -164,5 +167,43 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   filter(value: string): boolean {
     if (this.filterText == null || this.filterText.trim() == '') return true;
     return value.search(this.filterText) >= 0;
+  }
+
+  helpChatPallet() {
+    let coordinate = this.pointerDeviceService.pointers[0];
+    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 560, height: 620 };
+    let textView = this.panelService.open(TextViewComponent, option);
+    textView.title = 'チャット記法とチャットパレットの使い方';
+    textView.text = 
+`　チャットコマンドは全角と半角を区別しません、また、ダイスボットコマンドやパラメータの名前は大文字と小文字を区別しません。下記を併用する場合、スペースで区切ってパラメータ操作コマンド、ダイスボットコマンド、チャットの順に記述します、それぞれ省略が可能です。
+
+　チャット内容を事前に、チャットパレットに準備することができます。各行に一つの内容を記述し、行をシングルクリックでチャット欄に呼び出し、ダブルクリックで送信します。チャットパレットからのチャットで改行を行いたい場合、\\n と書きます（\\nは表示されません）。
+
+・パラメータ操作コマンド
+　キャラクターからのチャット送信時、先頭に':'、パラメータ名、オペレーター（増加'+'、減少'-'、代入'='）、操作内容の順に記述して、チャットからキャラクターのパラメータ操作を行うことができます。操作内容にダイスボットコマンドを記載することによりダイスロール結果で操作を行うことができます（リソースや数値、能力値を操作する場合、最後に一つの数字を返す必要があります）。
+　また、オペレーターとして'>'を使用すれば、ダイスボットコマンドを（ダイスロールを行わず）直接パラメータに代入できます（現状name、size、height、altitudeは操作できません）。さらに、':'で区切って複数の操作を記述できます、パラメータ操作コマンドはチャットに表示されません。
+
+　　例）
+　　　:HP+2d6:MP-4　 HPを2d6回復し、MPを4点消費します。
+　　　:浸食率+1D10　 登場！
+
+・ダイスボットコマンド
+　チャットからダイスボットコマンドを送信することにより、ダイスロールが可能です。実際のコマンドはゲームシステムごとのダイスボットのヘルプを参照してください。またダイスボット表機能によりをダイスボットコマンドを拡張することができます。
+
+・パラメータ参照
+　'{'と'}'で囲んでパラメータ名を記載すると、チャットパレットから選択した際とチャットを送信した際に、パラメータの内容に置き換えられます。またパラメータ名の先頭に'$'を付記することにより、前述のパラメータ操作コマンドを適用後の値を参照します。
+　さらに、'$数値'を参照することにより、パラメータ操作の結果の変化量（リソース、数値、能力値のみ。ダイスロール結果や最大値による切り捨てを考慮）を参照します。数値は1から開始で1でパラメータ操作コマンドの最初の操作結果、2で2番目の結果…となります。
+
+　　例）
+　　　:HP-2d6　2d6+{筋力}+2　 HP{$1}、筋力に+2して判定
+
+・ルビ（フリガナ）
+　チャット内容のフリガナを振りたい部分の開始に'|'（パイプ）、終了に'《'と'》'で囲んでフリガナの内容を記述します。
+
+　　例）
+　　　受けるが良い！｜約束された勝利の剣《エクスカリバー》！
+
+・💭
+　キャラクターからのチャット送信時、'「'と'」'で囲んだ内容を💭で表示します。`;
   }
 }

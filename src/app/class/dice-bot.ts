@@ -62,6 +62,7 @@ export class DiceBot extends GameObject {
     ['克蘇魯神話', '克蘇魯的呼喚 第六版', '克蘇魯的呼喚 第六版'],
     ['克蘇魯神話第7版', '克蘇魯的呼喚 第7版', '克蘇魯的呼喚 第七版'],
     ['ダブルクロス2nd,3rd', 'タフルクロス The 2nd Edition/The 3rd Edtion', 'ダブルクロス The 2nd Edition, The 3rd Edtion'],
+    ['더블크로스2nd,3rd', '더블크로스 The 2nd Edition/The 3rd Edtion', '더블크로스 The 2nd Edition, The 3rd Edtion'],
     ['トーグ', 'トオク', 'トーグ（TORG）'],
     ['ワープス', 'ワアフス', 'WARPS'],
     ['トーグ1.5版', 'トオク1.5ハン', 'トーグ（TORG） 1.5版'],
