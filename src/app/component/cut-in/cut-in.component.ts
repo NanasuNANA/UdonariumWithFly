@@ -3,7 +3,7 @@ import { Component, ElementRef, HostListener, Input, NgZone, OnDestroy, OnInit, 
 import { YouTubePlayer } from '@angular/youtube-player';
 import { AudioPlayer, VolumeType } from '@udonarium/core/file-storage/audio-player';
 import { AudioStorage } from '@udonarium/core/file-storage/audio-storage';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { EventSystem } from '@udonarium/core/system';
 import { CutIn } from '@udonarium/cut-in';
@@ -142,6 +142,11 @@ export class CutInComponent implements OnInit, OnDestroy {
           this.stop();
         }
       });
+    if (this.cutInImage.state === ImageState.COMPLETE && !this._cutInImgageUrl) {
+      this._cutInImgageUrl = URL.createObjectURL(this.cutInImage.blob);
+    } else {
+      this._cutInImgageUrl = this.cutInImage.url;
+    }
   }
 
   ngOnDestroy(): void {
@@ -150,6 +155,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     EventSystem.unregister(this, 'PLAY_VIDEO_CUT_IN');
     clearTimeout(this._timeoutId);
     clearTimeout(this._timeoutIdVideo);
+    if (this.cutInImage.state === ImageState.COMPLETE && this._cutInImgageUrl) URL.revokeObjectURL(this._cutInImgageUrl);
   }
 
   get isPointerDragging(): boolean { return this._dragging; }
@@ -374,6 +380,11 @@ export class CutInComponent implements OnInit, OnDestroy {
       ret = object.color;
     }
     return ret;
+  }
+
+  private _cutInImgageUrl: string = null;
+  get cutInImgageUrl(): string {
+    return this._cutInImgageUrl; 
   }
 
   play() {
