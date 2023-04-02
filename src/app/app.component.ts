@@ -511,10 +511,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log(`Downloading new app version: ${event.version.hash}`);
           Notification.requestPermission().then((permission) => {
             if (permission === 'granted') {
-              new Notification('Udonarium with Fly', { 
+              let n = new Notification('Udonarium with Fly', { 
                 body: 'Udonarium with Fly の新しいバージョンをダウンロード中です。',
                 icon: 'card.png'
               });
+              n.addEventListener('click', () => { n.close(); return false; });
             }
           });
           break;
