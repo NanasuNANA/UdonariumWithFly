@@ -138,11 +138,10 @@ nav ul a, nav ul a:hover, nav ul a:active, nav ul a:visited {
 
 .contain-image {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  min-width: 150px;
-  min-height: 150px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100% - 32px);
+  min-width: 100px;
+  min-height: 120px;
   box-sizing: border-box;
-  padding: 16px;
   object-fit: contain;
 }
