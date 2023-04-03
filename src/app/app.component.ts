@@ -505,17 +505,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     
     // PWA
+    let notification: Notification;
     this.swUpdate.versionUpdates.subscribe(event => {
       switch (event.type) {
         case 'VERSION_DETECTED':
           console.log(`Downloading new app version: ${event.version.hash}`);
           Notification.requestPermission().then((permission) => {
             if (permission === 'granted') {
-              let n = new Notification('Udonarium with Fly', { 
+              notification = new Notification('Udonarium with Fly', { 
                 body: 'Udonarium with Fly の新しいバージョンをダウンロード中です。',
                 icon: 'card.png'
               });
-              n.addEventListener('click', () => { n.close(); return false; });
+              notification.addEventListener('click', function() {
+                if (notification) {
+                  notification.close();
+                  notification = null;
+                }
+                return false;
+              });
             }
           });
           break;
@@ -526,7 +533,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.modalService.open(ConfirmationComponent, {
               title: 'Udonarium with Fly の更新', 
               text: 'Udonarium with Fly の新しいバージョンをダウンロードしました。更新を行いますか？',
-              helpHtml: '<b style="color: red">更新の際にページを再読み込みします。</b>あとで手動で再読み込みを行うことでも更新可能です。',
+              helpHtml: '<b style="color: red">更新の際にページを再読み込みします。</b>手動で再読み込みを行うことでも更新可能です。',
               type: ConfirmationType.OK_CANCEL,
               materialIcon: 'browser_updated',
               action: () => {
