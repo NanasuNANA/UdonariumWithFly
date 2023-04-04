@@ -1,7 +1,7 @@
 import { trigger, transition, animate, keyframes, style } from '@angular/animations';
-import { ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import { ElementRef, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
@@ -249,12 +249,63 @@ export class StandImageComponent implements OnInit, OnDestroy {
         clearTimeout(this._dialogTimeoutId);
         clearInterval(this._chatIntervalId);
       }
-    })
+    });
+  }
+
+  private _speakingImageIdentifier: string;
+  private _imageIdentifier: string;
+  private _speakingImageUrl: string;
+  private _imageUrl: string = ImageFile.Empty.url;
+  refleshImageUrls(force: boolean = false) {
+    const speakingImageElement = this.standElement.getFirstElementByName('speakingImageIdentifier');
+    if (force || !speakingImageElement || this._speakingImageIdentifier !== speakingImageElement.value) {
+      URL.revokeObjectURL(this._speakingImageUrl);
+      if (speakingImageElement) {
+        const iamgeFile: ImageFile = ImageStorage.instance.get(<string>speakingImageElement.value);
+        if (iamgeFile) {
+          if (iamgeFile.state === ImageState.COMPLETE) {
+            this._speakingImageUrl = URL.createObjectURL(iamgeFile.blob);
+          } else {
+            this._speakingImageUrl = iamgeFile.url;
+          }
+        } else {
+          this._speakingImageUrl = null;
+        }
+      } else {
+        this._speakingImageUrl = null;
+      }
+      this._speakingImageIdentifier = (speakingImageElement && speakingImageElement.value) ? speakingImageElement.value.toString() : null;
+    }
+    const imageElement = this.standElement.getFirstElementByName('imageIdentifier');
+    if (force || !imageElement || this._imageIdentifier !== imageElement.value) {
+      URL.revokeObjectURL(this._imageUrl);
+      if (imageElement) {
+        const iamgeFile: ImageFile = ImageStorage.instance.get(<string>imageElement.value);
+        if (iamgeFile) {
+          if (iamgeFile.state === ImageState.COMPLETE) {
+            this._imageUrl = URL.createObjectURL(iamgeFile.blob);
+          } else {
+            this._imageUrl = iamgeFile.url;
+          }
+        } else {
+          this._imageUrl = ImageFile.Empty.url;
+        }
+      } else {
+        this._imageUrl = ImageFile.Empty.url;
+      }
+      this._imageIdentifier = (imageElement && imageElement.value) ? imageElement.value.toString() : null;
+    }
   }
 
   ngOnDestroy(): void {
     clearTimeout(this._timeoutId);
     clearTimeout(this._dialogTimeoutId);
+    URL.revokeObjectURL(this._speakingImageUrl);
+    URL.revokeObjectURL(this._imageUrl);
+  }
+
+  get standImageUrl(): string {
+    return (this.isSpeaking && this._speakingImageUrl) ? this._speakingImageUrl : this._imageUrl;
   }
 
   get group(): string {

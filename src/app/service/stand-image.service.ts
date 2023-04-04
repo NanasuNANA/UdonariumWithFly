@@ -29,6 +29,7 @@ export class StandImageService {
         instance.standElement = standElement;
         instance.color = color ? color : gameCharacter.chatPalette.color;
         instance.isSecret = isSecret;
+        instance.refleshImageUrls();
         instance.toFront();
         isNewbee = false;
       } else if (instance.isFarewell || StandImageComponent.isCanBeGone) {
@@ -43,6 +44,7 @@ export class StandImageService {
       standImageComponentRef.instance.standElement = standElement;
       standImageComponentRef.instance.color = color ? color : gameCharacter.chatPalette.color;
       standImageComponentRef.instance.isSecret = isSecret;
+      standImageComponentRef.instance.refleshImageUrls();
       standImageComponentRef.instance.toFront();
       StandImageService.currentStandImageShowing.set(gameCharacter.identifier, standImageComponentRef);
     }
