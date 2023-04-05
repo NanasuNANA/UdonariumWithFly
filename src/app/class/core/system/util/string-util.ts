@@ -23,8 +23,8 @@ export namespace StringUtil {
   ].join('|'));
 
   export function toHalfWidth(str: String): string {
-    if (str == null || str == '') return '';
-    return str.replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+    if (str == null || str.toString() == '') return '';
+    return str.toString().replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
   }
 
   export function isEmote(str: string): boolean {

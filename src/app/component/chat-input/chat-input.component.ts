@@ -460,11 +460,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                         let match = null;
                         if (isOperateNumber && rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
                           value = match[1];
-                        } else if (target.isCheckProperty) {
+                        } else if (target.isCheckProperty && (rollResult.isSuccess || rollResult.isFailure)) {
                           value = rollResult.isSuccess ? '1' : '0';
                         } else if (rollResult.result.length > 0) {
                           value = rollResult.isDiceRollTable ? rollResult.result.split(/\s＞\s/).slice(1).join('') : rollResult.result.split(/\s＞\s/).slice(-1)[0];
                         }
+                      } else if (!isOperateNumber) {
+                        value = operateValue;
                       }
                     }
                   }
@@ -476,7 +478,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   } else if (target.isUrl && !StringUtil.validUrl(StringUtil.cr(value))) {
                     throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → URL不正：` + command.value;
                   }
-
+                  //console.log(value)
                   if (operator === '>') {
                     if (isOperateNumber) {
                       if (value != '') {
@@ -493,7 +495,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                         delayRef = '0';
                       }
                     } else if (target.isCheckProperty) {
-                      target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
+                      target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
                     } else if (target.isNote || target.isUrl) {
                       target.value = StringUtil.cr(value);
                     } else {
@@ -519,7 +521,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
                     delayRef = (parseInt(target.value + '') - dValue).toString();
                   } else if (target.isCheckProperty && operator == '=') {
-                    target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off') ? '' : target.name;
+                    target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
                   } else if (operator === '=') {
                     if (target.isNote || target.isUrl) {
                       target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
