@@ -520,8 +520,19 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     const dValue: number = target.currentValue == null ? 0 : parseInt(target.value.toString());
                     if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
                     delayRef = (parseInt(target.value + '') - dValue).toString();
-                  } else if (target.isCheckProperty && operator == '=') {
-                    target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
+                  } else if (target.isCheckProperty) {
+                    //if (operator == '=') {
+                    switch (operator) {
+                    case '=':
+                      target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
+                      break;
+                    case '+':
+                      target.value = target.name;
+                      break;
+                    case '-':
+                      target.value = '';
+                      break;
+                    }
                   } else if (operator === '=') {
                     if (target.isNote || target.isUrl) {
                       target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
