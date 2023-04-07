@@ -1,6 +1,6 @@
-<div class="image-box" style="position: relative" [appTooltip]="card" [cardState]="CardStateFront">
+<div class="image-box" style="position: relative" [appTooltip]="card" [cardState]="CardStateFront" [@flipCard]="card?.isFront ? 0 : 1">
   <ng-container *ngIf="!card?.isFront"><ng-container *ngTemplateOutlet="backFace"></ng-container></ng-container>
-  <div class="image contain front" [ngClass]="{'reverse': card && card.rotate == 180 }" style="position: relative" >
+  <div class="image contain front" [ngClass]="{'reverse': card && card.rotate == 180 }" style="position: relative" [@reverseCard]="card.rotate">
     <img #cardImage [src]="card?.frontImage?.url | safe: 'resourceUrl'" (load)="onCardImageLoad()" style="position: absolute">
     <div class="text" style="z-index: 5; position: absolute"
       [style.width.px]="imageAreaRect.width" [style.height.px]="imageAreaRect.height" [style.left.px]="imageAreaRect.left" [style.top.px]="imageAreaRect.top"
@@ -12,7 +12,7 @@
 </div>
 <ng-template #backFace>
   <div class="image contain back" style="position: relative">
-    <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180 }">
+    <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180 }"  [@reverseCard]="card.rotate">
     <i class="indicate-text">Back</i>
   </div>
 </ng-template>
