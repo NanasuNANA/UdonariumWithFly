@@ -300,6 +300,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'visibility',
         action: () => {
+          this.chatMessageService.sendOperationLog('カットイン設定 から非表示設定の画像を表示した');
           this.isShowHideImages = true;
           (<HTMLInputElement>$event.target).checked = true;
           this.changeDetector.markForCheck();

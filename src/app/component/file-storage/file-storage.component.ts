@@ -14,6 +14,7 @@ import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/
 import { ModalService } from 'service/modal.service';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { AppComponent } from 'src/app/app.component';
+import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
   selector: 'file-storage',
@@ -111,7 +112,8 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private changeDetector: ChangeDetectorRef,
     private panelService: PanelService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private chatMessageService: ChatMessageService
   ) { }
   
   ngOnInit() {
@@ -265,6 +267,7 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'visibility',
         action: () => {
+          this.chatMessageService.sendOperationLog('ファイル一覧 から非表示設定の画像を表示した');
           this.isShowHideImages = true;
           (<HTMLInputElement>$event.target).checked = true;
           this.changeDetector.markForCheck();
