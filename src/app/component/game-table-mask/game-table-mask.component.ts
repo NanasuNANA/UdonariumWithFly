@@ -8,7 +8,8 @@ import {
   Input,
   NgZone,
   OnDestroy,
-  OnInit
+  OnInit,
+  ViewChild
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
@@ -28,17 +29,33 @@ import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { TabletopActionService } from 'service/tabletop-action.service';
 import { UUID } from '@udonarium/core/system/util/uuid';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'game-table-mask',
   templateUrl: './game-table-mask.component.html',
   styleUrls: ['./game-table-mask.component.css'],
+  animations: [
+    trigger('bounceInOut', [
+      transition(':enter', [
+        animate('200ms ease', keyframes([
+          style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.2 }),
+          style({ transform: 'scale3d(1.25, 1.25, 1.25)', offset: 0.70 }),
+          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+        ]))
+      ]),
+      transition(':leave', [
+        animate(100, style({ transform: 'scale3d(0.25, 0.25, 0.25)' }))
+      ])
+    ])
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() gameTableMask: GameTableMask = null;
   @Input() is3D: boolean = false;
-  
+  @ViewChild('eventElement', { static: true }) eventElementRef: ElementRef;
+
   get name(): string { return this.gameTableMask.name; }
   get width(): number { return this.adjustMinBounds(this.gameTableMask.width); }
   get height(): number { return this.adjustMinBounds(this.gameTableMask.height); }
@@ -92,12 +109,10 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     for (let x = 0; x < Math.ceil(this.gameTableMask.width); x++) {
       for (let y = 0; y < Math.ceil(this.gameTableMask.height); y++) {
         const gridStr = `${x}:${y}`;
-        ret.push({ 
+        if (scratchingGridAry.includes(gridStr)) ret.push({ 
           x: x, 
           y: y, 
-          state: !scratchingGridAry.includes(gridStr) ? 0 
-            : !scratchedGridAry.includes(gridStr) ? 1 
-            : 2
+          state: !scratchedGridAry.includes(gridStr) ? 1 : 2
         });
       }
     }
@@ -219,7 +234,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   private _scratchingGridX = -1;
   private _scratchingGridY = -1;
   onInputMove(e: any) {
-    if (e.button >= 2 || e.buttons >= 2) return;
+    // とりあえず ＞ e.target !== this.eventElementRef.nativeElement
+    if (e.target !== this.eventElementRef.nativeElement || !this.isScratching || !this.gameTableMask.isMine || e.button >= 2 || e.buttons >= 2) return;
     this.ngZone.run(() => {
       const {offsetX, offsetY} = e;
       if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
@@ -444,6 +460,6 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   identify(index, gridInfo){
-    return `${gridInfo.x}:${gridInfo.y}`;
+    return `${this.panelId}:${gridInfo.x}:${gridInfo.y}`;
   }
 }
