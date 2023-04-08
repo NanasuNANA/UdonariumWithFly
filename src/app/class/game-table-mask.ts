@@ -1,5 +1,7 @@
 import { SyncObject, SyncVar } from './core/synchronize-object/decorator';
+import { Network } from './core/system';
 import { DataElement } from './data-element';
+import { PeerCursor } from './peer-cursor';
 import { TabletopObject } from './tabletop-object';
 
 @SyncObject('table-mask')
@@ -7,6 +9,10 @@ export class GameTableMask extends TabletopObject {
   @SyncVar() isLock: boolean = false;
   @SyncVar() blendType: number = 0;
   @SyncVar() isTransparentOnGMMode: boolean = false;
+
+  @SyncVar() owner: string = '';
+  @SyncVar() scratchingGrids: string = '';
+  @SyncVar() scratchedGrids: string = '';
 
   get name(): string { return this.getCommonValue('name', ''); }
   get width(): number { return this.getCommonValue('width', 1); }
@@ -19,46 +25,52 @@ export class GameTableMask extends TabletopObject {
   
   get fontsize(): number { 
     let element = this.getElement('fontsize', this.commonDataElement);
-    //if (!element && this.commonDataElement) {
-    //  this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
-    //}
     return element ? +element.value : 18;
   }
   set fontsize(fontsize: number) { this.setCommonValue('fontsize', fontsize); }
   
   get text(): string { 
     let element = this.getElement('text', this.commonDataElement);
-    //if (!element && this.commonDataElement) {
-    //  this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
-    //}
     return element ? element.value + '' : '';
   }
   set text(text: string) { this.setCommonValue('text', text); }
 
   get color(): string { 
     let element = this.getElement('color', this.commonDataElement);
-    /*
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.appendChild(DataElement.create('color', "#555555", { type: 'colors', currentValue: '#0a0a0a' }, 'color_' + this.identifier));
-    }
-    */
     return element ? element.value + '' : '#555555';
   }
   set color(color: string) { this.setCommonValue('color', color); }
 
   get bgcolor(): string { 
     let element = this.getElement('color', this.commonDataElement);
-    /*
-    if (!element && this.commonDataElement) {
-      this.commonDataElement.appendChild(DataElement.create('color', "#555555", { type: 'colors', currentValue: '#0a0a0a' }, 'color_' + this.identifier));
-    }
-    */
     return element ? element.currentValue + '' : '#0a0a0a';
   }
   set bgcolor(bgcolor: string) { 
     let element = this.getElement('color', this.commonDataElement);
     if (element) element.currentValue = bgcolor;
   }
+
+  get ownerName(): string {
+    let object = PeerCursor.findByUserId(this.owner);
+    return object ? object.name : '';
+  }
+
+  get ownerColor(): string {
+    let object = PeerCursor.findByUserId(this.owner);
+    return object ? object.color : '#444444';
+  }
+
+  get hasOwner(): boolean { return 0 < this.owner.length; }
+  get ownerIsOnline(): boolean {
+    if (!this.hasOwner) return false; 
+    return (Network.peerContext.userId === this.owner && Network.peerContext.isOpen)
+      || Network.peerContexts.some(context => {
+        const cursor = PeerCursor.findByPeerId(context.peerId); // とりあえずPeerCursorから取る
+        return cursor && cursor.userId === this.owner && context.isOpen;
+      }); 
+  }
+  
+  get isMine(): boolean { return Network.peerContext.userId === this.owner; }
 
   complement(): void {
     let element = this.getElement('fontsize', this.commonDataElement);

@@ -8,12 +8,12 @@ import {
   Input,
   NgZone,
   OnDestroy,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
-import { EventSystem } from '@udonarium/core/system';
+import { EventSystem, Network } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { GameTableMask } from '@udonarium/game-table-mask';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
@@ -27,7 +27,7 @@ import { CoordinateService } from 'service/coordinate.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { TabletopActionService } from 'service/tabletop-action.service';
-import { ChatMessageService } from 'service/chat-message.service';
+import { UUID } from '@udonarium/core/system/util/uuid';
 
 @Component({
   selector: 'game-table-mask',
@@ -38,7 +38,7 @@ import { ChatMessageService } from 'service/chat-message.service';
 export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() gameTableMask: GameTableMask = null;
   @Input() is3D: boolean = false;
-
+  
   get name(): string { return this.gameTableMask.name; }
   get width(): number { return this.adjustMinBounds(this.gameTableMask.width); }
   get height(): number { return this.adjustMinBounds(this.gameTableMask.height); }
@@ -61,13 +61,45 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get textShadowCss(): string {
     const shadow = StringUtil.textShadowColor(this.color);
     return `${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px,
-    ${shadow} 0px 0px 2px,
-    ${shadow} 0px 0px 2px`;
+      ${shadow} 0px 0px 2px, 
+      ${shadow} 0px 0px 2px, 
+      ${shadow} 0px 0px 2px, 
+      ${shadow} 0px 0px 2px, 
+      ${shadow} 0px 0px 2px,
+      ${shadow} 0px 0px 2px,
+      ${shadow} 0px 0px 2px`;
+  }
+
+  get masksCss(): string {
+    const masks: string[] = [];
+    const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (scratchedAry.includes(`${x}:${y}`)) continue;
+        masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize }px ${ y * this.gridSize }px / 50px 50px no-repeat`);
+      }
+    }
+    return masks.join(',');
+  }
+
+  get scratchingGridInfos(): {x: number, y: number, state: number}[] {
+    const ret: {x: number, y: number, state: number}[] = [];
+    if (!this.gameTableMask || !this.gameTableMask.scratchingGrids) return [];
+    const scratchingGridAry = this.gameTableMask.scratchingGrids.split(/,/g);
+    const scratchedGridAry = this.gameTableMask.scratchedGrids.split(/,/g);
+    for (let x = 0; x < Math.ceil(this.gameTableMask.width); x++) {
+      for (let y = 0; y < Math.ceil(this.gameTableMask.height); y++) {
+        const gridStr = `${x}:${y}`;
+        ret.push({ 
+          x: x, 
+          y: y, 
+          state: !scratchingGridAry.includes(gridStr) ? 0 
+            : !scratchedGridAry.includes(gridStr) ? 1 
+            : 2
+        });
+      }
+    }
+    return ret;
   }
 
   get altitude(): number { return this.gameTableMask.altitude; }
@@ -89,7 +121,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   get isGMMode(): boolean { return this.gameTableMask.isGMMode; }
+  get isScratching(): boolean { return !!this.gameTableMask.owner; }
 
+  panelId;
   gridSize: number = 50;
   math = Math;
   viewRotateZ = 10;
@@ -107,7 +141,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     private changeDetector: ChangeDetectorRef,
     private pointerDeviceService: PointerDeviceService,
     private modalService: ModalService,
-    private coordinateService: CoordinateService,
+    private coordinateService: CoordinateService
     //private chatMessageService: ChatMessageService
   ) { }
 
@@ -140,6 +174,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       transformCssOffset: 'translateZ(0.15px)',
       colideLayers: ['terrain']
     };
+    this.panelId = UUID.generateUuid();
   }
 
   ngAfterViewInit() {
@@ -147,6 +182,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       this.input = new InputHandler(this.elementRef.nativeElement);
     });
     this.input.onStart = this.onInputStart.bind(this);
+    this.input.onMove = this.onInputMove.bind(this);
   }
 
   ngOnDestroy() {
@@ -161,12 +197,59 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   onInputStart(e: any) {
-    this.input.cancel();
-
+    if (!this.isScratching || !this.gameTableMask.isMine) { 
+      this.input.cancel();
+    } else if (e.button != 2) {
+      this.ngZone.run(() => {
+        const {offsetX, offsetY} = e;
+        if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
+         this.scratching(Math.floor(offsetX / this.gridSize), Math.floor(offsetY / this.gridSize));
+        }
+      });
+    }
+    console.log(e)
     // TODO:もっと良い方法考える
-    if (this.isLock) {
+    if ((this.isLock && !this.isScratching) || (this.isScratching && !this.gameTableMask.isMine)) {
       EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
     }
+  }
+
+  private _scratchingGridX = -1;
+  private _scratchingGridY = -1;
+  onInputMove(e: any) {
+    if (e.button == 2) return;
+    this.ngZone.run(() => {
+      const {offsetX, offsetY} = e;
+      if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
+        const gridX = Math.floor(offsetX / this.gridSize);
+        const gridY = Math.floor(offsetY / this.gridSize);
+        if (this._scratchingGridX !== gridX || this._scratchingGridY !== gridY) this.scratching(gridX, gridY);
+      }
+    });
+  }
+
+  scratching(gridX: number, gridY: number) {
+    if (!this.gameTableMask.isMine) return;
+    let tempScratching = `${gridX}:${gridY}`;
+    this._scratchingGridX = gridX;
+    this._scratchingGridY = gridY;
+    const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
+    let newFlg = true;
+    const liveScratching: string[] = currentScratchingAry.filter(grid => {
+      if (grid === tempScratching) newFlg = false;
+      return grid !== tempScratching;
+    });
+    if (newFlg) liveScratching.push(tempScratching);
+    this.gameTableMask.scratchingGrids = Array.from(new Set(liveScratching)).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
+    //console.log(this.gameTableMask.scratchingGrids);
+  } 
+
+  scratched() {
+    const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
+    const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
+    const a = currentScratchedAry.filter( grid => !currentScratchingAry.includes(grid));
+    const b = currentScratchingAry.filter( grid => !currentScratchedAry.includes(grid));
+    this.gameTableMask.scratchedGrids = Array.from(new Set(a.concat(b))).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -219,6 +302,58 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         ]
       },
       ContextMenuSeparator,
+      (!this.gameTableMask.isMine ?
+        {
+          name: 'スクラッチ開始', action: () => { 
+            this.gameTableMask.owner = Network.peerContext.userId;
+            this._scratchingGridX = -1;
+            this._scratchingGridY = -1;
+          },
+        } : {
+          name: 'スクラッチ確定', action: () => {
+            this.ngZone.run(() => {
+              this.scratched();
+            });
+            this.gameTableMask.owner = '';
+            this.gameTableMask.scratchingGrids = '';
+            this._scratchingGridX = -1;
+            this._scratchingGridY = -1;
+          }
+        }
+      ),
+      {
+        name: 'スクラッチキャンセル', action: () => {
+          this.gameTableMask.owner = '';
+          this.gameTableMask.scratchingGrids = '';
+          this._scratchingGridX = -1;
+          this._scratchingGridY = -1;
+        },
+        disabled: !this.gameTableMask.isMine
+      },
+      {
+        name: 'スクラッチ継続',
+        subActions: [
+          { 
+            name: '確定して続ける', action: () => {
+              this.ngZone.run(() => {
+                this.scratched();
+              });
+              this.gameTableMask.scratchingGrids = '';
+              this._scratchingGridX = -1;
+              this._scratchingGridY = -1;
+            } 
+          },
+          { 
+            name: '破棄して続ける' , action: () => {
+              this.gameTableMask.scratchingGrids = '';
+              this._scratchingGridX = -1;
+              this._scratchingGridY = -1;
+            }
+          },
+        ],
+        disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
+      },
+      ContextMenuSeparator,
       (this.isAltitudeIndicate
         ? {
           name: '☑ 高度の表示', action: () => {
@@ -266,6 +401,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
+          cloneObject.owner = '';
+          cloneObject.scratchingGrids = '';
           cloneObject.isLock = false;
           if (this.gameTableMask.parent) this.gameTableMask.parent.appendChild(cloneObject);
           SoundEffect.play(PresetSound.cardPut);
@@ -302,5 +439,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     let option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 530 };
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
+  }
+
+  identify(index, gridInfo){
+    return `${gridInfo.x}:${gridInfo.y}`;
   }
 }

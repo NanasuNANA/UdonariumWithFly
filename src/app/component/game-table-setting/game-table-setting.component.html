@@ -58,9 +58,15 @@
             <option value="2">ヘクス（横揃え）</option>
           </select>
         </label>
-        <label class="self-setting" style="margin-left: 3px">色：
+        <label class="self-setting" style="margin-left: 6px">色：
           <select [(ngModel)]="tableGridColor" name="tableGridColor" [disabled]="!isEditable || tableGridType == -1">
             <option value="#000000e6">黒</option>
+            <option value="#0000dde6">青</option>
+            <option value="#00dd00e6">緑</option>
+            <option value="#00dddde6">水色</option>
+            <option value="#dd0000e6">赤</option>
+            <option value="#dd00dde6">紫</option>
+            <option value="#dddd00e6">黄</option>
             <option value="#dddddde6">白</option>
           </select>
         </label>

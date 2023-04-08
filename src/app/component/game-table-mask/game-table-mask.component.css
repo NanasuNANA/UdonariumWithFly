@@ -14,6 +14,10 @@
   cursor: grabbing;
 }
 
+.is-scratching {
+  cursor: pointer;
+}
+
 .is-transition {
   -webkit-transition: -webkit-transform 132ms linear;
   transition: transform 132ms linear;
@@ -53,6 +57,18 @@
   visibility: visible;
 }
 
+.scratching-icon {
+  background-color: #CCCCCC;
+  border-radius: 100%;
+  color: #444;
+  width: 25px;
+  height: 25px;
+  visibility: visible;
+}
+.component:hover .scratching-icon.mine, .component:active .scratching-icon.mine {
+  visibility: hidden;
+}
+
 .is-center {
   position: absolute;
   top: 0;
@@ -66,8 +82,9 @@
   border-width: 0px;
 } 
 
-.component:hover .border, .component:active .border,
-.is-grab .border {
+.component:hover .border, 
+.component:active .border,
+.is-border .border {
   outline: 2px solid #CCC !important;
   outline-offset: -2px;
 }
@@ -127,11 +144,30 @@
 .is-inverse {
   transform: rotateZ(180deg);
 }
-/*
-.mask {
-  mask: radial-gradient(black, black) 0px 0px / 50px 50px,
-        radial-gradient(black, black) 50px 50px / 50px 50px;
-  mask-origin: content-box;
-  mask-repeat: no-repeat;
-  mask-composite: add;
-}*/
+
+.scratching-area {
+  overflow: hidden;
+}
+
+.scratching-mark.scratch::after, .scratching-mark.scratch::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px; /* 棒の幅（太さ） */
+  height: 38px; /* 棒の高さ */
+  background: red;
+  border-radius: 3px;
+}
+.scratching-mark.scratch::before {
+  transform: translate(-50%,-50%) rotate(45deg);
+}
+ 
+.scratching-mark.scratch::after {
+  transform: translate(-50%,-50%) rotate(-45deg);
+}
+
+.scratching-mark.restore {
+  border: 3px solid rgb(8, 58, 224);
+  border-radius: 3px;
+}

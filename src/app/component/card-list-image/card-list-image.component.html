@@ -12,7 +12,7 @@
 </div>
 <ng-template #backFace>
   <div class="image contain back" style="position: relative">
-    <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180 }"  [@reverseCard]="card.rotate">
+    <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180 }" [@reverseCard]="card.rotate">
     <i class="indicate-text">Back</i>
   </div>
 </ng-template>
