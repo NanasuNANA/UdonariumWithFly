@@ -48,7 +48,7 @@
   #fff 0px 0px 2px;
 }
 
-.back {
+.downside {
   background-color: #555;
 }
 
@@ -60,6 +60,7 @@
   bottom: 1px;
   left: 1px;
   color: #000;
+  pointer-events: none;
   text-shadow: 
   #fff 0px 0px 1px, 
   #fff 0px 0px 1px, 
@@ -70,7 +71,7 @@
   #fff 0px 0px 1px,
   #fff 0px 0px 1px;
 }
-.indicate-text::first-letter {
+.indicate-text .initial {
   font-weight: bold;
   color: #fff;
   text-shadow: 
