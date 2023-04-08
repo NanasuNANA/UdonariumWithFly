@@ -73,9 +73,11 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get masksCss(): string {
     const masks: string[] = [];
     const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
+    const scratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (scratchedAry.includes(`${x}:${y}`)) continue;
+        const gridStr = `${x}:${y}`;
+        if (scratchedAry.includes(gridStr) && !scratchingAry.includes(gridStr)) continue;
         masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize }px ${ y * this.gridSize }px / 50px 50px no-repeat`);
       }
     }
@@ -199,7 +201,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   onInputStart(e: any) {
     if (!this.isScratching || !this.gameTableMask.isMine) { 
       this.input.cancel();
-    } else if (e.button != 2) {
+    } else if (e.button < 2 && e.buttons < 2) {
       this.ngZone.run(() => {
         const {offsetX, offsetY} = e;
         if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
@@ -207,7 +209,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         }
       });
     }
-    console.log(e)
+    //console.log(e)
     // TODO:もっと良い方法考える
     if ((this.isLock && !this.isScratching) || (this.isScratching && !this.gameTableMask.isMine)) {
       EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
@@ -217,7 +219,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   private _scratchingGridX = -1;
   private _scratchingGridY = -1;
   onInputMove(e: any) {
-    if (e.button == 2) return;
+    if (e.button >= 2 || e.buttons >= 2) return;
     this.ngZone.run(() => {
       const {offsetX, offsetY} = e;
       if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
