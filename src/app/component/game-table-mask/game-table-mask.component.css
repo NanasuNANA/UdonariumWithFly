@@ -57,15 +57,10 @@
   visibility: visible;
 }
 
-.scratching-icon {
-  background-color: #CCCCCC;
-  border-radius: 100%;
-  color: #444;
-  width: 25px;
-  height: 25px;
+.scratching {
   visibility: visible;
 }
-.component:hover .scratching-icon.is-mine, .component:active .scratching-icon.is-mine {
+.component:hover .scratching.is-mine, .component:active .scratching.is-mine {
   visibility: hidden;
 }
 
@@ -155,7 +150,7 @@
   top: 50%;
   left: 50%;
   width: 4px;
-  height: 46px;
+  height: 50px;
   background-color: rgb(253, 120, 120);
   border-radius: 2px;
 }
@@ -170,4 +165,35 @@
 .scratching-mark.restore {
   border: 3px solid rgb(128, 157, 253);
   border-radius: 2px;
+}
+
+.name-tag {
+  font-size: 15px;
+  padding: 3px 9px;
+  border-radius: 24px;
+  opacity: 0.9;
+  pointer-events: none;
+  display: inline-block;
+}
+
+.component:hover .is-mine, 
+.component:active .is-mine {
+  visibility: hidden;
+  border: 1px solid red;
+}
+
+.has-length-limit {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 18em;
+}
+
+.is-nowrap {
+  white-space: nowrap;
+}
+
+.is-black-background {
+  color: #CCC;
+  background-color: rgba(30, 30, 30, 0.8);
 }

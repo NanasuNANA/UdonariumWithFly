@@ -90,11 +90,10 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get masksCss(): string {
     const masks: string[] = [];
     const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
-    const scratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         const gridStr = `${x}:${y}`;
-        if (scratchedAry.includes(gridStr) && !scratchingAry.includes(gridStr)) continue;
+        if (scratchedAry.includes(gridStr)) continue;
         masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize }px ${ y * this.gridSize }px / 50px 50px no-repeat`);
       }
     }
@@ -139,6 +138,11 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
   get isGMMode(): boolean { return this.gameTableMask.isGMMode; }
   get isScratching(): boolean { return !!this.gameTableMask.owner; }
+
+  get hasOwner(): boolean { return this.gameTableMask.hasOwner; }
+  get ownerIsOnline(): boolean { return this.gameTableMask.ownerIsOnline; }
+  get ownerName(): string { return this.gameTableMask.ownerName; }
+  get ownerColor(): string { return this.gameTableMask.ownerColor; }
 
   panelId;
   gridSize: number = 50;
@@ -326,6 +330,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             this.gameTableMask.owner = Network.peerContext.userId;
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
+            SoundEffect.play(PresetSound.lock);
           },
         } : {
           name: 'スクラッチ確定', action: () => {
@@ -336,6 +341,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             this.gameTableMask.scratchingGrids = '';
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
+            SoundEffect.play(PresetSound.cardPut);
           }
         }
       ),
@@ -345,11 +351,12 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           this.gameTableMask.scratchingGrids = '';
           this._scratchingGridX = -1;
           this._scratchingGridY = -1;
+          SoundEffect.play(PresetSound.unlock);
         },
         disabled: !this.gameTableMask.isMine
       },
       {
-        name: 'スクラッチ継続',
+        name: 'スクラッチ操作',
         subActions: [
           { 
             name: '確定して続ける', action: () => {
@@ -359,17 +366,33 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
               this.gameTableMask.scratchingGrids = '';
               this._scratchingGridX = -1;
               this._scratchingGridY = -1;
-            } 
+              SoundEffect.play(PresetSound.cardDraw);
+            },
+            disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
           },
           { 
             name: '破棄して続ける' , action: () => {
               this.gameTableMask.scratchingGrids = '';
               this._scratchingGridX = -1;
               this._scratchingGridY = -1;
-            }
+              SoundEffect.play(PresetSound.sweep);
+            },
+            disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
           },
+          ContextMenuSeparator,
+          { 
+            name: 'スクラッチの初期化' , action: () => {
+              this.gameTableMask.owner = '';
+              this.gameTableMask.scratchedGrids = '';
+              this.gameTableMask.scratchingGrids = '';
+              this._scratchingGridX = -1;
+              this._scratchingGridY = -1;
+              SoundEffect.play(PresetSound.sweep);
+            },
+            disabled: !this.gameTableMask.scratchedGrids
+          }
         ],
-        disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
+        disabled: !this.gameTableMask.isMine
       },
       ContextMenuSeparator,
       (this.isAltitudeIndicate
