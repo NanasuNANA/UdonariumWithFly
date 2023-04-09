@@ -256,14 +256,6 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onBlur(e) {
-    e.target.blur();
-  }
-
-  onHover(e) {
-    e.target.focus();
-  }
-
   @HostListener('dragstart', ['$event'])
   onDragstart(e) {
     e.stopPropagation();
@@ -337,14 +329,27 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
           this.turnRight();
         },
         materialIcon: 'turn_right',
-        hotkey: 'T,R'
+        hotkey: 'R'
       }, 
       {
         name: '左回転', action: () => {
           this.turnLeft();
         },
         materialIcon: 'turn_left',
-        hotkey: 'U,Shift+R'
+        hotkey: 'Shift+R'
+      },
+      ContextMenuSeparator,
+      {
+        name: '正位置(0°)にする', action: () => {
+          this.turnRight();
+        },
+        hotkey: 'U'
+      }, 
+      {
+        name: '横向き(90°)にする', action: () => {
+          this.turnLeft();
+        },
+        hotkey: 'T'
       },
       ContextMenuSeparator,
       {
@@ -454,6 +459,18 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private adjustMinBounds(value: number, min: number = 0): number {
     return value < min ? min : value;
+  }
+
+  tap() {
+    if (this.card.rotate == 90) return; 
+    this.card.rotate = 90; 
+    SoundEffect.play(PresetSound.cardPut);
+  }
+
+  untap() {
+    if (this.card.rotate == 0) return; 
+    this.card.rotate = 0; 
+    SoundEffect.play(PresetSound.cardPut);
   }
 
   turnRight() {
