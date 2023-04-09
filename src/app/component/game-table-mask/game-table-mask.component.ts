@@ -92,13 +92,11 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        const gridStr = `${x}:${y}`;
-        if (scratchedAry.includes(gridStr)) continue;
+        if (scratchedAry.includes(`${x}:${y}`)) continue;
         masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize }px ${ y * this.gridSize }px / 50px 50px no-repeat`);
       }
     }
-    const ret = masks.join(',');
-    return ret ? ret : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
+    return masks.length ? masks.join(',') : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
   }
 
   get scratchingGridInfos(): {x: number, y: number, state: number}[] {
@@ -106,8 +104,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     if (!this.gameTableMask || !this.gameTableMask.scratchingGrids) return [];
     const scratchingGridAry = this.gameTableMask.scratchingGrids.split(/,/g);
     const scratchedGridAry = this.gameTableMask.scratchedGrids.split(/,/g);
-    for (let x = 0; x < Math.ceil(this.gameTableMask.width); x++) {
-      for (let y = 0; y < Math.ceil(this.gameTableMask.height); y++) {
+    for (let x = 0; x < Math.ceil(this.width); x++) {
+      for (let y = 0; y < Math.ceil(this.height); y++) {
         const gridStr = `${x}:${y}`;
         if (scratchingGridAry.includes(gridStr)) ret.push({ 
           x: x, 
