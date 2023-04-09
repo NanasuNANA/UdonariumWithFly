@@ -337,14 +337,14 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
           this.turnRight();
         },
         materialIcon: 'turn_right',
-        keybind: 'T,R'
+        hotkey: 'T,R'
       }, 
       {
         name: '左回転', action: () => {
           this.turnLeft();
         },
         materialIcon: 'turn_left',
-        keybind: 'U,Shift+R'
+        hotkey: 'U,Shift+R'
       },
       ContextMenuSeparator,
       {
