@@ -7,8 +7,9 @@
       <div [style.font-size.px]="cardFontSize" [style.color]="cardColor" [style.text-shadow]="textShadowCss" [innerHTML]="rubiedText | safe: 'html'"></div>
     </div>
   </div>
+  <i *ngIf="card?.isFront" class="indicate-text">face-<br /><span class="initial" style="padding-left: 3px">U</span>p</i>
   <div class="image" style="position: relative">
     <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180, 'downside': card && card.isFront }" [@reverseCard]="card.rotate">
-    <i *ngIf="!card?.isFront" class="indicate-text"><span class="initial">U</span>pside<br /><span class="initial">D</span>own</i>
+    <i *ngIf="!card?.isFront" class="indicate-text">face-<br /><span class="initial" style="padding-left: 3px">D</span>own</i>
   </div>
 </div>
