@@ -341,15 +341,17 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
       ContextMenuSeparator,
       {
         name: '正位置(0°)にする', action: () => {
-          this.turnRight();
+          this.vertical();
         },
-        hotkey: 'U'
+        hotkey: 'U',
+        disabled: this.card.rotate == 0
       }, 
       {
         name: '横向き(90°)にする', action: () => {
-          this.turnLeft();
+          this.horizontal();
         },
-        hotkey: 'T'
+        hotkey: 'T',
+        disabled: this.card.rotate == 90
       },
       ContextMenuSeparator,
       {
@@ -461,25 +463,25 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
     return value < min ? min : value;
   }
 
-  tap() {
-    if (this.card.rotate == 90) return; 
-    this.card.rotate = 90; 
-    SoundEffect.play(PresetSound.cardPut);
-  }
-
-  untap() {
+  vertical() {
     if (this.card.rotate == 0) return; 
     this.card.rotate = 0; 
     SoundEffect.play(PresetSound.cardPut);
   }
 
+  horizontal() {
+    if (this.card.rotate == 90) return; 
+    this.card.rotate = 90; 
+    SoundEffect.play(PresetSound.cardPut);
+  }
+
   turnRight() {
-    this.card.rotate += 90; 
+    this.card.rotate += 45; 
     SoundEffect.play(PresetSound.cardPut);
   }
 
   turnLeft() {
-    this.card.rotate -= 90; 
+    this.card.rotate -= 45; 
     SoundEffect.play(PresetSound.cardPut);
   }
 

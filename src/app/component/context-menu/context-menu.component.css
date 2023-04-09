@@ -185,3 +185,8 @@ input.altitude {
 .self-only {
   color: red;
 }
+
+.hotkey {
+  float: right;
+  font-size: smaller;
+}
