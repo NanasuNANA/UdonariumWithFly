@@ -97,7 +97,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize }px ${ y * this.gridSize }px / 50px 50px no-repeat`);
       }
     }
-    return masks.join(',');
+    const ret = masks.join(',');
+    return ret ? ret : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
   }
 
   get scratchingGridInfos(): {x: number, y: number, state: number}[] {
