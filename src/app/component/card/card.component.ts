@@ -256,6 +256,14 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  onBlur(e) {
+    e.target.blur();
+  }
+
+  onHover(e) {
+    e.target.focus();
+  }
+
   @HostListener('dragstart', ['$event'])
   onDragstart(e) {
     e.stopPropagation();
@@ -323,6 +331,21 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.owner = Network.peerContext.userId;
           }
         }),
+      ContextMenuSeparator,
+      {
+        name: '右回転', action: () => {
+          this.turnRight();
+        },
+        materialIcon: 'turn_right',
+        keybind: 'T,R'
+      }, 
+      {
+        name: '左回転', action: () => {
+          this.turnLeft();
+        },
+        materialIcon: 'turn_left',
+        keybind: 'U,Shift+R'
+      },
       ContextMenuSeparator,
       {
         name: '重なったカードで山札を作る', action: () => {
@@ -431,6 +454,16 @@ export class CardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private adjustMinBounds(value: number, min: number = 0): number {
     return value < min ? min : value;
+  }
+
+  turnRight() {
+    this.card.rotate += 90; 
+    SoundEffect.play(PresetSound.cardPut);
+  }
+
+  turnLeft() {
+    this.card.rotate -= 90; 
+    SoundEffect.play(PresetSound.cardPut);
   }
 
   private showDetail(gameObject: Card) {

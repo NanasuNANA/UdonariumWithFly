@@ -334,6 +334,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           },
         } : {
           name: 'スクラッチ確定', action: () => {
+            if (!this.gameTableMask.isMine) return;
             this.ngZone.run(() => {
               this.scratched();
             });
@@ -347,6 +348,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       ),
       {
         name: 'スクラッチキャンセル', action: () => {
+          if (!this.gameTableMask.isMine) return;
           this.gameTableMask.owner = '';
           this.gameTableMask.scratchingGrids = '';
           this._scratchingGridX = -1;
@@ -360,6 +362,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         subActions: [
           { 
             name: '確定して続ける', action: () => {
+              if (!this.gameTableMask.isMine) return;
               this.ngZone.run(() => {
                 this.scratched();
               });
@@ -372,6 +375,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           },
           { 
             name: '破棄して続ける' , action: () => {
+              if (!this.gameTableMask.isMine) return;
               this.gameTableMask.scratchingGrids = '';
               this._scratchingGridX = -1;
               this._scratchingGridY = -1;
@@ -382,6 +386,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           ContextMenuSeparator,
           { 
             name: 'スクラッチの初期化' , action: () => {
+              if (!this.gameTableMask.isMine) return;
               this.gameTableMask.owner = '';
               this.gameTableMask.scratchedGrids = '';
               this.gameTableMask.scratchingGrids = '';

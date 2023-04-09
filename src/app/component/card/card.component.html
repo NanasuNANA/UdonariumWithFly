@@ -1,5 +1,8 @@
 <div class="component is-3d is-pointer-events-none" [ngClass]="{'is-grab': !isLocked}" [style.width.px]="size * gridSize"
-  appMovable [movable.option]="movableOption" [movable.disable]="isLocked" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
+  appMovable [movable.option]="movableOption" [movable.disable]="isLocked"
+  (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()"
+  (keyup.t)="turnRight()" (keyup.r)="turnRight()" (keyup.u)="turnLeft()" (keyup.shift.r)="turnLeft()"
+  (mouseenter)="onHover($event)" (mouseleave)="onBlur($event)" tabindex="-1">
   <div @slidInOut class="is-pointer-events-none is-3d">
     <div class="component-content is-pointer-events-auto is-3d"
       appRotable [rotable.option]="rotableOption" [rotable.disable]="isLocked" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()">
