@@ -54,7 +54,6 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() gameTableMask: GameTableMask = null;
   @Input() is3D: boolean = false;
-  @ViewChild('eventElement', { static: true }) eventElementRef: ElementRef;
 
   get name(): string { return this.gameTableMask.name; }
   get width(): number { return this.adjustMinBounds(this.gameTableMask.width); }
@@ -88,12 +87,13 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   get masksCss(): string {
+    if (!this.gameTableMask.scratchedGrids) return '';
     const masks: string[] = [];
     const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         if (scratchedAry.includes(`${x}:${y}`)) continue;
-        masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize }px ${ y * this.gridSize }px / 50px 50px no-repeat`);
+        masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize + 0.1 }px ${ y * this.gridSize + 0.1 }px / 50px 50px no-repeat`);
       }
     }
     return masks.length ? masks.join(',') : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
@@ -220,12 +220,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     if (!this.isScratching || !this.gameTableMask.isMine) { 
       this.input.cancel();
     } else if (e.button < 2 && e.buttons < 2) {
-      this.ngZone.run(() => {
-        const {offsetX, offsetY} = e;
-        if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
-         this.scratching(Math.floor(offsetX / this.gridSize), Math.floor(offsetY / this.gridSize));
-        }
-      });
+      this.scratching(true);
     }
     //console.log(e)
     // TODO:もっと良い方法考える
@@ -237,40 +232,42 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   private _scratchingGridX = -1;
   private _scratchingGridY = -1;
   onInputMove(e: any) {
-    // とりあえず ＞ e.target !== this.eventElementRef.nativeElement
-    if (e.target !== this.eventElementRef.nativeElement || !this.isScratching || !this.gameTableMask.isMine || e.button >= 2 || e.buttons >= 2) return;
-    this.ngZone.run(() => {
-      const {offsetX, offsetY} = e;
-      if (0 <= offsetX && offsetX < this.gameTableMask.width * this.gridSize && 0 <= offsetY && offsetY < this.gameTableMask.height * this.gridSize) {
-        const gridX = Math.floor(offsetX / this.gridSize);
-        const gridY = Math.floor(offsetY / this.gridSize);
-        if (this._scratchingGridX !== gridX || this._scratchingGridY !== gridY) this.scratching(gridX, gridY);
-      }
-    });
+    if (this.isScratching && this.gameTableMask.isMine && (e instanceof TouchEvent || (e.button < 2 && e.buttons <2))) this.scratching();
   }
 
-  scratching(gridX: number, gridY: number) {
+  scratching(isStart = false) {
     if (!this.gameTableMask.isMine) return;
-    let tempScratching = `${gridX}:${gridY}`;
-    this._scratchingGridX = gridX;
-    this._scratchingGridY = gridY;
-    const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
-    let newFlg = true;
-    const liveScratching: string[] = currentScratchingAry.filter(grid => {
-      if (grid === tempScratching) newFlg = false;
-      return grid !== tempScratching;
+    const scratchingPosition = this.coordinateService.calcTabletopLocalCoordinate(this.pointerDeviceService.pointers[0], this.elementRef.nativeElement);
+    const offsetX = scratchingPosition.x - this.gameTableMask.location.x;
+    const offsetY = scratchingPosition.y - this.gameTableMask.location.y;
+    this.ngZone.run(() => {
+      if (offsetX < 0 || this.gameTableMask.width * this.gridSize <= offsetX || offsetY < 0 || this.gameTableMask.height * this.gridSize <= offsetY) return;
+      const gridX = Math.floor(offsetX / this.gridSize);
+      const gridY = Math.floor(offsetY / this.gridSize);
+
+      if (!isStart && this._scratchingGridX === gridX && this._scratchingGridY === gridY) return;
+      const tempScratching = `${gridX}:${gridY}`;
+      this._scratchingGridX = gridX;
+      this._scratchingGridY = gridY;
+      const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
+      let newFlg = true;
+      const liveScratching: string[] = currentScratchingAry.filter(grid => {
+        if (grid === tempScratching) newFlg = false;
+        return grid !== tempScratching;
+      });
+      if (newFlg) liveScratching.push(tempScratching);
+      this.gameTableMask.scratchingGrids = Array.from(new Set(liveScratching)).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
     });
-    if (newFlg) liveScratching.push(tempScratching);
-    this.gameTableMask.scratchingGrids = Array.from(new Set(liveScratching)).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
-    //console.log(this.gameTableMask.scratchingGrids);
   } 
 
   scratched() {
-    const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
-    const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
-    const a = currentScratchedAry.filter( grid => !currentScratchingAry.includes(grid));
-    const b = currentScratchingAry.filter( grid => !currentScratchedAry.includes(grid));
-    this.gameTableMask.scratchedGrids = Array.from(new Set(a.concat(b))).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
+    this.ngZone.run(() => {
+      const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
+      const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
+      const a = currentScratchedAry.filter( grid => !currentScratchingAry.includes(grid));
+      const b = currentScratchingAry.filter( grid => !currentScratchedAry.includes(grid));
+      this.gameTableMask.scratchedGrids = Array.from(new Set(a.concat(b))).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
+    });
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -334,9 +331,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         } : {
           name: 'スクラッチ確定', action: () => {
             if (!this.gameTableMask.isMine) return;
-            this.ngZone.run(() => {
-              this.scratched();
-            });
+            this.scratched();
             this.gameTableMask.owner = '';
             this.gameTableMask.scratchingGrids = '';
             this._scratchingGridX = -1;
@@ -362,9 +357,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           { 
             name: '確定して続ける', action: () => {
               if (!this.gameTableMask.isMine) return;
-              this.ngZone.run(() => {
-                this.scratched();
-              });
+              this.scratched();
               this.gameTableMask.scratchingGrids = '';
               this._scratchingGridX = -1;
               this._scratchingGridY = -1;
