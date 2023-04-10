@@ -255,15 +255,15 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
   scratching(isStart: boolean, position: {offsetX: number, offsetY: number} = null) {
     if (!this.gameTableMask.isMine) return;
-
-    const viewTable = TableSelecter.instance.viewTable;
-    viewTable.gridClipRect = {
-        top: this.gameTableMask.location.y - 46,
-        right: this.gameTableMask.location.x + this.width * this.gridSize + 46,
-        bottom:  this.gameTableMask.location.y + this.height * this.gridSize + 46,
-        left: this.gameTableMask.location.x - 46
+    // とりあえず、本当は周辺を表示したい。
+    const tableSelecter = TableSelecter.instance;
+    if (!tableSelecter.gridShow) tableSelecter.viewTable.gridClipRect = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
       };
-    viewTable.gridHeight = this.gameTableMask.posZ + this.gameTableMask.altitude * this.gridSize + 0.5;
+    //viewTable.gridHeight = this.gameTableMask.posZ + this.gameTableMask.altitude * this.gridSize + 0.5;
 
     let offsetX
     let offsetY;
