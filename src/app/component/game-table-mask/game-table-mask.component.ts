@@ -357,7 +357,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             SoundEffect.play(PresetSound.lock);
           },
         } : {
-          name: `スクラッチ${this.gameTableMask.scratchingGrids ? '確定して終了' : '終了'}`, action: () => {
+          name: 'スクラッチ確定', action: () => {
             if (!this.gameTableMask.isMine) return;
             this.ngZone.run(() => {
               this.scratched();
@@ -371,7 +371,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         }
       ),
       {
-        name: 'スクラッチのキャンセル', action: () => {
+        name: 'スクラッチキャンセル', action: () => {
           if (!this.gameTableMask.isMine) return;
           this.ngZone.run(() => {
             this.gameTableMask.owner = '';
@@ -413,10 +413,10 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           },
           ContextMenuSeparator,
           { 
-            name: 'スクラッチの初期化' , action: () => {
+            name: 'スクラッチ初期化' , action: () => {
               if (!this.gameTableMask.isMine) return;
               this.modalService.open(ConfirmationComponent, {
-                title: 'スクラッチの初期化', 
+                title: 'スクラッチ初期化', 
                 text: 'スクラッチを初期化しますか？',
                 help: 'マップマスクはスクラッチされていない状態になり、操作を終了します。',
                 type: ConfirmationType.OK_CANCEL,
