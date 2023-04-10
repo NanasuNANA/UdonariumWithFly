@@ -30,6 +30,7 @@ import { TabletopActionService } from 'service/tabletop-action.service';
 import { UUID } from '@udonarium/core/system/util/uuid';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { TableSelecter } from '@udonarium/table-selecter';
+import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 
 @Component({
   selector: 'game-table-mask',
@@ -335,25 +336,17 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             this.isLock = false;
             //this.chatMessageService.sendOperationLog(`${this.gameTableMask.name} の固定を解除した`);
             SoundEffect.play(PresetSound.unlock);
-          }
+          },
+          disabled: this.isScratching
         }
         : {
           name: '☐ 固定', action: () => {
             this.isLock = true;
             SoundEffect.play(PresetSound.lock);
-          }
+          },
+          disabled: this.isScratching
         }
       ),
-      {
-        name: '画像と色',
-        subActions: [
-          { name: `${this.blendType == 0 ? '◉' : '○'} 画像のみ`,  action: () => { this.blendType = 0; SoundEffect.play(PresetSound.cardDraw) } },
-          { name: `${this.blendType == 1 ? '◉' : '○'} 背景色と重ねる`,  action: () => { this.blendType = 1; SoundEffect.play(PresetSound.cardDraw) } },
-          { name: `${this.blendType == 2 ? '◉' : '○'} 背景色と混ぜる`,  action: () => { this.blendType = 2; SoundEffect.play(PresetSound.cardDraw) } },
-          ContextMenuSeparator,
-          { name: '色の初期化', action: () => { this.color = '#555555'; this.bgcolor = '#0a0a0a'; SoundEffect.play(PresetSound.cardDraw) } }
-        ]
-      },
       ContextMenuSeparator,
       (!this.gameTableMask.isMine ?
         {
@@ -364,7 +357,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             SoundEffect.play(PresetSound.lock);
           },
         } : {
-          name: 'スクラッチ確定', action: () => {
+          name: `スクラッチ${this.gameTableMask.scratchingGrids ? '確定して終了' : '終了'}`, action: () => {
             if (!this.gameTableMask.isMine) return;
             this.ngZone.run(() => {
               this.scratched();
@@ -378,7 +371,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         }
       ),
       {
-        name: 'スクラッチキャンセル', action: () => {
+        name: 'スクラッチのキャンセル', action: () => {
           if (!this.gameTableMask.isMine) return;
           this.ngZone.run(() => {
             this.gameTableMask.owner = '';
@@ -388,7 +381,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           this._scratchingGridY = -1;
           SoundEffect.play(PresetSound.unlock);
         },
-        disabled: !this.gameTableMask.isMine
+        disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
       },
       {
         name: 'スクラッチ操作',
@@ -422,19 +415,39 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           { 
             name: 'スクラッチの初期化' , action: () => {
               if (!this.gameTableMask.isMine) return;
-              this.ngZone.run(() => {
-                this.gameTableMask.owner = '';
-                this.gameTableMask.scratchedGrids = '';
-                this.gameTableMask.scratchingGrids = '';
+              this.modalService.open(ConfirmationComponent, {
+                title: 'スクラッチの初期化', 
+                text: 'スクラッチを初期化しますか？',
+                help: 'マップマスクはスクラッチされていない状態になり、操作を終了します。',
+                type: ConfirmationType.OK_CANCEL,
+                materialIcon: 'draw',
+                action: () => {
+                  this.ngZone.run(() => {
+                    this.gameTableMask.owner = '';
+                    this.gameTableMask.scratchedGrids = '';
+                    this.gameTableMask.scratchingGrids = '';
+                  });
+                  this._scratchingGridX = -1;
+                  this._scratchingGridY = -1;
+                  SoundEffect.play(PresetSound.sweep);
+                }
               });
-              this._scratchingGridX = -1;
-              this._scratchingGridY = -1;
-              SoundEffect.play(PresetSound.sweep);
             },
             disabled: !this.gameTableMask.scratchedGrids
           }
         ],
         disabled: !this.gameTableMask.isMine
+      },
+      ContextMenuSeparator,
+      {
+        name: '画像と色',
+        subActions: [
+          { name: `${this.blendType == 0 ? '◉' : '○'} 画像のみ`,  action: () => { this.blendType = 0; SoundEffect.play(PresetSound.cardDraw) } },
+          { name: `${this.blendType == 1 ? '◉' : '○'} 背景色と重ねる`,  action: () => { this.blendType = 1; SoundEffect.play(PresetSound.cardDraw) } },
+          { name: `${this.blendType == 2 ? '◉' : '○'} 背景色と混ぜる`,  action: () => { this.blendType = 2; SoundEffect.play(PresetSound.cardDraw) } },
+          ContextMenuSeparator,
+          { name: '色の初期化', action: () => { this.color = '#555555'; this.bgcolor = '#0a0a0a'; SoundEffect.play(PresetSound.cardDraw) } }
+        ]
       },
       ContextMenuSeparator,
       (this.isAltitudeIndicate
