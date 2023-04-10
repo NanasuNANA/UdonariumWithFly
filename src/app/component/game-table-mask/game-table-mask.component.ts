@@ -29,6 +29,7 @@ import { PointerDeviceService } from 'service/pointer-device.service';
 import { TabletopActionService } from 'service/tabletop-action.service';
 import { UUID } from '@udonarium/core/system/util/uuid';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import { TableSelecter } from '@udonarium/table-selecter';
 
 @Component({
   selector: 'game-table-mask',
@@ -92,7 +93,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         if (scratchedAry.includes(`${x}:${y}`)) continue;
-        masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize - 1 }px ${ y * this.gridSize -1 }px / 52px 52px no-repeat`);
+        masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize - 1 }px ${ y * this.gridSize -1 }px / ${ this.gridSize + 2 }px ${ this.gridSize + 2 }px no-repeat`);
       }
     }
     return masks.length ? masks.join(',') : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
@@ -218,7 +219,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   onInputStart(e: any) {
     if (!this.isScratching || !this.gameTableMask.isMine) { 
       this.input.cancel();
-    } else if (e.button < 2 && e.buttons < 2) {
+    } else if (!window.PointerEvent && e.button < 2 && e.buttons < 2) {
       this.scratching(true);
     }
     //console.log(e)
@@ -228,18 +229,52 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     }
   }
 
+  @HostListener('pointerdown', ['$event'])
+  onInputStartPointer(e: PointerEvent) {
+    if (!this.isScratching || !this.gameTableMask.isMine) { 
+      //this.input.cancel();
+    } else if (e.button < 2 && e.buttons < 2) {
+      this.scratching(true, {offsetX: e.offsetX, offsetY: e.offsetY});
+    }
+  }
+
   private _scratchingGridX = -1;
   private _scratchingGridY = -1;
   onInputMove(e: any) {
-    if (this.isScratching && this.gameTableMask.isMine && (e instanceof TouchEvent || (e.button < 2 && e.buttons <2))) this.scratching();
+    if (!window.PointerEvent && this.isScratching && this.gameTableMask.isMine && this.input.isDragging) {
+      this.scratching(false);
+    }
   }
 
-  scratching(isStart = false) {
+  @HostListener('pointermove', ['$event'])
+  onInputMovePointer(e: PointerEvent) {
+    if (this.isScratching && this.gameTableMask.isMine && this.input.isDragging && e.buttons < 2) {
+      this.scratching(false, {offsetX: e.offsetX, offsetY: e.offsetY});
+    }
+  }
+
+  scratching(isStart: boolean, position: {offsetX: number, offsetY: number} = null) {
     if (!this.gameTableMask.isMine) return;
-    const scratchingPosition = this.coordinateService.calcTabletopLocalCoordinate(this.pointerDeviceService.pointers[0], this.elementRef.nativeElement);
-    const offsetX = scratchingPosition.x - this.gameTableMask.location.x;
-    const offsetY = scratchingPosition.y - this.gameTableMask.location.y;
-    
+
+    const viewTable = TableSelecter.instance.viewTable;
+    viewTable.gridClipRect = {
+        top: this.gameTableMask.location.y - 46,
+        right: this.gameTableMask.location.x + this.width * this.gridSize + 46,
+        bottom:  this.gameTableMask.location.y + this.height * this.gridSize + 46,
+        left: this.gameTableMask.location.x - 46
+      };
+    viewTable.gridHeight = this.gameTableMask.posZ + this.gameTableMask.altitude * this.gridSize + 0.5;
+
+    let offsetX
+    let offsetY;
+    if (position) {
+      offsetX = position.offsetX;
+      offsetY = position.offsetY;
+    } else {
+      const scratchingPosition = this.coordinateService.calcTabletopLocalCoordinate(this.pointerDeviceService.pointers[0], this.elementRef.nativeElement);
+      offsetX = scratchingPosition.x - this.gameTableMask.location.x;
+      offsetY = scratchingPosition.y - this.gameTableMask.location.y;
+    }
     if (offsetX < 0 || this.gameTableMask.width * this.gridSize <= offsetX || offsetY < 0 || this.gameTableMask.height * this.gridSize <= offsetY) return;
     const gridX = Math.floor(offsetX / this.gridSize);
     const gridY = Math.floor(offsetY / this.gridSize);

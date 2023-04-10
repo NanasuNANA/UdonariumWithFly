@@ -84,6 +84,11 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   get isStealthMode(): boolean { return GameCharacter.isStealthMode; }
   get isGMMode(): boolean { return PeerCursor.myCursor && PeerCursor.myCursor.isGMMode; }
 
+  get clipCss(): string {
+    const rect = this.currentTable.gridClipRect;
+    return rect ? `rect(${rect.top}px, ${rect.right}px, ${rect.bottom}px, ${rect.left}px)` : 'auto';
+  }
+
   constructor(
     private ngZone: NgZone,
     private contextMenuService: ContextMenuService,

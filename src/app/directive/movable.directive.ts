@@ -163,7 +163,9 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     //this.height = this.input.target.clientHeight;
     this.ratio = 1.0;
     
-    this.tabletopService.tableSelecter.viewTable.gridHeight = this.posZ + 0.5;
+    const viewTable = TableSelecter.instance.viewTable;
+    viewTable.gridClipRect = null;
+    viewTable.gridHeight = this.posZ + 0.5;
     this.setUpdateTimer();
   }
 
@@ -211,7 +213,9 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     this.posZ = pointer3d.z;
     
     //let tableSelecter = ObjectStore.instance.get<TableSelecter>('tableSelecter');
-    TableSelecter.instance.viewTable.gridHeight = this.posZ + 0.5;
+    const viewTable = TableSelecter.instance.viewTable;
+    viewTable.gridClipRect = null;
+    viewTable.gridHeight = this.posZ + 0.5;
   }
 
   onInputEnd(e: MouseEvent | TouchEvent) {

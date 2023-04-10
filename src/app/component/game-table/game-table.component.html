@@ -3,7 +3,7 @@
 <div class="component is-fill is-perspective" [ngClass]="{'is-grabbing': isPointerDragging}" #root>
   <div class="component-content is-fill is-3d" #gameTable>
     <div id="app-game-table" class="game-table table-image is-3d" [style.background-image]="'url(' + tableImage.url + ')' | safe: 'style'" #gameObjects>
-      <canvas class="grid-canvas is-fill is-pointer-events-none" #gridCanvas [ngStyle]="{'transform': 'translateZ(' + (gridHeight + 0.1) + 'px)'}"></canvas>
+      <canvas class="grid-canvas is-fill is-pointer-events-none" #gridCanvas [ngStyle]="{'transform': 'translateZ(' + (gridHeight + 0.1) + 'px)', 'clip': clipCss}"></canvas>
       <div class="is-fill is-3d is-pointer-events-none">
         <ng-container *ngFor="let terrain of terrains; trackBy: trackByGameObject">
           <ng-container *ngIf="terrain.detailDataElement && 0 < terrain.detailDataElement.children.length"><terrain class="is-3d" [style.z-index]="terrain.height > 0 ? 0 : 1" [terrain]="terrain" [appTooltip]="terrain"></terrain></ng-container>

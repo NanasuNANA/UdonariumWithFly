@@ -149,10 +149,10 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 4px;
+  width: 6px;
   height: 50px;
-  background-color: rgb(253, 120, 120);
-  border-radius: 2px;
+  background-color: rgb(255, 62, 62);
+  border-radius: 3px;
 }
 .scratching-mark.scratch::before {
   transform: translate(-50%,-50%) rotate(45deg);
@@ -163,7 +163,7 @@
 }
 
 .scratching-mark.restore {
-  border: 3px solid rgb(128, 157, 253);
+  border: 4px solid rgb(115, 150, 255);
   border-radius: 2px;
 }
 
@@ -179,7 +179,6 @@
 .component:hover .is-mine, 
 .component:active .is-mine {
   visibility: hidden;
-  border: 1px solid red;
 }
 
 .has-length-limit {
