@@ -299,8 +299,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   scratched() {
     const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
     const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
-    const a = currentScratchedAry.filter( grid => !currentScratchingAry.includes(grid));
-    const b = currentScratchingAry.filter( grid => !currentScratchedAry.includes(grid));
+    const a = currentScratchedAry.filter(grid => !currentScratchingAry.includes(grid));
+    const b = currentScratchingAry.filter(grid => !currentScratchedAry.includes(grid));
     this.ngZone.run(() => {
       this.gameTableMask.scratchedGrids = Array.from(new Set(a.concat(b))).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
     });

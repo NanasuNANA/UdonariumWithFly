@@ -27,8 +27,8 @@
         </div>
       </div>
     </div>
-    <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10">
-      <i class="material-icons is-3d" style="pointer-events: none; backface-visibility: hidden">{{ isLock ? 'lock' : 'open_with' }}</i>
+    <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
+      <i class="material-icons is-3d" style="pointer-events: none">{{ isLock ? 'lock' : 'open_with' }}</i>
     </div>
     <div *ngIf="isScratching && ownerIsOnline" class="scratching is-center is-3d" style="pointer-events: none; z-index: 10; top: -7px; left: 1px; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
       <div class="name-tag has-length-limit is-nowrap is-black-background" style="color: whitesmoke" [ngStyle]="{'background-color': ownerColor}">
