@@ -102,20 +102,27 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
   get scratchingGridInfos(): {x: number, y: number, state: number}[] {
     const ret: {x: number, y: number, state: number}[] = [];
-    if (!this.gameTableMask || !this.gameTableMask.scratchingGrids) return [];
+    if (!this.gameTableMask || (!this.gameTableMask.scratchingGrids && !this.gameTableMask.scratchedGrids)) return [];
     const scratchingGridAry = this.gameTableMask.scratchingGrids.split(/,/g);
     const scratchedGridAry = this.gameTableMask.scratchedGrids.split(/,/g);
     for (let x = 0; x < Math.ceil(this.width); x++) {
       for (let y = 0; y < Math.ceil(this.height); y++) {
         const gridStr = `${x}:${y}`;
-        if (scratchingGridAry.includes(gridStr)) ret.push({ 
+        if (scratchingGridAry.includes(gridStr) || scratchedGridAry.includes(gridStr)) ret.push({ 
           x: x, 
           y: y, 
-          state: !scratchedGridAry.includes(gridStr) ? 1 : 2
+          state: !scratchingGridAry.includes(gridStr) ? 3 : 
+            !scratchedGridAry.includes(gridStr) ? 1 
+            : 2
         });
       }
     }
     return ret;
+  }
+
+  get operateOpacity(): number {
+    const ret = this.opacity * (this.isGMMode && this.gameTableMask.isTransparentOnGMMode ? 0.6 : 1);
+    return (ret < 0.4 && this.isScratching) ? 0.4 : ret;
   }
 
   get altitude(): number { return this.gameTableMask.altitude; }

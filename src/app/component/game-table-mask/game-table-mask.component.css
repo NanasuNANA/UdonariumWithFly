@@ -144,27 +144,38 @@
   overflow: hidden;
 }
 
-.scratching-mark.scratch::after, .scratching-mark.scratch::before {
+.scratching-mark.scratching::after, 
+.scratching-mark.scratching::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
   width: 6px;
   height: 50px;
-  background-color: rgb(255, 62, 62);
   border-radius: 3px;
 }
-.scratching-mark.scratch::before {
+.scratching-mark.scratching::before {
   transform: translate(-50%,-50%) rotate(45deg);
 }
- 
-.scratching-mark.scratch::after {
+.scratching-mark.scratching::after {
   transform: translate(-50%,-50%) rotate(-45deg);
 }
 
-.scratching-mark.restore {
-  border: 4px solid rgb(128, 152, 255);
+.scratching-mark.restore,
+.scratching-mark.scratched {
+  border: 4px solid;
   border-radius: 2px;
+}
+
+.scratching-mark.scratching::after, 
+.scratching-mark.scratching::before {
+  background-color: rgb(255, 62, 62);
+}
+.scratching-mark.scratched {
+  border-color: rgb(255, 62, 62);
+}
+.scratching-mark.restore {
+  border-color: rgb(128, 152, 255);
 }
 
 .name-tag {
