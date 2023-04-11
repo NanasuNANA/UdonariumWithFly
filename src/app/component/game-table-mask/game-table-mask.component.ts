@@ -56,6 +56,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   @Input() gameTableMask: GameTableMask = null;
   @Input() is3D: boolean = false;
 
+  static layerIndex = 0;
+
   get name(): string { return this.gameTableMask.name; }
   get width(): number { return this.adjustMinBounds(this.gameTableMask.width); }
   get height(): number { return this.adjustMinBounds(this.gameTableMask.height); }
@@ -199,10 +201,11 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       });
     this.movableOption = {
       tabletopObject: this.gameTableMask,
-      transformCssOffset: 'translateZ(0.15px)',
+      transformCssOffset: `translateZ(${ (0.15 + 0.00001 * GameTableMaskComponent.layerIndex).toFixed(5) }px)`,
       colideLayers: ['terrain']
     };
     this.panelId = UUID.generateUuid();
+    GameTableMaskComponent.layerIndex += 1;
   }
 
   ngAfterViewInit() {
