@@ -272,7 +272,6 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         left: 0
       };
     //viewTable.gridHeight = this.gameTableMask.posZ + this.gameTableMask.altitude * this.gridSize + 0.5;
-
     let offsetX
     let offsetY;
     if (position) {
@@ -298,9 +297,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       return grid !== tempScratching;
     });
     if (newFlg) liveScratching.push(tempScratching);
-    this.ngZone.run(() => {
+    //this.ngZone.run(() => {
       this.gameTableMask.scratchingGrids = Array.from(new Set(liveScratching)).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
-    });
+    //});
   } 
 
   scratched() {
@@ -308,9 +307,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
     const a = currentScratchedAry.filter(grid => !currentScratchingAry.includes(grid));
     const b = currentScratchingAry.filter(grid => !currentScratchedAry.includes(grid));
-    this.ngZone.run(() => {
+    //this.ngZone.run(() => {
       this.gameTableMask.scratchedGrids = Array.from(new Set(a.concat(b))).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
-    });
+    //});
   }
 
   @HostListener('contextmenu', ['$event'])
