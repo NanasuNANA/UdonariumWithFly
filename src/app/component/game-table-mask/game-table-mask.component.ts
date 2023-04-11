@@ -387,7 +387,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         name: 'スクラッチ操作',
         subActions: [
           { 
-            name: '確定して続ける', action: () => {
+            name: '適用して続ける', action: () => {
               if (!this.gameTableMask.isMine) return;
               this.ngZone.run(() => {
                 this.scratched();
@@ -440,7 +440,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       },
       ContextMenuSeparator,
       {
-        name: '画像と色',
+        name: '画像と色の表示',
         subActions: [
           { name: `${this.blendType == 0 ? '◉' : '○'} 画像のみ`,  action: () => { this.blendType = 0; SoundEffect.play(PresetSound.cardDraw) } },
           { name: `${this.blendType == 1 ? '◉' : '○'} 背景色と重ねる`,  action: () => { this.blendType = 1; SoundEffect.play(PresetSound.cardDraw) } },
