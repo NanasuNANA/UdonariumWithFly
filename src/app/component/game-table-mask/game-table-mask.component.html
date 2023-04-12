@@ -15,7 +15,7 @@
       <div class="is-fit-full is-3d scratching-area" style="pointer-events: none; backface-visibility: hidden">
         <div class="is-fit-full is-3d border" [style.background-color]="isScratching ? '#00000077' : 'transparent'" style="pointer-events: none">
           <ng-container *ngIf="isScratching">
-            <div *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify" [@bounceInOut]
+            <div *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify" [@bounceInOut]="gridInfo.state"
               style="position: absolute; pointer-events: none; display: flex; justify-content: center; align-items: center"
               [style.width]="gridSize + 'px'"
               [style.height]="gridSize + 'px'"
