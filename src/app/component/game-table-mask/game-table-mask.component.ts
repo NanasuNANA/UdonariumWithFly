@@ -40,17 +40,26 @@ import { PeerCursor } from '@udonarium/peer-cursor';
   styleUrls: ['./game-table-mask.component.css'],
   animations: [
     trigger('bounceInOut', [
-      transition(':enter,:increment', [
+      transition(':enter', [
         animate('200ms ease', keyframes([
           style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.2 }),
           style({ transform: 'scale3d(1.25, 1.25, 1.25)', offset: 0.70 }),
           style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
         ]))
       ]),
-      transition(':leave,:decrement', [
+      transition(':leave', [
         animate(100, style({ transform: 'scale3d(0.25, 0.25, 0.25)' }))
       ])
-    ])
+    ]),
+    trigger('rotateInOut', [
+      transition(':increment,:decrement', [
+        animate('200ms ease-in-out', keyframes([
+          style({ transform: 'rotateY(0deg)', offset: 0.0 }),
+          style({ transform: 'rotateY(90deg)', offset: 0.50 }),
+          style({ transform: 'rotateY(180deg)', offset: 1.0 })
+        ]))
+      ])
+    ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
