@@ -162,21 +162,27 @@
   height: 50px;
   border-radius: 3px;
 }
-.scratching-mark.scratched::before,
-.scratching-mark.scratched::after {
+.scratching-mark.restore::before,
+.scratching-mark.restore::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 4px;
-  height: 25px;
-  border-radius: 2px;
+  width: 5px;
+  height: 24px;
+  border-radius: 3px;
 }
-.scratching-mark.scratching::before, .scratching-mark.scratched::before {
+.scratching-mark.scratching::before {
   transform: translate(-50%,-50%) rotate(45deg);
 }
-.scratching-mark.scratching::after, .scratching-mark.scratched::after {
+.scratching-mark.scratching::after {
   transform: translate(-50%,-50%) rotate(-45deg);
+}
+.scratching-mark.restore::before {
+  transform: translate(-50%,-50%);
+}
+.scratching-mark.restore::after {
+  transform: translate(-50%,-50%) rotate(90deg);
 }
 
 .scratching-mark.restore,
@@ -186,13 +192,15 @@
 }
 
 .scratching-mark.scratching::before,
-.scratching-mark.scratching::after, 
-.scratching-mark.scratched::before,
-.scratching-mark.scratched::after {
+.scratching-mark.scratching::after {
   background-color: rgb(255, 62, 62);
 }
 .scratching-mark.scratched {
   border-color: rgb(255, 62, 62);
+}
+.scratching-mark.restore::before,
+.scratching-mark.restore::after {
+  background-color: rgb(128, 152, 255);
 }
 .scratching-mark.restore {
   border-color: rgb(128, 152, 255);
