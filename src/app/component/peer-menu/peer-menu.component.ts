@@ -281,7 +281,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
       this.modalService.open(ConfirmationComponent, {
         title: 'GMモードになる', 
         text: 'GMモードになりますか？\nGMモード中（保留中含む）はあなたからプライベート接続、ルームへの接続は行えません。',
-        helpHtml: 'GMモードでは、<b>秘話</b>、裏向きの<b>カード</b>、公開されていない<b>ダイスシンボル</b>、<b>キャラクター</b>位置、<b>カーソル</b>位置をすべて見ることができ、あなたのカーソル位置は他の参加者に伝わらなくなります。\n\n<b><big>—With great power comes great responsibility.</big></b>',
+        helpHtml: 'GMモードでは、<b>秘話</b>、裏向きの<b>カード</b>、公開されていない<b>ダイスシンボル</b>、<b>キャラクター</b>位置、<b>カーソル</b>位置をすべて見ることができ、あなたの<b>カーソル</b>位置、<b>マップマスク</b>のスクラッチ中の状態は他の参加者に伝わらなくなります。\n\n<b><big>—With great power comes great responsibility.</big></b>',
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'person_add',
         action: () => {

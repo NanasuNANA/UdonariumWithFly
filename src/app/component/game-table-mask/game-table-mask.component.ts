@@ -153,6 +153,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get ownerName(): string { return this.gameTableMask.ownerName; }
   get ownerColor(): string { return this.gameTableMask.ownerColor; }
 
+  get ownerIsGM(): boolean { return this.gameTableMask.ownerIsGM; }
+
   panelId;
   gridSize: number = 50;
   math = Math;

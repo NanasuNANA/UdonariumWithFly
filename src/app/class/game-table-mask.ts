@@ -69,7 +69,13 @@ export class GameTableMask extends TabletopObject {
         return cursor && cursor.userId === this.owner && context.isOpen;
       }); 
   }
-  
+
+  get ownerIsGM(): boolean {
+    if (!this.hasOwner) return false;
+    const cursor = PeerCursor.findByUserId(this.owner);
+    return cursor && cursor.isGMMode;
+  }
+
   get isMine(): boolean { return Network.peerContext.userId === this.owner; }
 
   complement(): void {
