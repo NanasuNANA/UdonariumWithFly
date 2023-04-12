@@ -31,6 +31,8 @@ import { UUID } from '@udonarium/core/system/util/uuid';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { TableSelecter } from '@udonarium/table-selecter';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
+import { ChatMessageService } from 'service/chat-message.service';
+import { PeerCursor } from '@udonarium/peer-cursor';
 
 @Component({
   selector: 'game-table-mask',
@@ -177,8 +179,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     private changeDetector: ChangeDetectorRef,
     private pointerDeviceService: PointerDeviceService,
     private modalService: ModalService,
-    private coordinateService: CoordinateService
-    //private chatMessageService: ChatMessageService
+    private coordinateService: CoordinateService,
+    private chatMessageService: ChatMessageService
   ) { }
 
   ngOnInit() {
@@ -376,10 +378,19 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       (!this.gameTableMask.isMine ?
         {
           name: 'スクラッチ開始', action: () => { 
+            let isHandover = false;
+            if (this.gameTableMask.owner != '') {
+              const owner = PeerCursor.findByUserId(this.gameTableMask.owner);
+              if (owner) {
+                this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを ${ owner.name == '' ? '(無名のプレイヤー)' : owner.name } から引き継いだ`);
+                isHandover = true;
+              }
+            }
             this.gameTableMask.owner = Network.peerContext.userId;
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
             SoundEffect.play(PresetSound.lock);
+            if (!isHandover) this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを開始した`);
           },
         } : {
           name: 'スクラッチ確定', action: () => {
@@ -392,6 +403,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
             SoundEffect.play(PresetSound.cardPut);
+            this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
           }
         }
       ),
@@ -405,6 +417,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           this._scratchingGridX = -1;
           this._scratchingGridY = -1;
           SoundEffect.play(PresetSound.unlock);
+          this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
         },
         disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
       },
@@ -455,6 +468,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
                   this._scratchingGridX = -1;
                   this._scratchingGridY = -1;
                   SoundEffect.play(PresetSound.sweep);
+                  this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを初期化した`);
                 }
               });
             },
@@ -531,7 +545,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       },
       {
         name: '削除する', action: () => {
-          //this.chatMessageService.sendOperationLog(`${this.gameTableMask.name} を削除した`);
+          this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } を削除した`);
           this.gameTableMask.destroy();
           SoundEffect.play(PresetSound.sweep);
         }

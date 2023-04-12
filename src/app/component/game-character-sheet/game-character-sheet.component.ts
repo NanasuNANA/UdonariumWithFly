@@ -23,6 +23,7 @@ import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { RangeArea } from '@udonarium/range';
+import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
   selector: 'game-character-sheet',
@@ -99,7 +100,8 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     private saveDataService: SaveDataService,
     private panelService: PanelService,
     private modalService: ModalService,
-    private pointerDeviceService: PointerDeviceService
+    private pointerDeviceService: PointerDeviceService,
+    private chatMessageService: ChatMessageService
   ) { }
 
   ngOnInit() {
@@ -145,6 +147,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngAfterViewInit() {
+    this.chatMessageService.sendOperationLog(`${this.panelService.title} を開いた`);
   }
 
   ngOnDestroy() {
