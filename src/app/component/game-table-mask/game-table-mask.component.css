@@ -148,8 +148,8 @@
   transition: all;
 }
 
-.scratching-mark.scratching::after, 
-.scratching-mark.scratching::before {
+.scratching-mark.scratching::before,
+.scratching-mark.scratching::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -158,10 +158,20 @@
   height: 50px;
   border-radius: 3px;
 }
-.scratching-mark.scratching::before {
+.scratching-mark.scratched::before,
+.scratching-mark.scratched::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 25px;
+  border-radius: 2px;
+}
+.scratching-mark.scratching::before, .scratching-mark.scratched::before {
   transform: translate(-50%,-50%) rotate(45deg);
 }
-.scratching-mark.scratching::after {
+.scratching-mark.scratching::after, .scratching-mark.scratched::after {
   transform: translate(-50%,-50%) rotate(-45deg);
 }
 
@@ -171,8 +181,10 @@
   border-radius: 2px;
 }
 
+.scratching-mark.scratching::before,
 .scratching-mark.scratching::after, 
-.scratching-mark.scratching::before {
+.scratching-mark.scratched::before,
+.scratching-mark.scratched::after {
   background-color: rgb(255, 62, 62);
 }
 .scratching-mark.scratched {
