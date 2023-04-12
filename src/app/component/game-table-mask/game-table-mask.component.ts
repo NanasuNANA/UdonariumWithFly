@@ -90,12 +90,18 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   get masksCss(): string {
-    if (!this.gameTableMask.scratchedGrids) return '';
+    if (!this.isGMMode && !this.gameTableMask.scratchedGrids) return '';
     const masks: string[] = [];
     const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
+    const scratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (scratchedAry.includes(`${x}:${y}`)) continue;
+        if (this.isGMMode && this.gameTableMask.isScratchPreviewOnGMMode) {
+          if (scratchedAry.includes(`${x}:${y}`) && !scratchingAry.includes(`${x}:${y}`)) continue;
+          if (scratchingAry.includes(`${x}:${y}`) && !scratchedAry.includes(`${x}:${y}`)) continue;
+        } else {
+          if (scratchedAry.includes(`${x}:${y}`)) continue;
+        }
         masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize - 1 }px ${ y * this.gridSize -1 }px / ${ this.gridSize + 2 }px ${ this.gridSize + 2 }px no-repeat`);
       }
     }
@@ -326,15 +332,25 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     this.contextMenuService.open(menuPosition, [
       (this.isGMMode ?
         this.gameTableMask.isTransparentOnGMMode ? {
-          name: '☑ GMモード時透過', action: () => {
+          name: '☑ GM時透過表示', action: () => {
             this.gameTableMask.isTransparentOnGMMode = false;
-            SoundEffect.play(PresetSound.lock);
           }
         }
         : {
-          name: '☐ GMモード時透過', action: () => {
+          name: '☐ GM時透過表示', action: () => {
             this.gameTableMask.isTransparentOnGMMode = true;
-            SoundEffect.play(PresetSound.unlock);
+          }
+        }
+      : null),
+      (this.isGMMode ?
+        this.gameTableMask.isScratchPreviewOnGMMode ? {
+          name: '☑ GM時スクラッチプレビュー', action: () => {
+            this.gameTableMask.isScratchPreviewOnGMMode = false;
+          }
+        }
+        : {
+          name: '☐ GM時スクラッチプレビュー', action: () => {
+            this.gameTableMask.isScratchPreviewOnGMMode = true;
           }
         }
       : null),

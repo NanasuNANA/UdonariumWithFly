@@ -45,22 +45,26 @@
   box-sizing: border-box;
 }
 
-.lock-icon {
+.lock-icon, .draw-icon {
   background-color: #CCCCCC;
   border-radius: 100%;
   color: #444;
   width: 25px;
   height: 25px;
+}
+.lock-icon {
   visibility: hidden;
 }
 .component:hover .lock-icon, .component:active .lock-icon {
   visibility: visible;
 }
 
-.scratching {
+
+.scratching, .draw-icon {
   visibility: visible;
 }
-.component:hover .scratching.is-mine, .component:active .scratching.is-mine {
+.component:hover .scratching.is-mine, .component:active .scratching.is-mine,
+.component:hover .draw-icon.is-mine, .component:active .draw-icon.is-mine {
   visibility: hidden;
 }
 
@@ -165,7 +169,7 @@
   top: 50%;
   left: 50%;
   width: 4px;
-  height: 25px;
+  height: 50px;
   border-radius: 2px;
 }
 .scratching-mark.scratching::before, .scratching-mark.scratched::before {
