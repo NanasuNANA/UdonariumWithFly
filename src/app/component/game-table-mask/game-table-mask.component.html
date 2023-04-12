@@ -15,15 +15,14 @@
       <div class="is-fit-full is-3d scratching-area" style="pointer-events: none; backface-visibility: hidden">
         <div class="is-fit-full is-3d border" [style.background-color]="isScratching ? '#00000077' : 'transparent'" style="pointer-events: none">
           <ng-container *ngIf="isScratching">
-            <div *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify" [@bounceInOut]="(gameTableMask.isMine || !ownerIsGM) ? gridInfo.state : 3"
+            <div *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify" [@bounceInOut]="gridInfo.state"
               style="position: absolute; pointer-events: none; display: flex; justify-content: center; align-items: center"
               [style.width]="gridSize + 'px'"
               [style.height]="gridSize + 'px'"
               [style.left]="(gridInfo.x * gridSize) + 'px'"
               [style.top]="(gridInfo.y * gridSize) + 'px'">
-              <div *ngIf="gridInfo.state != 1 || (gameTableMask.isMine || !ownerIsGM)"
-                style="width: calc(100% - 16px); height: calc(100% - 16px); pointer-events: none" class="scratching-mark" 
-                [ngClass]="{ scratched: (gridInfo.state == 3 || (gridInfo.state == 2 && !gameTableMask.isMine && ownerIsGM)), scratching: gridInfo.state == 1, restore: (gridInfo.state == 2 && (gameTableMask.isMine || !ownerIsGM)) }">
+              <div style="width: calc(100% - 16px); height: calc(100% - 16px); pointer-events: none" class="scratching-mark" 
+                [ngClass]="{ scratched: gridInfo.state == 3, scratching: gridInfo.state == 1, restore: gridInfo.state == 2 }">
               </div>
             </div>
           </ng-container>
