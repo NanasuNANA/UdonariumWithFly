@@ -492,7 +492,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           { name: `${this.blendType == 2 ? '◉' : '○'} 背景色と混ぜる`,  action: () => { this.blendType = 2; SoundEffect.play(PresetSound.cardDraw) } },
           ContextMenuSeparator,
           { name: '色の初期化', action: () => { this.color = '#555555'; this.bgcolor = '#0a0a0a'; SoundEffect.play(PresetSound.cardDraw) } }
-        ]
+        ],
+        disabled: this.isScratching
       },
       ContextMenuSeparator,
       (this.isAltitudeIndicate
