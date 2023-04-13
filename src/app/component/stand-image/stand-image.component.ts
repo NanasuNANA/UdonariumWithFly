@@ -211,6 +211,11 @@ export class StandImageComponent implements OnInit, OnDestroy {
     //const ary = this.gameCharacter.text.replace(/。/g, "。\n\n").split(/[\r\n]{2,}/g).filter(str => str.trim());
     //return ary.length > 0 ? ary.reverse()[0].trim() : '';
   }
+
+  get dialogSpeechLength(): number {
+    if (!this.gameCharacter || StringUtil.isUnspeakable(this.gameCharacter.text)) return 0;
+    return this.dialogText.length;
+  }
   /*
   get standImage(): ImageFile {
     if (!this.standElement) return this._imageFile;
