@@ -239,7 +239,17 @@
 .name-tag .material-icons {
   font-size: 16px;
   display: inline-block;
-  margin-right: 2px;
   position: relative;
   vertical-align: text-bottom;
+}
+
+.small-font {
+  font-size: 14px;
+  vertical-align: bottom;
+}
+.edit-button {
+  padding: 0px 3px;
+  vertical-align: 10%;
+  margin: 0px 1px 0px 0px;
+  pointer-events: auto;
 }

@@ -408,35 +408,12 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             if (!isHandover) this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを開始した`);
           },
         } : {
-          name: 'スクラッチ確定', action: () => {
-            if (!this.gameTableMask.isMine) return;
-            this.ngZone.run(() => {
-              this.scratched();
-              this.gameTableMask.owner = '';
-              this.gameTableMask.scratchingGrids = '';
-              this.isPreview = false;
-            });
-            this._scratchingGridX = -1;
-            this._scratchingGridY = -1;
-            SoundEffect.play(PresetSound.cardPut);
-            this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
-          }
+          name: `スクラッチ${ this.gameTableMask.scratchingGrids ? '確定' : '終了' }`, action: () => { this.scratchDone(); },
         }
       ),
       {
-        name: 'スクラッチキャンセル', action: () => {
-          if (!this.gameTableMask.isMine) return;
-          this.ngZone.run(() => {
-            this.gameTableMask.owner = '';
-            this.gameTableMask.scratchingGrids = '';
-            this.isPreview = false;
-          });
-          this._scratchingGridX = -1;
-          this._scratchingGridY = -1;
-          SoundEffect.play(PresetSound.unlock);
-          this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
-        },
-        disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
+        name: 'スクラッチキャンセル', action: () => { this.scratchCancel(); },
+        disabled: !this.gameTableMask.isMine
       },
       {
         name: 'スクラッチ操作',
@@ -616,6 +593,48 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
   onMoved() {
     SoundEffect.play(PresetSound.cardPut);
+  }
+
+  scratchDone(e: Event=null) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!this.gameTableMask.isMine) return false;
+    this.ngZone.run(() => {
+      this.scratched();
+      this.gameTableMask.owner = '';
+      this.gameTableMask.scratchingGrids = '';
+      this.isPreview = false;
+    });
+    this._scratchingGridX = -1;
+    this._scratchingGridY = -1;
+    SoundEffect.play(PresetSound.cardPut);
+    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
+    return false;
+  }
+
+  scratchCancel(e: Event=null) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!this.gameTableMask.isMine) return false;
+    this.ngZone.run(() => {
+      this.gameTableMask.owner = '';
+      this.gameTableMask.scratchingGrids = '';
+      this.isPreview = false;
+    });
+    this._scratchingGridX = -1;
+    this._scratchingGridY = -1;
+    SoundEffect.play(PresetSound.unlock);
+    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
+    return false;
+  }
+
+  prevent(e) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   private adjustMinBounds(value: number, min: number = 0): number {
