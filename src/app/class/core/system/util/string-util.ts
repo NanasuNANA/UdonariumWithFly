@@ -33,11 +33,6 @@ export namespace StringUtil {
     return Array.from(str).length <= 3 && !/[「」]/.test(str) && (EMOJI_REGEXP.test(str) || /[$＄\\￥！？❕❢‽‼/!/?♥♪♬♩♫☺🤮❤️☠️]/.test(str)); 
   }
 
-  export function speakableText(str: string): string {
-    if (str == null) return '';
-    return Array.from<string>(this.cr(str).replace(/[\s\r\n]/g, '')).filter(c => !/[「」]/.test(c) && !EMOJI_REGEXP.test(c) && !/[$＄\\￥！？❕❢‽‼/!/?♥♪♬♩♫☺🤮❤️☠️]/.test(c)).join(''); 
-  }
-
   export function cr(str: string): string {
     if (str == null || str == '') return '';
     let ret = '';
