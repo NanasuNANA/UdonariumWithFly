@@ -516,7 +516,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 body: 'Udonarium with Fly の新しいバージョンをダウンロード中です。',
                 icon: 'card.png'
               });
-              notification.addEventListener('click', function() {
+              notification.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 if (notification) {
                   notification.close();
                   notification = null;
