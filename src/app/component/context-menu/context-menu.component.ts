@@ -36,6 +36,10 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
     return null;
   }
 
+  get isAltitudeDisabled(): boolean {
+    return this.actions.some(action => action && action.altitudeDisabled);
+  }
+
   get isIconsMenu(): boolean {
     for (let action of this.actions) {
       if(!action || !action.icon) return false;

@@ -513,7 +513,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             SoundEffect.play(PresetSound.sweep);
           }
         },
-        altitudeHande: this.gameTableMask
+        disabled: this.isScratching,
+        altitudeHande: this.gameTableMask,
+        altitudeDisabled: this.isScratching
       },
       ContextMenuSeparator,
       { name: 'マップマスクを編集...', action: () => { this.showDetail(this.gameTableMask); } },

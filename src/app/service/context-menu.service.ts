@@ -26,6 +26,7 @@ export interface ContextMenuAction {
   type?: ContextMenuType,
   subActions?: ContextMenuAction[],
   altitudeHande?: TabletopObject,
+  altitudeDisabled?: boolean,
   default?: boolean,
   icon?: ImageFile,
   error?: string,
