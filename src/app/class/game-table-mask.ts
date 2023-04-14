@@ -14,6 +14,7 @@ export class GameTableMask extends TabletopObject {
   @SyncVar() scratchingGrids: string = '';
   @SyncVar() scratchedGrids: string = '';
   @SyncVar() isScratchPreviewOnGMMode = false;
+  @SyncVar() isPreview = false;
 
   get name(): string { return this.getCommonValue('name', ''); }
   get width(): number { return this.getCommonValue('width', 1); }

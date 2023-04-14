@@ -180,7 +180,10 @@ export class TabletopService {
   private placeToTabletop(gameObject: TabletopObject) {
     switch (gameObject.aliasName) {
       case GameTableMask.aliasName:
-        if (gameObject instanceof GameTableMask) gameObject.isLock = false;
+        if (gameObject instanceof GameTableMask) { 
+          gameObject.isLock = false;
+          gameObject.isPreview = false;
+        }
         // フォールスルー
       case Terrain.aliasName:
         if (gameObject instanceof Terrain) gameObject.isLocked = false;

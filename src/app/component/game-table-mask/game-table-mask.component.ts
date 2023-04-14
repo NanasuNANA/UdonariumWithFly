@@ -86,6 +86,14 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get bgcolor(): string { return this.gameTableMask.bgcolor; }
   set bgcolor(bgcolor: string) { this.gameTableMask.bgcolor = bgcolor; }
 
+  get isPreview(): boolean { return this.gameTableMask.isPreview; }
+  set isPreview(isPreview: boolean) { this.gameTableMask.isPreview = isPreview; }
+  get isPreviewMode(): boolean {
+    if (!this.gameTableMask) return false;
+    return this.isGMMode && this.gameTableMask.isScratchPreviewOnGMMode
+     || this.isPreview && this.gameTableMask.isMine;
+  }
+
   get textShadowCss(): string {
     const shadow = StringUtil.textShadowColor(this.color);
     return `${shadow} 0px 0px 2px, 
@@ -99,13 +107,13 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   get masksCss(): string {
-    if (!this.isGMMode && !this.gameTableMask.scratchedGrids) return '';
+    if (!this.isPreviewMode && !this.gameTableMask.scratchedGrids) return '';
     const masks: string[] = [];
     const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     const scratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (this.isGMMode && this.gameTableMask.isScratchPreviewOnGMMode) {
+        if (this.isPreviewMode) {
           if (scratchedAry.includes(`${x}:${y}`) && !scratchingAry.includes(`${x}:${y}`)) continue;
           if (scratchingAry.includes(`${x}:${y}`) && !scratchedAry.includes(`${x}:${y}`)) continue;
         } else {
@@ -138,7 +146,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   get operateOpacity(): number {
-    const ret = this.opacity * (this.isGMMode && this.gameTableMask.isTransparentOnGMMode ? 0.6 : 1);
+    const ret = this.opacity * ((this.isGMMode && this.gameTableMask.isTransparentOnGMMode) || (this.isPreview && this.gameTableMask.isMine) ? 0.6 : 1);
     return (ret < 0.4 && this.isScratching) ? 0.4 : ret;
   }
 
@@ -386,6 +394,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           name: 'スクラッチ開始', action: () => { 
             let isHandover = false;
             if (this.gameTableMask.owner != '') {
+              this.isPreview = false;
               const owner = PeerCursor.findByUserId(this.gameTableMask.owner);
               if (owner) {
                 this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを ${ owner.name == '' ? '(無名のプレイヤー)' : owner.name } から引き継いだ`);
@@ -405,6 +414,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
               this.scratched();
               this.gameTableMask.owner = '';
               this.gameTableMask.scratchingGrids = '';
+              this.isPreview = false;
             });
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
@@ -419,6 +429,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           this.ngZone.run(() => {
             this.gameTableMask.owner = '';
             this.gameTableMask.scratchingGrids = '';
+            this.isPreview = false;
           });
           this._scratchingGridX = -1;
           this._scratchingGridY = -1;
@@ -456,6 +467,40 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
           },
           ContextMenuSeparator,
+          (this.isPreview
+            ? {
+              name: 'プレビューモード解除', action: () => {
+                if (!this.gameTableMask.isMine) return;
+                this.ngZone.run(() => {
+                  this.isPreview = false;
+                });
+                SoundEffect.play(PresetSound.lock);
+              },
+              selfOnly: true,
+              disabled: !this.gameTableMask.isMine
+            }
+            : {
+              name: 'プレビューモード開始', action: () => {
+                if (!this.gameTableMask.isMine) return;
+                this.modalService.open(ConfirmationComponent, {
+                  title: 'スクラッチプレビューモード', 
+                  text: 'スクラッチ中に適用後の状態を表示しますか？',
+                  helpHtml: '自分のみ、<b>このスクラッチを確定/キャンセルするまで</b>マップマスクは透過表示になり、またスクラッチ適用後の状態を表示します。',
+                  type: ConfirmationType.OK_CANCEL,
+                  materialIcon: 'visibility',
+                  action: () => {
+                    this.ngZone.run(() => {
+                      this.isPreview = true;
+                    });
+                    SoundEffect.play(PresetSound.unlock);
+                    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチをプレビューモードにした`);
+                  }
+                });
+              }, 
+              selfOnly: true,
+              disabled: !this.gameTableMask.isMine
+            }
+          ),
           { 
             name: 'スクラッチ初期化' , action: () => {
               if (!this.gameTableMask.isMine) return;
@@ -548,6 +593,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           cloneObject.owner = '';
           cloneObject.scratchingGrids = '';
           cloneObject.isLock = false;
+          cloneObject.isPreview = false;
           if (this.gameTableMask.parent) this.gameTableMask.parent.appendChild(cloneObject);
           SoundEffect.play(PresetSound.cardPut);
         }
