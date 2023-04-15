@@ -158,52 +158,91 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 5px;
-  height: 50px;
+  width: 6px;
+  height: 51px;
   border-radius: 3px;
 }
+.scratching-mark.scratching2::before,
+.scratching-mark.scratching2::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 49px;
+  border-radius: 3px;
+}
+
 .scratching-mark.restore::before,
 .scratching-mark.restore::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 5px;
+  width: 6px;
+  height: 26px;
+  border-radius: 3px;
+}
+.scratching-mark.restore2::before,
+.scratching-mark.restore2::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
   height: 24px;
   border-radius: 3px;
 }
-.scratching-mark.scratching::before {
+
+.scratching-mark.scratching::before,
+.scratching-mark.scratching2::before {
   transform: translate(-50%,-50%) rotate(45deg);
 }
-.scratching-mark.scratching::after {
+.scratching-mark.scratching::after,
+.scratching-mark.scratching2::after {
   transform: translate(-50%,-50%) rotate(-45deg);
 }
-.scratching-mark.restore::before {
+.scratching-mark.restore::before,
+.scratching-mark.restore2::before {
   transform: translate(-50%,-50%);
 }
-.scratching-mark.restore::after {
+.scratching-mark.restore::after,
+.scratching-mark.restore2::after {
   transform: translate(-50%,-50%) rotate(90deg);
 }
 
 .scratching-mark.restore,
 .scratching-mark.scratched {
-  border: 4px solid;
+  border: 3px solid;
   border-radius: 2px;
 }
 
 .scratching-mark.scratching::before,
 .scratching-mark.scratching::after {
+  background-color: #222;
+}
+.scratching-mark.scratching2::before,
+.scratching-mark.scratching2::after {
   background-color: rgb(255, 62, 62);
 }
+
 .scratching-mark.scratched {
   border-color: rgb(255, 62, 62);
+  box-shadow: 0px 0px 0px 1px #222,
+    inset 0px 0px 0px 1px #222;
 }
 .scratching-mark.restore::before,
 .scratching-mark.restore::after {
+  background-color: #222;
+}
+.scratching-mark.restore2::before,
+.scratching-mark.restore2::after {
   background-color: rgb(128, 152, 255);
 }
 .scratching-mark.restore {
   border-color: rgb(128, 152, 255);
+  box-shadow: 0px 0px 0px 1px #222,
+    inset 0px 0px 0px 1px #222;
 }
 
 .name-tag {
