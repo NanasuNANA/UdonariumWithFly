@@ -146,7 +146,7 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private resetFadeOut() {
     this.opacityElements.forEach((opacityElement) => {
-      opacityElement.style.opacity = '0.8';
+      opacityElement.style.opacity = '0.9';
     });
     if (this.fadeOutTimer == null) {
       this.fadeOutTimer = new ResettableTimeout(() => {
