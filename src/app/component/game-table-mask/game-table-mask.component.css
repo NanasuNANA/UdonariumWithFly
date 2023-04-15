@@ -228,8 +228,6 @@
 
 .scratching-mark.scratched {
   border-color: rgb(255, 62, 62);
-  box-shadow: 0px 0px 0px 1px #222,
-    inset 0px 0px 0px 1px #222;
 }
 .scratching-mark.restore::before,
 .scratching-mark.restore::after {
