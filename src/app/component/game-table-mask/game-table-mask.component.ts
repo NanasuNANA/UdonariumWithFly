@@ -413,7 +413,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       ),
       {
         name: 'スクラッチキャンセル', action: () => { this.scratchCancel(); },
-        disabled: !this.gameTableMask.isMine
+        disabled: !this.isScratching || (!this.gameTableMask.isMine && this.ownerIsOnline)
       },
       {
         name: 'スクラッチ操作',
@@ -619,7 +619,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       e.preventDefault();
       e.stopPropagation();
     }
-    if (!this.gameTableMask.isMine) return false;
+    if (!this.gameTableMask.isMine && this.ownerIsOnline) return false;
     this.ngZone.run(() => {
       this.gameTableMask.owner = '';
       this.gameTableMask.scratchingGrids = '';

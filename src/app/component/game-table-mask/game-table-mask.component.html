@@ -35,7 +35,7 @@
     <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
       <i class="material-icons" style="pointer-events: none; backface-visibility: hidden">{{ isLock ? 'lock' : 'open_with' }}</i>
     </div>
-    <div *ngIf="isScratching && ownerIsOnline" class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
+    <div *ngIf="isScratching" class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
       <i class="material-icons" style="pointer-events: none; backface-visibility: hidden">{{ isPreviewMode ? 'visibility' : 'draw' }}</i>
     </div>
     <div *ngIf="isScratching && ownerIsOnline" class="scratching is-center is-3d" style="pointer-events: none; z-index: 10; top: -10px; left: 1px; backface-visibility: hidden">
