@@ -567,8 +567,6 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
-          cloneObject.owner = '';
-          cloneObject.scratchingGrids = '';
           cloneObject.isLock = false;
           cloneObject.isPreview = false;
           if (this.gameTableMask.parent) this.gameTableMask.parent.appendChild(cloneObject);
