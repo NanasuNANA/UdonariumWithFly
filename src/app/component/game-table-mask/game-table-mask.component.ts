@@ -224,7 +224,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       });
     this.movableOption = {
       tabletopObject: this.gameTableMask,
-      transformCssOffset: 'translateZ(0.15px)',
+      transformCssOffset: 'translateZ(0.10px)',
       colideLayers: ['terrain']
     };
     this.panelId = UUID.generateUuid();
