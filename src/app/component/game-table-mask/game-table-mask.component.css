@@ -152,46 +152,42 @@
   transition: all;
 }
 
-.scratching-mark.scratching::before,
-.scratching-mark.scratching::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 51px;
-  border-radius: 3px;
-}
-.scratching-mark.scratching2::before,
-.scratching-mark.scratching2::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 49px;
-  border-radius: 3px;
-}
 
+.scratching-mark.scratching::before,
+.scratching-mark.scratching::after,
+.scratching-mark.scratching2::before,
+.scratching-mark.scratching2::after,
 .scratching-mark.restore::before,
-.scratching-mark.restore::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 26px;
-  border-radius: 3px;
-}
+.scratching-mark.restore::after,
 .scratching-mark.restore2::before,
 .scratching-mark.restore2::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
+  border-radius: 2px;
+}
+.scratching-mark.scratching::before,
+.scratching-mark.scratching::after {
+  width: 6px;
+  height: 51px;
+
+}
+.scratching-mark.scratching2::before,
+.scratching-mark.scratching2::after {
+  width: 4px;
+  height: 49px;
+}
+
+.scratching-mark.restore::before,
+.scratching-mark.restore::after {
+  width: 6px;
+  height: 26px;
+}
+.scratching-mark.restore2::before,
+.scratching-mark.restore2::after {
   width: 4px;
   height: 24px;
-  border-radius: 3px;
 }
 
 .scratching-mark.scratching::before,
