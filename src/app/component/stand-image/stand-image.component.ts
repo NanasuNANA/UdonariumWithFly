@@ -97,7 +97,8 @@ export class StandImageComponent implements OnInit, OnDestroy {
         });
       }, 12000);
     }
-    if (this.isSpeakable) {
+    //ToDO エモート時画像
+    if (this.isSpeakable && !this.gameCharacter.isEmote) {
       clearTimeout(this._dialogTimeoutId);
       if (this.gameCharacter && this.gameCharacter.text) {
         if (!this.isSpeaking) this.refleshSpeakingImageUrl();
