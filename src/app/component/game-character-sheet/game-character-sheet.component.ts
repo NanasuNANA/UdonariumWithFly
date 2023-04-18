@@ -147,7 +147,9 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngAfterViewInit() {
-    this.chatMessageService.sendOperationLog(`${this.panelService.title} を開いた`);
+    queueMicrotask(() => {
+      this.chatMessageService.sendOperationLog(`${this.panelService.title} を開いた`);
+    });
   }
 
   ngOnDestroy() {
@@ -184,6 +186,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
         (cloneObject as any).toTopmost();
       case 'table-mask':
         (cloneObject as any).isLock = false;
+        (cloneObject as any).isPreview = false;
         SoundEffect.play(PresetSound.cardPut);
         break;
       case 'text-note':
