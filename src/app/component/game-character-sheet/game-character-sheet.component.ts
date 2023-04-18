@@ -225,7 +225,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
     //let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
     //let objectName: string = element ? <string>element.value : '';
-    let objectName = this.tabletopObjectName;
+    const objectName = ((this.tabletopObject instanceof Card && !this.tabletopObject.isFront) ? 'カード' : this.tabletopObjectName);
 
     await this.saveDataService.saveGameObjectAsync(this.tabletopObject, 'fly_xml_' + objectName, percent => {
       this.progresPercent = percent;
