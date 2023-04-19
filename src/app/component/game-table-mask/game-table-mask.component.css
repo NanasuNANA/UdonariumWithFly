@@ -148,11 +148,6 @@
   overflow: hidden;
 }
 
-.scratching-mark {
-  transition: all;
-}
-
-
 .scratching-mark.scratching::before,
 .scratching-mark.scratching::after,
 .scratching-mark.scratching2::before,

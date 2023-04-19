@@ -33,6 +33,7 @@ import { TableSelecter } from '@udonarium/table-selecter';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { ChatMessageService } from 'service/chat-message.service';
 import { PeerCursor } from '@udonarium/peer-cursor';
+import { xor, uniq } from 'lodash';
 
 @Component({
   selector: 'game-table-mask',
@@ -109,15 +110,16 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get masksCss(): string {
     if (!this.isPreviewMode && !this.gameTableMask.scratchedGrids) return '';
     const masks: string[] = [];
-    const scratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
-    const scratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g).filter(grid => grid && /^\d+:\d+$/.test(grid));
+    const scratchedSet: Set<string> = new Set(this.gameTableMask.scratchedGrids.split(/,/g));
+    const scratchingSet: Set<string> = new Set(this.gameTableMask.scratchingGrids.split(/,/g));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
+        const gridStr = `${x}:${y}`;
         if (this.isPreviewMode) {
-          if (scratchedAry.includes(`${x}:${y}`) && !scratchingAry.includes(`${x}:${y}`)) continue;
-          if (scratchingAry.includes(`${x}:${y}`) && !scratchedAry.includes(`${x}:${y}`)) continue;
+          if (scratchedSet.has(gridStr) && !scratchingSet.has(gridStr)) continue;
+          if (scratchingSet.has(gridStr) && !scratchedSet.has(gridStr)) continue;
         } else {
-          if (scratchedAry.includes(`${x}:${y}`)) continue;
+          if (scratchedSet.has(gridStr)) continue;
         }
         masks.push(`radial-gradient(#000, #000) ${ x * this.gridSize - 1 }px ${ y * this.gridSize -1 }px / ${ this.gridSize + 2 }px ${ this.gridSize + 2 }px no-repeat`);
       }
@@ -127,17 +129,17 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
   get scratchingGridInfos(): {x: number, y: number, state: number}[] {
     const ret: {x: number, y: number, state: number}[] = [];
-    if (!this.gameTableMask || (!this.gameTableMask.scratchingGrids && !this.gameTableMask.scratchedGrids)) return [];
-    const scratchingGridAry = this.gameTableMask.scratchingGrids.split(/,/g);
-    const scratchedGridAry = this.gameTableMask.scratchedGrids.split(/,/g);
+    if (!this.gameTableMask || (!this.gameTableMask.scratchingGrids && !this.gameTableMask.scratchedGrids)) return ret;
+    const scratchingGridSet: Set<string> = new Set(this.gameTableMask.scratchingGrids.split(/,/g));
+    const scratchedGridSet: Set<string> = new Set(this.gameTableMask.scratchedGrids.split(/,/g));
     for (let x = 0; x < Math.ceil(this.width); x++) {
       for (let y = 0; y < Math.ceil(this.height); y++) {
         const gridStr = `${x}:${y}`;
-        if (scratchingGridAry.includes(gridStr) || scratchedGridAry.includes(gridStr)) ret.push({ 
+        if (scratchingGridSet.has(gridStr) || scratchedGridSet.has(gridStr)) ret.push({ 
           x: x, 
           y: y, 
-          state: !scratchingGridAry.includes(gridStr) ? 3 : 
-            !scratchedGridAry.includes(gridStr) ? 1 
+          state: !scratchingGridSet.has(gridStr) ? 3 : 
+            !scratchedGridSet.has(gridStr) ? 1 
             : 2
         });
       }
@@ -318,23 +320,18 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
     let newFlg = true;
     const liveScratching: string[] = currentScratchingAry.filter(grid => {
+      //if (!grid || !/^\d+:\d+$/.test(grid)) return false;
       if (grid === tempScratching) newFlg = false;
       return grid !== tempScratching;
     });
     if (newFlg) liveScratching.push(tempScratching);
-    //this.ngZone.run(() => {
-      this.gameTableMask.scratchingGrids = Array.from(new Set(liveScratching)).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
-    //});
+    this.gameTableMask.scratchingGrids = uniq(liveScratching).sort().join(',');
   } 
 
   scratched() {
     const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
     const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
-    const a = currentScratchedAry.filter(grid => !currentScratchingAry.includes(grid));
-    const b = currentScratchingAry.filter(grid => !currentScratchedAry.includes(grid));
-    //this.ngZone.run(() => {
-      this.gameTableMask.scratchedGrids = Array.from(new Set(a.concat(b))).filter(grid => grid && /^\d+:\d+$/.test(grid)).join(',');
-    //});
+    this.gameTableMask.scratchedGrids = xor(currentScratchedAry, currentScratchingAry).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
   }
 
   @HostListener('contextmenu', ['$event'])
