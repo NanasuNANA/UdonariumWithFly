@@ -33,7 +33,7 @@ import { TableSelecter } from '@udonarium/table-selecter';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 import { ChatMessageService } from 'service/chat-message.service';
 import { PeerCursor } from '@udonarium/peer-cursor';
-import { xor, uniq } from 'lodash';
+import { xor } from 'lodash';
 
 @Component({
   selector: 'game-table-mask',
@@ -243,6 +243,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   ngOnDestroy() {
     this.input.destroy();
     EventSystem.unregister(this);
+    clearTimeout(this._scratchingTimerId);
   }
 
   @HostListener('dragstart', ['$event'])
@@ -288,6 +289,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     }
   }
 
+  private _currentScratchingSet: Set<string>;
+  private _scratchingTimerId;
   scratching(isStart: boolean, position: {offsetX: number, offsetY: number} = null) {
     if (!this.gameTableMask.isMine) return;
     // とりあえず、本当は周辺を表示したい。
@@ -317,16 +320,18 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     const tempScratching = `${gridX}:${gridY}`;
     this._scratchingGridX = gridX;
     this._scratchingGridY = gridY;
-    const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
-    let newFlg = true;
-    const liveScratching: string[] = currentScratchingAry.filter(grid => {
-      //if (!grid || !/^\d+:\d+$/.test(grid)) return false;
-      if (grid === tempScratching) newFlg = false;
-      return grid !== tempScratching;
-    });
-    if (newFlg) liveScratching.push(tempScratching);
-    this.gameTableMask.scratchingGrids = uniq(liveScratching).sort().join(',');
-  } 
+    if (!this._currentScratchingSet) this._currentScratchingSet = new Set(this.gameTableMask.scratchingGrids.split(/,/g));
+    if (this._currentScratchingSet.has(tempScratching)) {
+      this._currentScratchingSet.delete(tempScratching);
+    } else {
+      this._currentScratchingSet.add(tempScratching);
+    }
+    clearTimeout(this._scratchingTimerId);
+    this._scratchingTimerId = setTimeout(() => {
+      this.gameTableMask.scratchingGrids = Array.from(this._currentScratchingSet).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
+      this._currentScratchingSet = null;
+    }, 50);
+  }
 
   scratched() {
     const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
