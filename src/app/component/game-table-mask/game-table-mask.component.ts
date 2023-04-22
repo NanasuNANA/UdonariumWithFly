@@ -107,11 +107,33 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       ${shadow} 0px 0px 2px`;
   }
 
+  get scratchedGrids() {
+    return this.gameTableMask.scratchedGrids;
+  }
+  set scratchedGrids(scratchedGrids: string) {
+    this.gameTableMask.scratchedGrids = scratchedGrids;
+  }
+
+  get scratchingGrids() {
+    return this.gameTableMask.scratchingGrids;
+  }
+  set scratchingGrids(scratchingGrids: string) {
+    this.gameTableMask.scratchingGrids = scratchingGrids;
+  }
+
+  get isNonScratched(): boolean {
+    return !this.gameTableMask.scratchedGrids;
+  }
+
+  get isNonScratching(): boolean {
+    return !(this.gameTableMask.scratchingGrids || this._currentScratchingSet);
+  }
+
   get masksCss(): string {
-    if (!this.isPreviewMode && !this.gameTableMask.scratchedGrids) return '';
+    if (!this.isPreviewMode && this.isNonScratched) return '';
     const masks: string[] = [];
-    const scratchedSet: Set<string> = new Set(this.gameTableMask.scratchedGrids.split(/,/g));
-    const scratchingSet: Set<string> = new Set(this.gameTableMask.scratchingGrids.split(/,/g));
+    const scratchedSet: Set<string> = new Set(this.scratchedGrids.split(/,/g));
+    const scratchingSet: Set<string> = this._currentScratchingSet ? this._currentScratchingSet : new Set(this.scratchingGrids.split(/,/g));
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         const gridStr = `${x}:${y}`;
@@ -129,9 +151,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
   get scratchingGridInfos(): {x: number, y: number, state: number}[] {
     const ret: {x: number, y: number, state: number}[] = [];
-    if (!this.gameTableMask || (!this.gameTableMask.scratchingGrids && !this.gameTableMask.scratchedGrids)) return ret;
-    const scratchingGridSet: Set<string> = new Set(this.gameTableMask.scratchingGrids.split(/,/g));
-    const scratchedGridSet: Set<string> = new Set(this.gameTableMask.scratchedGrids.split(/,/g));
+    if (!this.gameTableMask || (this.isNonScratching && this.isNonScratched)) return ret;
+    const scratchingGridSet: Set<string> = this._currentScratchingSet ? this._currentScratchingSet : new Set(this.scratchingGrids.split(/,/g));
+    const scratchedGridSet: Set<string> = new Set(this.scratchedGrids.split(/,/g));
     for (let x = 0; x < Math.ceil(this.width); x++) {
       for (let y = 0; y < Math.ceil(this.height); y++) {
         const gridStr = `${x}:${y}`;
@@ -320,7 +342,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     const tempScratching = `${gridX}:${gridY}`;
     this._scratchingGridX = gridX;
     this._scratchingGridY = gridY;
-    if (!this._currentScratchingSet) this._currentScratchingSet = new Set(this.gameTableMask.scratchingGrids.split(/,/g));
+    if (!this._currentScratchingSet) this._currentScratchingSet = new Set(this.scratchingGrids.split(/,/g));
     if (this._currentScratchingSet.has(tempScratching)) {
       this._currentScratchingSet.delete(tempScratching);
     } else {
@@ -328,15 +350,20 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     }
     clearTimeout(this._scratchingTimerId);
     this._scratchingTimerId = setTimeout(() => {
-      this.gameTableMask.scratchingGrids = Array.from(this._currentScratchingSet).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
+      this.scratchingGrids = Array.from(this._currentScratchingSet).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
       this._currentScratchingSet = null;
-    }, 50);
+    }, 250);
   }
 
   scratched() {
-    const currentScratchedAry: string[] = this.gameTableMask.scratchedGrids.split(/,/g);
-    const currentScratchingAry: string[] = this.gameTableMask.scratchingGrids.split(/,/g);
-    this.gameTableMask.scratchedGrids = xor(currentScratchedAry, currentScratchingAry).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
+    const currentScratchedAry: string[] = this.scratchedGrids.split(/,/g);
+    if (this._currentScratchingSet) {
+      clearTimeout(this._scratchingTimerId);
+      this.scratchingGrids = Array.from(this._currentScratchingSet).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
+      this._currentScratchingSet = null;
+    }
+    const currentScratchingAry: string[] = this.scratchingGrids.split(/,/g);
+    this.scratchedGrids = xor(currentScratchedAry, currentScratchingAry).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -397,6 +424,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             let isHandover = false;
             if (this.gameTableMask.owner != '') {
               this.isPreview = false;
+              clearTimeout(this._scratchingTimerId);
+              this._currentScratchingSet = null;
               const owner = PeerCursor.findByUserId(this.gameTableMask.owner);
               if (owner) {
                 this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを ${ owner.name == '' ? '(無名のプレイヤー)' : owner.name } から引き継いだ`);
@@ -410,7 +439,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
             if (!isHandover) this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを開始した`);
           },
         } : {
-          name: `スクラッチ${ this.gameTableMask.scratchingGrids ? '確定' : '終了' }`, action: () => { this.scratchDone(); },
+          name: `スクラッチ${ this.isNonScratching ? '終了' : '確定' }`, action: () => { this.scratchDone(); },
         }
       ),
       {
@@ -425,25 +454,27 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
               if (!this.gameTableMask.isMine) return;
               this.ngZone.run(() => {
                 this.scratched();
-                this.gameTableMask.scratchingGrids = '';
+                this.scratchingGrids = '';
               });
               this._scratchingGridX = -1;
               this._scratchingGridY = -1;
               SoundEffect.play(PresetSound.cardDraw);
             },
-            disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
+            disabled: !this.gameTableMask.isMine || this.isNonScratching
           },
           { 
             name: '破棄して続ける' , action: () => {
               if (!this.gameTableMask.isMine) return;
               this.ngZone.run(() => {
-                this.gameTableMask.scratchingGrids = '';
+                this.scratchingGrids = '';
+                clearTimeout(this._scratchingTimerId);
+                this._currentScratchingSet = null;
               });
               this._scratchingGridX = -1;
               this._scratchingGridY = -1;
               SoundEffect.play(PresetSound.sweep);
             },
-            disabled: !this.gameTableMask.isMine || !this.gameTableMask.scratchingGrids
+            disabled: !this.gameTableMask.isMine || this.isNonScratching
           },
           ContextMenuSeparator,
           (this.isPreview
@@ -492,8 +523,10 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
                 action: () => {
                   this.ngZone.run(() => {
                     this.gameTableMask.owner = '';
-                    this.gameTableMask.scratchedGrids = '';
-                    this.gameTableMask.scratchingGrids = '';
+                    this.scratchedGrids = '';
+                    this.scratchingGrids = '';
+                    this._currentScratchingSet = null;
+                    clearTimeout(this._scratchingTimerId);
                   });
                   this._scratchingGridX = -1;
                   this._scratchingGridY = -1;
@@ -502,7 +535,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
                 }
               });
             },
-            disabled: !this.gameTableMask.scratchedGrids
+            disabled: !this.gameTableMask.isMine || this.isNonScratched
           }
         ],
         disabled: !this.gameTableMask.isMine
@@ -604,7 +637,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     this.ngZone.run(() => {
       this.scratched();
       this.gameTableMask.owner = '';
-      this.gameTableMask.scratchingGrids = '';
+      this.scratchingGrids = '';
       this.isPreview = false;
     });
     this._scratchingGridX = -1;
@@ -622,7 +655,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     if (!this.gameTableMask.isMine && this.ownerIsOnline) return false;
     this.ngZone.run(() => {
       this.gameTableMask.owner = '';
-      this.gameTableMask.scratchingGrids = '';
+      this.scratchingGrids = '';
       this.isPreview = false;
     });
     this._scratchingGridX = -1;
