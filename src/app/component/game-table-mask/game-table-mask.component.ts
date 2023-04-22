@@ -141,9 +141,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     }
     return masks.length ? masks.join(',') : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
   }
-  /*
-  get scratchingGridInfos(): {x: number, y: number, state: number}[] {
-    const ret: {x: number, y: number, state: number}[] = [];
+  
+  get scratchingGridInfos(): {x: number, y: number, state: string}[] {
+    const ret: {x: number, y: number, state: string}[] = [];
     if (!this.gameTableMask || (this.isNonScratching && this.isNonScratched)) return ret;
     const scratchingGridSet: Set<string> = this._currentScratchingSet ? this._currentScratchingSet : new Set(this.scratchingGrids.split(/,/g));
     const scratchedGridSet: Set<string> = new Set(this.scratchedGrids.split(/,/g));
@@ -153,15 +153,15 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
         if (scratchingGridSet.has(gridStr) || scratchedGridSet.has(gridStr)) ret.push({ 
           x: x, 
           y: y, 
-          state: !scratchingGridSet.has(gridStr) ? 3 : 
-            !scratchedGridSet.has(gridStr) ? 1 
-            : 2
+          state: !scratchingGridSet.has(gridStr) ? 'scrached' : 
+            !scratchedGridSet.has(gridStr) ? 'scraching' 
+            : 'restore'
         });
       }
     }
     return ret;
   }
-  */
+  
   get scratchingInfoBackgroundsCss(): string {
     if (!this.gameTableMask || (this.isNonScratching && this.isNonScratched)) return 'transparent';
     const ret = [];
@@ -695,9 +695,8 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
-  /*
+  
   identify(index, gridInfo){
     return `${this.panelId}:${gridInfo.x}:${gridInfo.y}`;
   }
-  */
 }
