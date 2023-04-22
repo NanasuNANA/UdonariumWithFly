@@ -12,6 +12,7 @@
           "/*.js",
           "/assets/images/**",
           "/assets/sounds/**",
+          "/assets/svg/**",
           "/assets/styles.css",
           "!/assets/**/*.txt"
         ]
