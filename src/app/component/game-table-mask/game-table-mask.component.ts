@@ -53,7 +53,15 @@ import { xor } from 'lodash';
           style({ opacity: 0, offset: 1.0 })
         ]))
       ])
-    ])
+    ]),
+    trigger('rotateInOut', [
+      transition('scrached<=>restore', [
+        animate('132ms ease-in-out', keyframes([
+          style({ transform: 'rotateY(0deg)', offset: 0.0 }),
+          style({ transform: 'rotateY(-90deg)', offset: 1.0 })
+        ]))
+      ])
+    ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
