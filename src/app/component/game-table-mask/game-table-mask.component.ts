@@ -40,20 +40,31 @@ import { xor } from 'lodash';
   templateUrl: './game-table-mask.component.html',
   styleUrls: ['./game-table-mask.component.css'],
   animations: [
-    trigger('fadeInOut', [
-      transition('void => *', [
-        animate('132ms ease-out', keyframes([
-          style({ opacity: 0, offset: 0 }),
-          style({ opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('132ms ease-in', keyframes([
-          style({ opacity: 1, offset: 0 }),
-          style({ opacity: 0, offset: 1.0 })
+    trigger('bounceInOut', [
+      transition('0 => *', [
+        animate('200ms ease', keyframes([
+          style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.2 }),
+          style({ transform: 'scale3d(1.25, 1.25, 1.25)', offset: 0.70 }),
+          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
         ]))
       ])
-    ])
+    ]),
+    trigger('rotateInOut', [
+      transition('2 => 3', [
+        animate('200ms ease-in-out', keyframes([
+          style({ transform: 'rotateY(0deg)', offset: 0.0 }),
+          style({ transform: 'rotateY(90deg)', offset: 0.50 }),
+          style({ transform: 'rotateY(180deg)', offset: 1.0 })
+        ]))
+      ]),
+      transition('3 => 2', [
+        animate('200ms ease-in-out', keyframes([
+          style({ transform: 'rotateY(0deg)', offset: 0.0 }),
+          style({ transform: 'rotateY(-90deg)', offset: 0.50 }),
+          style({ transform: 'rotateY(-180deg)', offset: 1.0 })
+        ]))
+      ])
+    ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -142,26 +153,27 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     return masks.length ? masks.join(',') : 'radial-gradient(#000, #000) 0px 0px / 0px 0px no-repeat';
   }
   
-  get scratchingGridInfos(): {x: number, y: number, state: string}[] {
-    const ret: {x: number, y: number, state: string}[] = [];
+  get scratchingGridInfos(): {x: number, y: number, state: number}[] {
+    const ret: {x: number, y: number, state: number}[] = [];
     if (!this.gameTableMask || (this.isNonScratching && this.isNonScratched)) return ret;
     const scratchingGridSet: Set<string> = this._currentScratchingSet ? this._currentScratchingSet : new Set(this.scratchingGrids.split(/,/g));
     const scratchedGridSet: Set<string> = new Set(this.scratchedGrids.split(/,/g));
     for (let x = 0; x < Math.ceil(this.width); x++) {
       for (let y = 0; y < Math.ceil(this.height); y++) {
         const gridStr = `${x}:${y}`;
-        if (scratchingGridSet.has(gridStr) || scratchedGridSet.has(gridStr)) ret.push({ 
-          x: x, 
-          y: y, 
-          state: !scratchingGridSet.has(gridStr) ? 'scrached' : 
-            !scratchedGridSet.has(gridStr) ? 'scraching' 
-            : 'restore'
-        });
+        ret.push({ 
+            x: x, 
+            y: y, 
+            state: (!this.isScratching || !(scratchingGridSet.has(gridStr) || scratchedGridSet.has(gridStr))) ? 0 
+            : !scratchingGridSet.has(gridStr) ? 3
+            : !scratchedGridSet.has(gridStr) ? 1 
+            : 2
+          });
       }
     }
     return ret;
   }
-  
+  /*
   get scratchingInfoBackgroundsCss(): string {
     if (!this.gameTableMask || (this.isNonScratching && this.isNonScratched)) return 'transparent';
     const ret = [];
@@ -180,8 +192,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     }
     return ret.join(',');
   }
-
-
+  */
   get operateOpacity(): number {
     const ret = this.opacity * ((this.isGMMode && this.gameTableMask.isTransparentOnGMMode) || (this.isPreview && this.gameTableMask.isMine) ? 0.6 : 1);
     return (ret < 0.4 && this.isScratching) ? 0.4 : ret;
@@ -698,5 +709,10 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   
   identify(index, gridInfo){
     return `${this.panelId}:${gridInfo.x}:${gridInfo.y}`;
+  }
+
+  scrachingMarkUrl(gridInfo) {
+    const state = gridInfo.state || 0;
+    return state == 0 ? 'none' : state == 1 ? 'scraching' : state == 2 ? 'restore' : 'scrached'
   }
 }

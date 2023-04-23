@@ -12,35 +12,19 @@
         [ngClass]="{image: imageFile.url.length >= 1}">
         <img *ngIf="imageFile.url.length >= 1" class="is-fit-full is-3d chrome-smooth-image-trick" style="pointer-events: none; position: absolute;" [style.mix-blend-mode]="blendType == 1 ? null : 'hard-light'" [src]="imageFile.url | safe: 'resourceUrl'">
       </div>
-      <div class="is-fit-full is-3d scratching-area border" style="pointer-events: none; backface-visibility: hidden">
-        <svg *ngIf="isScratching" [attr.width]="width * gridSize" [attr.height]="height * gridSize" [attr.viewBox]="'0, 0, ' + (width * gridSize) + ', ' + (height * gridSize)">
-          <g *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify">
-            <desc>{{ gridInfo.state }}</desc>
-            <ng-container [ngSwitch]="gridInfo.state">
-              <ng-container *ngSwitchCase="'scrached'">
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#ff3e3e" stroke-width="4" stroke-linejoin="round" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'scraching'">
-                <line [attr.x1]="gridInfo.x * gridSize + 5" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + 5" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 5" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#ff3e3e" stroke-width="4" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + 5" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#ff3e3e" stroke-width="4" stroke-linecap="round" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'restore'">
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#22222288" stroke-width="6" stroke-linejoin="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 15" [attr.y1]="gridInfo.y * gridSize + 25" [attr.x2]="gridInfo.x * gridSize + 35" [attr.y2]="gridInfo.y * gridSize + 25" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 25" [attr.y1]="gridInfo.y * gridSize + 15" [attr.x2]="gridInfo.x * gridSize + 25" [attr.y2]="gridInfo.y * gridSize + 35" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#8098ff" stroke-width="4" stroke-linejoin="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 15" [attr.y1]="gridInfo.y * gridSize + 25" [attr.x2]="gridInfo.x * gridSize + 35" [attr.y2]="gridInfo.y * gridSize + 25" stroke="#8098ff" stroke-width="4" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 25" [attr.y1]="gridInfo.y * gridSize + 15" [attr.x2]="gridInfo.x * gridSize + 25" [attr.y2]="gridInfo.y * gridSize + 35" stroke="#8098ff" stroke-width="4" stroke-linecap="round" />
-              </ng-container>
-            </ng-container>
+      <div class="is-fit-full is-3d scratching-area" style="pointer-events: none; backface-visibility: hidden">
+        <svg *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify"
+          [@bounceInOut]="gridInfo.state" [@rotateInOut]="gridInfo.state" 
+          [style.left.px]="gridInfo.x * gridSize" [style.top.px]="gridInfo.y * gridSize"
+          [attr.width]="gridSize" [attr.height]="gridSize" [ngClass]="{ 'none': !gridInfo.state }"
+          style="transform-origin: center; position: absolute">
+          <g style="transform-origin: center">
+            <desc *ngIf="gridInfo.state > 0">{{ gridInfo.state == 1 ? 'スクラッチ中' : gridInfo.state == 2 ? '元に戻す' : 'スクラッチ済' }}</desc>
+            <image [attr.href]="'/assets/svg/' + scrachingMarkUrl(gridInfo) + '.svg'"
+              [attr.width]="gridSize" [attr.height]="gridSize" style="transform-origin: center" />
           </g>
-        </svg>        
-        <!--
-        <div *ngIf="isScratching" class="is-fit-full is-3d border" style="pointer-events: none" [style.background]="scratchingInfoBackgroundsCss" @fadeInOut>
-        </div>
-        -->
+        </svg>
+        <div class="is-fit-full is-3d border" style="pointer-events: none; backface-visibility: hidden"></div>
       </div>
     </div>
     <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
