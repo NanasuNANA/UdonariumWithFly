@@ -338,6 +338,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
         } else {
+          /*
           DiceBot.diceBotInfos.forEach((info) => {
             let normalize = info.sort_key.normalize('NFKD');
             for (let replaceData of DiceBot.replaceData) {
@@ -381,11 +382,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               DiceBot.diceBotInfosIndexed.push(group);
               group = { index: sentinel, infos: [] };
             }
-            group.infos.push({ script: info.id, game: info.game });
+            group.infos.push({ id: info.id, game: info.game });
           }
           DiceBot.diceBotInfosIndexed.push(group);
+          */
         }
-        DiceBot.diceBotInfosIndexed.sort((a, b) => a.index == b.index ? 0 : a.index < b.index ? -1 : 1);
+        //DiceBot.diceBotInfosIndexed.sort((a, b) => a.index == b.index ? 0 : a.index < b.index ? -1 : 1);
         Network.setApiKey(event.data.webrtc.key);
         Network.open();
       })
