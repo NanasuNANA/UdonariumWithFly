@@ -7,6 +7,7 @@ import {
   HostListener,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -21,8 +22,8 @@ import { GameCharacterSheetComponent } from 'component/game-character-sheet/game
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { InputHandler } from 'directive/input-handler';
 import { MovableOption } from 'directive/movable.directive';
-import { ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 import { ModalService } from 'service/modal.service';
+import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 import { CoordinateService } from 'service/coordinate.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
@@ -34,6 +35,7 @@ import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/
 import { ChatMessageService } from 'service/chat-message.service';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { xor } from 'lodash';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
   selector: 'game-table-mask',
@@ -65,7 +67,7 @@ import { xor } from 'lodash';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit {
+export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() gameTableMask: GameTableMask = null;
   @Input() is3D: boolean = false;
 
@@ -202,6 +204,11 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
   get ownerColor(): string { return this.gameTableMask.ownerColor; }
 
   panelId;
+  
+  get selectionState(): SelectionState { return this.selectionService.state(this.gameTableMask); }
+  get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
+  get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
+
   gridSize: number = 50;
   math = Math;
   viewRotateZ = 10;
@@ -217,20 +224,21 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     private elementRef: ElementRef<HTMLElement>,
     private panelService: PanelService,
     private changeDetector: ChangeDetectorRef,
+    private selectionService: TabletopSelectionService,
     private pointerDeviceService: PointerDeviceService,
     private modalService: ModalService,
     private coordinateService: CoordinateService,
     private chatMessageService: ChatMessageService
   ) { }
 
-  ngOnInit() {
+  ngOnChanges(): void {
+    EventSystem.unregister(this);
     EventSystem.register(this)
-      .on('UPDATE_GAME_OBJECT', event => {
-        let object = ObjectStore.instance.get(event.data.identifier);
-        if (!this.gameTableMask || !object) return;
-        if (this.gameTableMask === object || (object instanceof ObjectNode && this.gameTableMask.contains(object))) {
-          this.changeDetector.markForCheck();
-        }
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.gameTableMask?.identifier}`, event => {
+        this.changeDetector.markForCheck();
+      })
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.gameTableMask?.identifier}`, event => {
+        this.changeDetector.markForCheck();
       })
       .on('CHANGE_GM_MODE', event => {
         this.changeDetector.markForCheck();
@@ -246,6 +254,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
           this.viewRotateZ = event.data['z'];
           this.changeDetector.markForCheck();
         });
+      })
+      .on(`UPDATE_SELECTION/identifier/${this.gameTableMask?.identifier}`, event => {
+        this.changeDetector.markForCheck();
       });
     this.movableOption = {
       tabletopObject: this.gameTableMask,
@@ -284,7 +295,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
     //console.log(e)
     // TODO:もっと良い方法考える
     if ((this.isLock && !this.isScratching) || (this.isScratching && !this.gameTableMask.isMine)) {
-      EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
+      EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
     }
   }
 
@@ -374,8 +385,110 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
     let menuPosition = this.pointerDeviceService.pointers[0];
+
+    let menuActions: ContextMenuAction[] = [];
+    menuActions = menuActions.concat(this.makeSelectionContextMenu());
+    menuActions = menuActions.concat(this.makeContextMenu());
+
+    this.contextMenuService.open(menuPosition, menuActions, this.name);
+  }
+
+  onMove() {
+    this.contextMenuService.close();
+    SoundEffect.play(PresetSound.cardPick);
+  }
+
+  onMoved() {
+    SoundEffect.play(PresetSound.cardPut);
+  }
+
+  scratchDone(e: Event=null) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!this.gameTableMask.isMine) return false;
+    this.ngZone.run(() => {
+      this.scratched();
+      this.gameTableMask.owner = '';
+      this.scratchingGrids = '';
+      this.isPreview = false;
+    });
+    this._scratchingGridX = -1;
+    this._scratchingGridY = -1;
+    SoundEffect.play(PresetSound.cardPut);
+    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
+    return false;
+  }
+
+  scratchCancel(e: Event=null) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!this.gameTableMask.isMine && this.ownerIsOnline) return false;
+    this.ngZone.run(() => {
+      this.gameTableMask.owner = '';
+      this.scratchingGrids = '';
+      this.isPreview = false;
+    });
+    this._scratchingGridX = -1;
+    this._scratchingGridY = -1;
+    SoundEffect.play(PresetSound.unlock);
+    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
+    return false;
+  }
+
+  prevent(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  private makeSelectionContextMenu(): ContextMenuAction[] {
+    let actions: ContextMenuAction[] = [];
+
+    if (this.selectionService.objects.length) {
+      let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+      actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    }
+
+    if (this.isSelected) {
+      let selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.gameTableMask.aliasName) as GameTableMask[];
+      actions.push(
+        {
+          name: '選択したマップマスク', action: null, subActions: [
+            {
+              name: 'すべて固定する', action: () => {
+                selectedGameTableMasks().forEach(gameTableMask => gameTableMask.isLock = true);
+                SoundEffect.play(PresetSound.lock);
+              }
+            },
+            {
+              name: 'すべてのコピーを作る', action: () => {
+                selectedGameTableMasks().forEach(gameTableMask => {
+                  let cloneObject = gameTableMask.clone();
+                  console.log('コピー', cloneObject);
+                  cloneObject.location.x += this.gridSize;
+                  cloneObject.location.y += this.gridSize;
+                  cloneObject.isLock = false;
+                  if (gameTableMask.parent) gameTableMask.parent.appendChild(cloneObject);
+                });
+                SoundEffect.play(PresetSound.cardPut);
+              }
+            },
+          ]
+        }
+      );
+    }
+    if (this.selectionService.objects.length) {
+      actions.push(ContextMenuSeparator);
+    }
+    return actions;
+  }
+
+  private makeContextMenu(): ContextMenuAction[] {
     let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
-    this.contextMenuService.open(menuPosition, [
+    let actions: ContextMenuAction[] = [
       (this.isGMMode ?
         this.gameTableMask.isTransparentOnGMMode ? {
           name: '☑ GM時透過表示', action: () => {
@@ -433,7 +546,7 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
                 isHandover = true;
               }
             }
-            this.gameTableMask.owner = Network.peerContext.userId;
+            this.gameTableMask.owner = Network.peer.userId;
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
             SoundEffect.play(PresetSound.lock);
@@ -618,57 +731,9 @@ export class GameTableMaskComponent implements OnInit, OnDestroy, AfterViewInit 
       },
       ContextMenuSeparator,
       { name: 'オブジェクト作成', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
-    ], this.name);
-  }
-
-  onMove() {
-    SoundEffect.play(PresetSound.cardPick);
-  }
-
-  onMoved() {
-    SoundEffect.play(PresetSound.cardPut);
-  }
-
-  scratchDone(e: Event=null) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    if (!this.gameTableMask.isMine) return false;
-    this.ngZone.run(() => {
-      this.scratched();
-      this.gameTableMask.owner = '';
-      this.scratchingGrids = '';
-      this.isPreview = false;
-    });
-    this._scratchingGridX = -1;
-    this._scratchingGridY = -1;
-    SoundEffect.play(PresetSound.cardPut);
-    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
-    return false;
-  }
-
-  scratchCancel(e: Event=null) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    if (!this.gameTableMask.isMine && this.ownerIsOnline) return false;
-    this.ngZone.run(() => {
-      this.gameTableMask.owner = '';
-      this.scratchingGrids = '';
-      this.isPreview = false;
-    });
-    this._scratchingGridX = -1;
-    this._scratchingGridY = -1;
-    SoundEffect.play(PresetSound.unlock);
-    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
-    return false;
-  }
-
-  prevent(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    ];
+    
+    return actions;
   }
 
   private adjustMinBounds(value: number, min: number = 0): number {

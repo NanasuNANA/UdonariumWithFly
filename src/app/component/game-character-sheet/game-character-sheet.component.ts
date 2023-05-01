@@ -487,7 +487,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     return card ? card.fontsize + 9 : 18;
   }
 
-  get cardText(): number {
+  get cardText(): string {
     let card = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;

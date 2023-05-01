@@ -28,7 +28,6 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private callbackOnOutsideClick = (e) => this.onOutsideClick(e);
 
-  get isPointerDragging(): boolean { return this.pointerDeviceService.isDragging; }
   get altitudeHande(): TabletopObject { 
     for (let action of this.actions) {
       if (action && action.altitudeHande) return action.altitudeHande;
@@ -46,6 +45,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     return true;
   }
+  get isPointerDragging(): boolean { return this.pointerDeviceService.isDragging || this.pointerDeviceService.isTablePickGesture; }
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,

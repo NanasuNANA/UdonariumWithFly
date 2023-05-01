@@ -1,6 +1,6 @@
 {
   "name": "udonarium",
-  "version": "1.14.5",
+  "version": "1.15.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -42,7 +42,7 @@
     "ngx-linky": "^3.0.0",
     "pako": "^2.0.4",
     "postcss": "^8.3.0",
-    "rxjs": "~7.5.0",
+    "rxjs": "~7.8.0",
     "ssri": ">=8.0.1",
     "tslib": "^2.3.0",
     "url-parse": ">=1.5.6",

@@ -34,7 +34,7 @@
   </div>
 </button>
 <ng-container *ngIf="tabletopObject.aliasName === 'character'">
-  <select *ngIf="tabletopObject" (change)="setLocation($event.target.value)" [ngModel]="tabletopObject.location.name">
+  <select #select *ngIf="tabletopObject" (change)="setLocation(select.value)" [ngModel]="tabletopObject.location.name">
     <option value="table">テーブル</option>
     <option value="common">共有インベントリ</option>
     <option value="{{networkService.peerId}}">個人インベントリ</option>
@@ -64,7 +64,7 @@
         style="position: relative; bottom: 30px; z-index: 700;" 
         [style.left.px]="tabletopObject.imageFiles.length < 0 ? -5 : (tabletopObject.imageFiles.length - 1) * 45 - 5 - showCaseOffset(tabletopObject.imageFiles.length-2)">{{ tabletopObject.imageFiles.length < 2 ? '切り替え画像設定' : '＋' }}</button>
     </div>
-    <div *ngIf="(tabletopObject.aliasName == 'card' && (tabletopObject.isFront || tabletopObject.isHand || isVisible)) || (tabletopObject.aliasName == 'card-stack' && tabletopObject.topCard.isFront)"
+    <div *ngIf="(tabletopObject.aliasName == 'card' && ($any(tabletopObject).isFront || $any(tabletopObject).isHand || isVisible)) || (tabletopObject.aliasName == 'card-stack' && $any(tabletopObject).topCard.isFront)"
       class="text" [style.width.px]="imageAreaRreact.width" [style.height.px]="imageAreaRreact.height" [ngStyle]="{transform: 'scale(' + imageAreaRreact.scale + ')'}">
       <div [style.font-size.px]="cardFontSize" [style.color]="cardColor" [style.text-shadow]="cardTextShadowCss" [innerHTML]="cardText | safe: 'html'"></div>
     </div>
@@ -83,7 +83,7 @@
     <div class="flex-item">
       <div class="table">
         <div class="table-row" game-data-element [gameDataElement]="tabletopObject.commonDataElement" [tabletopObject]="tabletopObject" [isTagLocked]="true"
-          [isHideText]="tabletopObject.aliasName === 'card' && !tabletopObject.isFront && !tabletopObject.isHand && !tabletopObject.isGMMode" [isNoLogging]="isNoLogging" [descriptionType]="descriptionType"></div>
+          [isHideText]="tabletopObject.aliasName === 'card' && !$any(tabletopObject).isFront && !$any(tabletopObject).isHand && !tabletopObject.isGMMode" [isNoLogging]="isNoLogging" [descriptionType]="descriptionType"></div>
       </div>
       <div *ngIf="tabletopObject.aliasName === 'character'" style="margin-top: 3px; text-align: right">
         <button style="font-size: 11px; color: #444;" (click)="showChatPalette()">チャットパレットを表示</button>
@@ -95,7 +95,7 @@
   <ng-container *ngIf="tabletopObject.detailDataElement">
     <div class="flex-item" *ngFor="let childElement of tabletopObject.detailDataElement.children">
       <div class="table">
-        <div class="table-row" game-data-element [gameDataElement]="childElement" [tabletopObject]="tabletopObject" [isEdit]="isEdit" [isNoLogging]="isNoLogging"></div>
+        <div class="table-row" game-data-element [gameDataElement]="$any(childElement)" [tabletopObject]="tabletopObject" [isEdit]="isEdit" [isNoLogging]="isNoLogging"></div>
       </div>
     </div>
   </ng-container>

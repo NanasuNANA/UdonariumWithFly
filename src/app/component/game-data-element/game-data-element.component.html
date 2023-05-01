@@ -2,7 +2,7 @@
   <ng-container *ngIf="gameDataElement.children.length < 1">
     <div *ngIf="isEdit" class="table-cell table-cell_solid">
       <ng-container *ngTemplateOutlet="editButtons"></ng-container>
-      <select (change)="setElementType($event.target.value)" [ngModel]="gameDataElement.type">
+      <select #select (change)="setElementType(select.value)" [ngModel]="gameDataElement.type">
         <option value="">通常</option>
         <option value="simpleNumber">数値</option>
         <option value="numberResource">リソース</option>
@@ -46,7 +46,7 @@
               [(ngModel)]="value" type="range" title="{{value}}" min="{{name === 'altitude' ? -12 : (name === 'fontsize' || name === 'length') ? 1 : 0}}" max="{{name === 'fontsize' ? 128 : 12}}" step="{{name === 'fontsize' ? 1 : 0.5}}" />
             <br />
             <input style="width:35%; max-width:4em; text-align:right;" type="number" min="{{name === 'altitude' ? -24 : (name === 'fontsize' || name === 'length') ? 1 : 0}}" step="{{name === 'fontsize' ? 1 : 0.1}}" size="1" [(ngModel)]="value" placeholder="Value" />
-            <dev *ngIf="descriptionType === 'character' && name === 'height'" style="color: #444; font-family: Cambria, Georgia; font-size: 0.9rem; display: inline-block; margin-left: 3px"><label><input type="checkbox" [(ngModel)]="currentValue" checked="{{currentValue ? 'checked' : ''}}" (change)="currentValue = (currentValue ? name : '')">× size</label></dev>
+            <div *ngIf="descriptionType === 'character' && name === 'height'" style="color: #444; font-family: Cambria, Georgia; font-size: 0.9rem; display: inline-block; margin-left: 3px"><label><input type="checkbox" [(ngModel)]="currentValue" checked="{{currentValue ? 'checked' : ''}}" (change)="currentValue = (currentValue ? name : '')">× size</label></div>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -94,7 +94,7 @@
             <div class="hidden-spacer" style="font-size: 1.0em; font-family: Cambria, Georgia;">{{value}}</div>
             <span style="white-space: nowrap">
               <input type="url" style="width:calc(100% - 1.6rem); min-width:10px;" size="1" [(ngModel)]="value" placeholder="https://www.example.com" />
-              <button style="width: 1.6rem" [attr.disabled]="!stringUtil.validUrl(value) ? '' : null" (click)="stringUtil.validUrl(value) ? openUrl(value) : false"><i class="material-icons" style="font-size: 1.0rem">{{ !stringUtil.validUrl(value) ? 'link_off' : (stringUtil.sameOrigin(value) ? 'link' : 'open_in_new') }}</i></button>
+              <button style="width: 1.6rem" [attr.disabled]="!stringUtil.validUrl(value.toString()) ? '' : null" (click)="stringUtil.validUrl(value.toString()) ? openUrl(value) : false"><i class="material-icons" style="font-size: 1.0rem">{{ !stringUtil.validUrl(value.toString()) ? 'link_off' : (stringUtil.sameOrigin(value.toString()) ? 'link' : 'open_in_new') }}</i></button>
             </span>
           </ng-container>
           <ng-container *ngSwitchDefault>
@@ -124,7 +124,7 @@
       </div>
       <div class="table" *ngIf="0 < gameDataElement.children.length">
         <div game-data-element class="table-row" *ngFor="let childElement of gameDataElement.children"
-          [gameDataElement]="childElement" [tabletopObject]="tabletopObject" [isEdit]="isEdit" [isTagLocked]="isTagLocked" [isHideText]="isHideText" [isNoLogging]="isNoLogging" [descriptionType]="descriptionType"></div>
+          [gameDataElement]="$any(childElement)" [tabletopObject]="tabletopObject" [isEdit]="isEdit" [isTagLocked]="isTagLocked" [isHideText]="isHideText" [isNoLogging]="isNoLogging" [descriptionType]="descriptionType"></div>
       </div>
     </div>
   </ng-container>

@@ -8,11 +8,10 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
-  ViewChild, ElementRef, AfterViewInit
+  ViewChild, ElementRef, AfterViewInit,
+  OnChanges
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
-import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
-import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { GameCharacter } from '@udonarium/game-character';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
@@ -20,7 +19,7 @@ import { ChatPaletteComponent } from 'component/chat-palette/chat-palette.compon
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
-import { ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
+import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { PeerCursor } from '@udonarium/peer-cursor';
@@ -30,6 +29,8 @@ import { ModalService } from 'service/modal.service';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { StandSettingComponent } from 'component/stand-setting/stand-setting.component';
 import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
+import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 
 @Component({
   selector: 'game-character',
@@ -91,7 +92,7 @@ import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/
     ])
   ]
 })
-export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy {
+export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() gameCharacter: GameCharacter = null;
   @Input() is3D: boolean = false;
 
@@ -142,6 +143,10 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
   get elevation(): number {
     return +((this.gameCharacter.posZ + (this.altitude * this.gridSize)) / this.gridSize).toFixed(1);
   }
+
+  get selectionState(): SelectionState { return this.selectionService.state(this.gameCharacter); }
+  get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
+  get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
   gridSize: number = 50;
   math = Math;
@@ -381,6 +386,7 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
 
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};
+  rollOption: RotableOption = {};
 
   constructor(
     private contextMenuService: ContextMenuService,
@@ -388,9 +394,11 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
     private changeDetector: ChangeDetectorRef,
     private pointerDeviceService: PointerDeviceService,
     private ngZone: NgZone,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private selectionService: TabletopSelectionService
   ) { }
   
+  /*
   ngOnInit() {
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', event => {
@@ -404,6 +412,28 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
           }
           this.changeDetector.markForCheck();
         }
+    private selectionService: TabletopSelectionService,
+    private pointerDeviceService: PointerDeviceService
+  ) { }
+*/
+  ngOnChanges(): void {
+    EventSystem.unregister(this);
+    EventSystem.register(this)
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.gameCharacter?.identifier}`, event => {
+        if (this.gameCharacter.imageFiles.length <= 0) {
+          this.naturalImageHeight = 0;
+          this.naturalImageWidth = 0;
+          this.naturaHeightWidthRatio = 1;
+        }
+        this.changeDetector.markForCheck();
+      })
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.gameCharacter?.identifier}`, event => {
+        if (this.gameCharacter.imageFiles.length <= 0) {
+          this.naturalImageHeight = 0;
+          this.naturalImageWidth = 0;
+          this.naturaHeightWidthRatio = 1;
+        }
+        this.changeDetector.markForCheck();
       })
       .on('SYNCHRONIZE_FILE_LIST', event => {
         this.changeDetector.markForCheck();
@@ -452,8 +482,9 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
           clearInterval(this.chatIntervalId);
         }
       })
-      ;
-      
+      .on(`UPDATE_SELECTION/identifier/${this.gameCharacter?.identifier}`, event => {
+        this.changeDetector.markForCheck();
+      });
     this.movableOption = {
       tabletopObject: this.gameCharacter,
       transformCssOffset: 'translateZ(1.0px)',
@@ -461,6 +492,10 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
     };
     this.rotableOption = {
       tabletopObject: this.gameCharacter
+    };
+    this.rollOption = {
+      tabletopObject: this.gameCharacter,
+      targetPropertyName: 'roll',
     };
   }
 
@@ -495,7 +530,89 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
 
     let position = this.pointerDeviceService.pointers[0];
-    this.contextMenuService.open(position, [
+    let menuActions: ContextMenuAction[] = [];
+    menuActions = menuActions.concat(this.makeSelectionContextMenu());
+    menuActions = menuActions.concat(this.makeContextMenu());
+    this.contextMenuService.open(position, menuActions, this.name);
+  }
+
+  onMove() {
+    this.contextMenuService.close();
+    if (!this.isHideIn) SoundEffect.play(PresetSound.piecePick);
+  }
+
+  onMoved() {
+    // とりあえず移動したら💭消す
+    if (this.gameCharacter && this.gameCharacter.text) {
+      EventSystem.call('FAREWELL_CHAT_BALLOON', { characterIdentifier: this.gameCharacter.identifier });
+    }
+    if (!this.isHideIn) SoundEffect.play(PresetSound.piecePut);
+    this.selected = false;
+  }
+
+  onImageLoad() {
+    this.naturalImageWidth = this.characterImage.nativeElement.naturalWidth;
+    this.naturalImageHeight = this.characterImage.nativeElement.naturalHeight;
+    this.naturaHeightWidthRatio =  (this.naturalImageWidth && this.naturalImageHeight) ? (this.naturalImageHeight / this.naturalImageWidth) : 1;
+    //EventSystem.trigger('UPDATE_GAME_OBJECT', this.gameCharacter);
+  }
+
+  private makeSelectionContextMenu(): ContextMenuAction[] {
+    let actions: ContextMenuAction[] = [];
+
+    if (this.selectionService.objects.length) {
+      let objectPosition = {
+        x: this.gameCharacter.location.x + (this.gameCharacter.size * this.gridSize) / 2,
+        y: this.gameCharacter.location.y + (this.gameCharacter.size * this.gridSize) / 2,
+        z: this.gameCharacter.posZ
+      };
+      actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    }
+
+    if (this.isSelected) {
+      let selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === this.gameCharacter.aliasName) as GameCharacter[];
+      actions.push(
+        {
+          name: '選択したキャラクター', action: null, subActions: [
+            {
+              name: 'すべて共有イベントリに移動', action: () => {
+                selectedCharacter().forEach(gameCharacter => {
+                  gameCharacter.setLocation('common')
+                  this.selectionService.remove(gameCharacter);
+                });
+                SoundEffect.play(PresetSound.piecePut);
+              }
+            },
+            {
+              name: 'すべて個人イベントリに移動', action: () => {
+                selectedCharacter().forEach(gameCharacter => {
+                  gameCharacter.setLocation(Network.peerId);
+                  this.selectionService.remove(gameCharacter);
+                });
+                SoundEffect.play(PresetSound.piecePut);
+              }
+            },
+            {
+              name: 'すべて墓場に移動', action: () => {
+                selectedCharacter().forEach(gameCharacter => {
+                  gameCharacter.setLocation('graveyard');
+                  this.selectionService.remove(gameCharacter);
+                });
+                SoundEffect.play(PresetSound.sweep);
+              }
+            },
+          ]
+        }
+      );
+    }
+    if (this.selectionService.objects.length) {
+      actions.push(ContextMenuSeparator);
+    }
+    return actions;
+  }
+
+  private makeContextMenu(): ContextMenuAction[] {
+    let actions: ContextMenuAction[] = [
       { 
         name: this.isHideIn ? '位置を公開する' : '位置を自分だけ見る（ステルス）',
         action: () => {
@@ -512,7 +629,7 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
                 materialIcon: 'disabled_visible'
               });
             }
-            this.gameCharacter.owner = Network.peerContext.userId;
+            this.gameCharacter.owner = Network.peer.userId;
             SoundEffect.play(PresetSound.sweep);
             EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
           }
@@ -758,27 +875,9 @@ export class GameCharacterComponent implements OnInit, AfterViewInit, OnDestroy 
           SoundEffect.play(PresetSound.sweep);
         }
       }
-    ], this.name);
-  }
+    ];
 
-  onMove() {
-    if (!this.isHideIn) SoundEffect.play(PresetSound.piecePick);
-  }
-
-  onMoved() {
-    // とりあえず移動したら💭消す
-    if (this.gameCharacter && this.gameCharacter.text) {
-      EventSystem.call('FAREWELL_CHAT_BALLOON', { characterIdentifier: this.gameCharacter.identifier });
-    }
-    if (!this.isHideIn) SoundEffect.play(PresetSound.piecePut);
-    this.selected = false;
-  }
-
-  onImageLoad() {
-    this.naturalImageWidth = this.characterImage.nativeElement.naturalWidth;
-    this.naturalImageHeight = this.characterImage.nativeElement.naturalHeight;
-    this.naturaHeightWidthRatio =  (this.naturalImageWidth && this.naturalImageHeight) ? (this.naturalImageHeight / this.naturalImageWidth) : 1;
-    //EventSystem.trigger('UPDATE_GAME_OBJECT', this.gameCharacter);
+    return actions;
   }
 
   private adjustMinBounds(value: number, min: number = 0): number {

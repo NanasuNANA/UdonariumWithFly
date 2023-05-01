@@ -1,4 +1,14 @@
-import { AfterViewInit, Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnChanges,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 import { EventSystem } from '@udonarium/core/system';
 import { TableSelecter } from '@udonarium/table-selecter';
 import { TabletopObject } from '@udonarium/tabletop-object';
@@ -6,8 +16,12 @@ import { BatchService } from 'service/batch.service';
 import { CoordinateService } from 'service/coordinate.service';
 import { TabletopService } from 'service/tabletop.service';
 import { PointerCoordinate, PointerDeviceService } from 'service/pointer-device.service';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 import { InputHandler } from './input-handler';
+import { MovableSelectionSynchronizer } from './movable-selection-synchronizer';
+
+type LayerName = string;
 
 export interface MovableOption {
   readonly tabletopObject?: TabletopObject;
@@ -19,19 +33,32 @@ export interface MovableOption {
 @Directive({
   selector: '[appMovable]'
 })
-export class MovableDirective implements AfterViewInit, OnDestroy {
-  private static layerHash: { [layerName: string]: MovableDirective[] } = {};
+export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
+  static readonly layerMap: Map<LayerName, Set<MovableDirective>> = new Map();
 
-  private tabletopObject: TabletopObject;
-  private layerName: string = '';
-  private colideLayers: string[] = [];
-  private transformCssOffset: string = '';
+  private _tabletopObject: TabletopObject;
+  private _layerName: string = '';
+  private _colideLayers: string[] = [];
+  private _transformCssOffset: string = '';
+
+  get tabletopObject(): TabletopObject { return this._tabletopObject; }
+  get layerName(): string { return this._layerName; }
+  get colideLayers(): string[] { return this._colideLayers; }
+  get transformCssOffset(): string { return this._transformCssOffset; }
 
   @Input('movable.option') set option(option: MovableOption) {
-    this.tabletopObject = option.tabletopObject != null ? option.tabletopObject : this.tabletopObject;
-    this.layerName = option.layerName != null ? option.layerName : this.layerName;
-    this.colideLayers = option.colideLayers != null ? option.colideLayers : this.colideLayers;
-    this.transformCssOffset = option.transformCssOffset != null ? option.transformCssOffset : this.transformCssOffset;
+    this.unregister();
+    this.synchronizer.unregister();
+
+    this._tabletopObject = option.tabletopObject ?? null;
+    this._layerName = option.layerName ?? '';
+    this._colideLayers = option.colideLayers ?? [];
+    this._transformCssOffset = option.transformCssOffset ?? '';
+
+    if (this._layerName.length < 1 && this._tabletopObject) this._layerName = this._tabletopObject.aliasName;
+
+    this.register();
+    this.synchronizer.register();
   }
   @Input('movable.disable') isDisable: boolean = false;
   @Input('movable.interact') isInteract: boolean = true;
@@ -41,31 +68,35 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
   @Output('movable.ondragend') ondragend: EventEmitter<PointerEvent> = new EventEmitter();
   @Output('movable.onend') onend: EventEmitter<PointerEvent> = new EventEmitter();
 
-  private get nativeElement(): HTMLElement { return this.elementRef.nativeElement; }
+  get nativeElement(): HTMLElement { return this.elementRef.nativeElement; }
 
   private _posX: number = 0;
   private _posY: number = 0;
   private _posZ: number = 0;
 
   get posX(): number { return this._posX; }
-  set posX(posX: number) { this._posX = posX; this.setUpdateTimer(); }
+  set posX(posX: number) { this._posX = posX; this.setUpdateBatching(); }
   get posY(): number { return this._posY; }
-  set posY(posY: number) { this._posY = posY; this.setUpdateTimer(); }
+  set posY(posY: number) { this._posY = posY; this.setUpdateBatching(); }
   get posZ(): number { return this._posZ; }
-  set posZ(posZ: number) { this._posZ = posZ; this.setUpdateTimer(); }
+  set posZ(posZ: number) { this._posZ = posZ; this.setUpdateBatching(); }
 
   private pointerOffset2d: PointerCoordinate = { x: 0, y: 0, z: 0 };
   private pointerStart3d: PointerCoordinate = { x: 0, y: 0, z: 0 };
 
   private targetStartRect: DOMRect;
 
-  private height: number = 0;
-  private width: number = 0;
+  height: number = -1;
+  width: number = -1;
   private ratio: number = 1.0;
 
-  private updateTimer: NodeJS.Timer = null;
+  private isUpdateBatching: boolean = false;
   private collidableElements: HTMLElement[] = [];
-  private input: InputHandler = null;
+  private input: InputHandler = new InputHandler(this.nativeElement, false);
+
+  private synchronizer: MovableSelectionSynchronizer = new MovableSelectionSynchronizer(this, this.selectionService, this.pointerDeviceService);
+  get state(): SelectionState { return this.selectionService.state(this.tabletopObject); }
+  set state(state: SelectionState) { this.selectionService.add(this.tabletopObject, state); }
 
   private get isGridSnap(): boolean { return TableSelecter.instance.gridSnap; }
 
@@ -75,47 +106,53 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     private batchService: BatchService,
     private pointerDeviceService: PointerDeviceService,
     private coordinateService: CoordinateService,
-    private tabletopService: TabletopService
+    private tabletopService: TabletopService,
+    private selectionService: TabletopSelectionService
   ) { }
 
   ngAfterViewInit() {
-    this.batchService.add(() => this.initialize(), this.elementRef);
-    this.setPosition(this.tabletopObject);
+    this.batchService.add(() => this.initialize(), this.onstart);
   }
 
-  ngOnDestroy() {
-    this.cancel();
-    this.input.destroy();
-    this.unregister();
-    EventSystem.unregister(this);
-    this.batchService.remove(this);
-    this.batchService.remove(this.elementRef);
-  }
-
-  initialize() {
-    this.input = new InputHandler(this.nativeElement);
-    this.input.onStart = this.onInputStart.bind(this);
-    this.input.onMove = this.onInputMove.bind(this);
-    this.input.onEnd = this.onInputEnd.bind(this);
-    this.input.onContextMenu = this.onContextMenu.bind(this);
+  ngOnChanges(): void {
+    this.dispose();
 
     EventSystem.register(this)
-      .on('UPDATE_GAME_OBJECT', event => {
-        if ((event.isSendFromSelf && this.input.isGrabbing) || event.data.identifier !== this.tabletopObject.identifier || !this.shouldTransition(this.tabletopObject)) return;
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.tabletopObject?.identifier}`, event => {
+        if ((event.isSendFromSelf && (this.input.isGrabbing || this.state !== SelectionState.NONE)) || !this.shouldTransition(this.tabletopObject)) return;
         this.batchService.add(() => {
           if (this.input.isGrabbing) {
             this.cancel();
           } else {
             this.setAnimatedTransition(true);
           }
+          this.state = SelectionState.NONE;
           this.stopTransition();
           this.setPosition(this.tabletopObject);
         }, this);
       });
-    if (this.layerName.length < 1 && this.tabletopObject) this.layerName = this.tabletopObject.aliasName;
-    this.register();
-    this.findCollidableElements();
+
+    if (this.isDisable && this.state !== SelectionState.NONE) this.state = SelectionState.NONE;
     this.setPosition(this.tabletopObject);
+  }
+
+  ngOnDestroy() {
+    this.unregister();
+    this.dispose();
+    this.synchronizer.destroy();
+    this.input.destroy();
+    this.batchService.remove(this.onstart);
+  }
+
+  initialize() {
+    this.synchronizer.initialize();
+    this.input.initialize();
+    this.input.onStart = this.onInputStart.bind(this);
+    this.input.onMove = this.onInputMove.bind(this);
+    this.input.onEnd = this.onInputEnd.bind(this);
+    this.input.onContextMenu = this.onContextMenu.bind(this);
+
+    this.findCollidableElements();
   }
 
   cancel() {
@@ -126,11 +163,20 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     if (this.tabletopService.tableSelecter.viewTable) this.tabletopService.tableSelecter.viewTable.gridHeight = 0;
   }
 
+  dispose() {
+    EventSystem.unregister(this);
+    this.batchService.remove(this);
+  }
+
   onInputStart(e: MouseEvent | TouchEvent) {
     this.callSelectedEvent();
     if (this.collidableElements.length < 1) this.findCollidableElements(); // 稀にcollidableElementsの取得に失敗している
 
-    if (this.isDisable || (e as MouseEvent).button === 1 || (e as MouseEvent).button === 2) return this.cancel();
+    if (this.isDisable || (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.shiftKey))) {
+      this.cancel();
+      return;
+    }
+
     this.onstart.emit(e as PointerEvent);
 
     this.setPointerEvents(false);
@@ -166,7 +212,9 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     const viewTable = TableSelecter.instance.viewTable;
     viewTable.gridClipRect = null;
     viewTable.gridHeight = this.posZ + 0.5;
-    this.setUpdateTimer();
+    //this.setUpdateTimer();
+
+    this.synchronizer.prepareMove();
   }
 
   onInputMove(e: MouseEvent | TouchEvent) {
@@ -208,20 +256,47 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     //this.posX = this.pointer3d.x + (this.pointerOffset3d.x * this.ratio) + (-(this.width / 2) * (1.0 - this.ratio));
     //this.posY = this.pointer3d.y + (this.pointerOffset3d.y * this.ratio) + (-(this.height / 2) * (1.0 - this.ratio));
     //this.posZ = this.pointer3d.z;
-    this.posX = pointer3d.x;
-    this.posY = pointer3d.y;
-    this.posZ = pointer3d.z;
+    //this.posX = pointer3d.x;
+    //this.posY = pointer3d.y;
+    //this.posZ = pointer3d.z;
     
     //let tableSelecter = ObjectStore.instance.get<TableSelecter>('tableSelecter');
     const viewTable = TableSelecter.instance.viewTable;
     viewTable.gridClipRect = null;
     viewTable.gridHeight = this.posZ + 0.5;
+    let delta = {
+      x: pointer3d.x - this.posX,
+      y: pointer3d.y - this.posY,
+      z: pointer3d.z - this.posZ,
+    };
+
+    this.posX = pointer3d.x;
+    this.posY = pointer3d.y;
+    this.posZ = pointer3d.z;
+
+    this.synchronizer.updateMove(delta);
   }
 
   onInputEnd(e: MouseEvent | TouchEvent) {
     if (this.isDisable) return this.cancel();
     if (this.input.isDragging) this.ondragend.emit(e as PointerEvent);
+
+    let prev = {
+      x: this.posX,
+      y: this.posY,
+      z: this.posZ,
+    };
+
     if (this.isGridSnap && this.input.isDragging) this.snapToGrid();
+
+    let delta = {
+      x: this.posX - prev.x,
+      y: this.posY - prev.y,
+      z: this.posZ - prev.z,
+    };
+
+    this.synchronizer.finishMove(delta);
+
     this.cancel();
     this.onend.emit(e as PointerEvent);
   }
@@ -266,14 +341,15 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     this.updateTransformCss();
   }
 
-  private setUpdateTimer() {
-    if (this.updateTimer === null && this.tabletopObject) {
-      this.updateTimer = setTimeout(() => {
+  private setUpdateBatching() {
+    if (!this.isUpdateBatching && this.tabletopObject) {
+      this.isUpdateBatching = true;
+      this.batchService.add(() => {
         this.tabletopObject.location.x = this.posX;
         this.tabletopObject.location.y = this.posY;
         this.tabletopObject.posZ = this.posZ;
-        this.updateTimer = null;
-      }, 66);
+        this.isUpdateBatching = false;
+      });
     }
     this.updateTransformCss();
   }
@@ -306,12 +382,12 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     }
   }
 
-  private setPointerEvents(isEnable: boolean) {
+  setPointerEvents(isEnable: boolean) {
     let css = isEnable ? 'auto' : 'none';
     this.collidableElements.forEach(element => element.style.pointerEvents = css);
   }
 
-  private setAnimatedTransition(isEnable: boolean) {
+  setAnimatedTransition(isEnable: boolean) {
     this.nativeElement.style.transition = isEnable ? 'transform 132ms linear' : '';
   }
 
@@ -319,7 +395,7 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
     return object.location.x !== this.posX || object.location.y !== this.posY || object.posZ !== this.posZ;
   }
 
-  private stopTransition() {
+  stopTransition() {
     this.nativeElement.style.transform = window.getComputedStyle(this.nativeElement).transform;
   }
 
@@ -331,32 +407,29 @@ export class MovableDirective implements AfterViewInit, OnDestroy {
   private setCollidableLayer(isCollidable: boolean) {
     // todo
     let isEnable = isCollidable;
-    for (let layerName in MovableDirective.layerHash) {
-      if (-1 < this.colideLayers.indexOf(layerName)) {
-        if (layerName == 'character') {
-          isEnable = this.input.isGrabbing ? isCollidable && !this.tabletopObject.isNotRide : true;
-        } else {
-          isEnable = this.input.isGrabbing ? isCollidable : true;
-        }
+    for (let layerName of MovableDirective.layerMap.keys()) {
+      if (this.colideLayers.includes(layerName)) {
+        isEnable = this.input.isGrabbing ? isCollidable && !this.tabletopObject.isNotRide : true;
       } else {
         isEnable = !isCollidable;
       }
-      MovableDirective.layerHash[layerName].forEach(movable => {
-        if (movable === this || movable.input.isGrabbing) return;
+      MovableDirective.layerMap.get(layerName).forEach(movable => {
+        if (movable === this || (movable.input?.isGrabbing)) return;
         movable.setPointerEvents(isEnable);
       });
     }
   }
 
   private register() {
-    if (!(this.layerName in MovableDirective.layerHash)) MovableDirective.layerHash[this.layerName] = [];
-    let index = MovableDirective.layerHash[this.layerName].indexOf(this);
-    if (index < 0) MovableDirective.layerHash[this.layerName].push(this);
+    let layerSet = MovableDirective.layerMap.get(this.layerName) ?? new Set();
+    layerSet.add(this);
+    MovableDirective.layerMap.set(this.layerName, layerSet);
   }
 
   private unregister() {
-    if (!(this.layerName in MovableDirective.layerHash)) return;
-    let index = MovableDirective.layerHash[this.layerName].indexOf(this);
-    if (-1 < index) MovableDirective.layerHash[this.layerName].splice(index, 1);
+    let layerSet = MovableDirective.layerMap.get(this.layerName);
+    if (!layerSet) return;
+    layerSet.delete(this);
+    if (layerSet.size < 1) MovableDirective.layerMap.delete(this.layerName);
   }
 }

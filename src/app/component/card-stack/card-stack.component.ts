@@ -1,4 +1,4 @@
-import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -8,13 +8,12 @@ import {
   HostListener,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
-  OnInit,
 } from '@angular/core';
 import { Card } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
-import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
@@ -26,12 +25,14 @@ import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { InputHandler } from 'directive/input-handler';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
-import { ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
+import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 import { ImageService } from 'service/image.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { ModalService } from 'service/modal.service';
 import { ChatMessageService } from 'service/chat-message.service';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
+import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
 
 @Component({
   selector: 'card-stack',
@@ -40,7 +41,6 @@ import { ChatMessageService } from 'service/chat-message.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('shuffle', [
-      state('active', style({ transform: '' })),
       transition('* => active', [
         animate('800ms ease', keyframes([
           style({ transform: 'scale3d(0, 0, 0) rotateZ(0deg)', offset: 0 }),
@@ -76,7 +76,7 @@ import { ChatMessageService } from 'service/chat-message.service';
     ]),
   ]
 })
-export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() cardStack: CardStack = null;
   @Input() is3D: boolean = false;
 
@@ -99,6 +99,10 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get topCard(): Card { return this.cardStack.topCard; }
   get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.cardStack.imageFile); }
+
+  get selectionState(): SelectionState { return this.selectionService.state(this.cardStack); }
+  get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
+  get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
   animeState: string = 'inactive';
 
@@ -133,13 +137,15 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
     private panelService: PanelService,
     private elementRef: ElementRef<HTMLElement>,
     private changeDetector: ChangeDetectorRef,
+    private selectionService: TabletopSelectionService,
     private imageService: ImageService,
     private pointerDeviceService: PointerDeviceService,
     private modalService: ModalService,
     private chatMessageService: ChatMessageService
   ) { }
 
-  ngOnInit() {
+  ngOnChanges(): void {
+    EventSystem.unregister(this);
     EventSystem.register(this)
       .on('SHUFFLE_CARD_STACK', event => {
         if (event.data.identifier === this.cardStack.identifier) {
@@ -171,10 +177,25 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('CARD_STACK_DECREASED', event => {
         if (event.data.cardStackIdentifier === this.cardStack.identifier && this.cardStack) this.changeDetector.markForCheck();
       })
+      .on(`UPDATE_GAME_OBJECT/aliasName/${PeerCursor.aliasName}`, event => {
+        let object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
+        if (this.cardStack && object && object.userId === this.cardStack.owner) {
+          this.changeDetector.markForCheck();
+        }
+      })
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.cardStack?.identifier}`, event => {
+        this.changeDetector.markForCheck();
+      })
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.cardStack?.identifier}`, event => {
+        this.changeDetector.markForCheck();
+      })
       .on('SYNCHRONIZE_FILE_LIST', event => {
         this.changeDetector.markForCheck();
       })
       .on('UPDATE_FILE_RESOURE', event => {
+        this.changeDetector.markForCheck();
+      })
+      .on(`UPDATE_SELECTION/identifier/${this.cardStack?.identifier}`, event => {
         this.changeDetector.markForCheck();
       })
       .on('DISCONNECT_PEER', event => {
@@ -285,6 +306,7 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onInputStart(e: MouseEvent | TouchEvent) {
+    if (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.shiftKey)) return;
     this.startDoubleClickTimer(e);
     this.cardStack.toTopmost();
     this.startIconHiddenTimer();
@@ -304,7 +326,175 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
     let position = this.pointerDeviceService.pointers[0];
-    this.contextMenuService.open(position, [
+
+    let menuActions: ContextMenuAction[] = [];
+    menuActions = menuActions.concat(this.makeSelectionContextMenu());
+    menuActions = menuActions.concat(this.makeContextMenu());
+
+    this.contextMenuService.open(position, menuActions, this.name);
+  }
+
+  onMove() {
+    this.contextMenuService.close();
+    SoundEffect.play(PresetSound.cardPick);
+  }
+
+  onMoved() {
+    SoundEffect.play(PresetSound.cardPut);
+    this.ngZone.run(() => this.dispatchCardDropEvent());
+  }
+
+  private drawCard(): Card {
+    let card = this.cardStack.drawCard();
+    if (card) {
+      card.location.x += 100 + (Math.random() * 50);
+      card.location.y += 25 + (Math.random() * 50);
+      card.setLocation(this.cardStack.location.name);
+    }
+    return card;
+  }
+
+  textShadowCss(textColor: string): string {
+    const shadow = StringUtil.textShadowColor(textColor);
+    return `${shadow} 0px 0px 2px, 
+    ${shadow} 0px 0px 2px, 
+    ${shadow} 0px 0px 2px, 
+    ${shadow} 0px 0px 2px, 
+    ${shadow} 0px 0px 2px, 
+    ${shadow} 0px 0px 2px,
+    ${shadow} 0px 0px 2px,
+    ${shadow} 0px 0px 2px`;
+  }
+
+  private breakStack() {
+    let cards = this.cardStack.drawCardAll().reverse();
+    for (let card of cards) {
+      card.location.x += 25 - (Math.random() * 50);
+      card.location.y += 25 - (Math.random() * 50);
+      card.toTopmost();
+      card.setLocation(this.cardStack.location.name);
+    }
+    this.cardStack.setLocation('graveyard');
+    this.cardStack.destroy();
+  }
+
+  private splitStack(split: number) {
+    if (split < 2) return;
+    let cardStacks: CardStack[] = [];
+    for (let i = 0; i < split; i++) {
+      let cardStack = CardStack.create(`${this.cardStack.name}_${('0' + (i+1).toString()).slice(-2)}`);
+      cardStack.location.x = this.cardStack.location.x + 50 - (Math.random() * 100);
+      cardStack.location.y = this.cardStack.location.y + 50 - (Math.random() * 100);
+      cardStack.posZ = this.cardStack.posZ;
+      cardStack.location.name = this.cardStack.location.name;
+      cardStack.rotate = this.rotate;
+      cardStack.toTopmost();
+      cardStacks.push(cardStack);
+    }
+
+    let cards = this.cardStack.drawCardAll();
+    this.cardStack.setLocation('graveyard');
+    this.cardStack.destroy();
+
+    let num = 0;
+    let splitIndex = (cards.length / split) * (num + 1);
+    for (let i = 0; i < cards.length; i++) {
+      cardStacks[num].putOnBottom(cards[i]);
+      if (splitIndex <= i + 1) {
+        num++;
+        splitIndex = (cards.length / split) * (num + 1);
+      }
+    }
+  }
+
+  private concatStack(topStack: CardStack, bottomStack: CardStack = this.cardStack) {
+    let newCardStack = CardStack.create(bottomStack.name);
+    newCardStack.location.name = bottomStack.location.name;
+    newCardStack.location.x = bottomStack.location.x;
+    newCardStack.location.y = bottomStack.location.y;
+    newCardStack.posZ = bottomStack.posZ;
+    newCardStack.zindex = topStack.zindex;
+    newCardStack.rotate = bottomStack.rotate;
+
+    let bottomCards: Card[] = bottomStack.drawCardAll();
+    let topCards: Card[] = topStack.drawCardAll();
+    for (let card of topCards.concat(bottomCards)) newCardStack.putOnBottom(card);
+
+    bottomStack.setLocation('');
+    bottomStack.destroy();
+
+    topStack.setLocation('');
+    topStack.destroy();
+  }
+
+  private dispatchCardDropEvent() {
+    let element: HTMLElement = this.elementRef.nativeElement;
+    let parent = element.parentElement;
+    let children = parent.children;
+    let event = new CustomEvent('carddrop', { detail: this.cardStack, bubbles: true });
+    for (let i = 0; i < children.length; i++) {
+      children[i].dispatchEvent(event);
+    }
+  }
+
+  private makeSelectionContextMenu(): ContextMenuAction[] {
+    let actions: ContextMenuAction[] = [];
+
+    if (this.selectionService.objects.length) {
+      let size = this.cardStack.topCard?.size ?? 2;
+      let objectPosition = {
+        x: this.cardStack.location.x + (size * this.gridSize) / 2,
+        y: this.cardStack.location.y + (size * this.gridSize) / 2,
+        z: this.cardStack.posZ
+      };
+      actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    }
+
+    if (this.isSelected) {
+      let selectedCardStacks = () => this.selectionService.objects.filter(object => object.aliasName === this.cardStack.aliasName) as CardStack[];
+      actions.push(
+        {
+          name: '選択した山札', action: null, subActions: [
+            {
+              name: 'すべて表にする', action: () => {
+                selectedCardStacks().forEach(cardStack => cardStack.faceUpAll());
+                SoundEffect.play(PresetSound.cardDraw);
+              }
+            },
+            {
+              name: 'すべて裏にする', action: () => {
+                selectedCardStacks().forEach(cardStack => cardStack.faceDownAll());
+                SoundEffect.play(PresetSound.cardDraw);
+              }
+            },
+            {
+              name: 'すべて正位置にする', action: () => {
+                selectedCardStacks().forEach(cardStack => cardStack.uprightAll());
+                SoundEffect.play(PresetSound.cardDraw);
+              }
+            },
+            ContextMenuSeparator,
+            {
+              name: 'すべてシャッフル', action: () => {
+                SoundEffect.play(PresetSound.cardShuffle);
+                selectedCardStacks().forEach(cardStack => {
+                  cardStack.shuffle();
+                  EventSystem.call('SHUFFLE_CARD_STACK', { identifier: cardStack.identifier });
+                });
+              }
+            },
+          ]
+        }
+      );
+    }
+    if (this.selectionService.objects.length) {
+      actions.push(ContextMenuSeparator);
+    }
+    return actions;
+  }
+
+  private makeContextMenu(): ContextMenuAction[] {
+    let actions: ContextMenuAction[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -513,110 +703,9 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
           SoundEffect.play(PresetSound.sweep);
         }
       },
-    ], this.name);
-  }
+    ];
 
-  onMove() {
-    SoundEffect.play(PresetSound.cardPick);
-  }
-
-  onMoved() {
-    SoundEffect.play(PresetSound.cardPut);
-    this.ngZone.run(() => this.dispatchCardDropEvent());
-  }
-
-  private drawCard(): Card {
-    let card = this.cardStack.drawCard();
-    if (card) {
-      this.cardStack.update(); // todo
-      card.location.x += 100 + (Math.random() * 50);
-      card.location.y += 25 + (Math.random() * 50);
-      card.setLocation(this.cardStack.location.name);
-    }
-    return card;
-  }
-
-  textShadowCss(textColor: string): string {
-    const shadow = StringUtil.textShadowColor(textColor);
-    return `${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px, 
-    ${shadow} 0px 0px 2px,
-    ${shadow} 0px 0px 2px,
-    ${shadow} 0px 0px 2px`;
-  }
-
-  private breakStack() {
-    let cards = this.cardStack.drawCardAll().reverse();
-    for (let card of cards) {
-      card.location.x += 25 - (Math.random() * 50);
-      card.location.y += 25 - (Math.random() * 50);
-      card.toTopmost();
-      card.setLocation(this.cardStack.location.name);
-    }
-    this.cardStack.setLocation('graveyard');
-    this.cardStack.destroy();
-  }
-
-  private splitStack(split: number) {
-    if (split < 2) return;
-    let cardStacks: CardStack[] = [];
-    for (let i = 0; i < split; i++) {
-      let cardStack = CardStack.create(`${this.cardStack.name}_${('0' + (i+1).toString()).slice(-2)}`);
-      cardStack.location.x = this.cardStack.location.x + 50 - (Math.random() * 100);
-      cardStack.location.y = this.cardStack.location.y + 50 - (Math.random() * 100);
-      cardStack.posZ = this.cardStack.posZ;
-      cardStack.location.name = this.cardStack.location.name;
-      cardStack.rotate = this.rotate;
-      cardStack.toTopmost();
-      cardStacks.push(cardStack);
-    }
-
-    let cards = this.cardStack.drawCardAll();
-    this.cardStack.setLocation('graveyard');
-    this.cardStack.destroy();
-
-    let num = 0;
-    let splitIndex = (cards.length / split) * (num + 1);
-    for (let i = 0; i < cards.length; i++) {
-      cardStacks[num].putOnBottom(cards[i]);
-      if (splitIndex <= i + 1) {
-        num++;
-        splitIndex = (cards.length / split) * (num + 1);
-      }
-    }
-  }
-
-  private concatStack(topStack: CardStack, bottomStack: CardStack = this.cardStack) {
-    let newCardStack = CardStack.create(bottomStack.name);
-    newCardStack.location.name = bottomStack.location.name;
-    newCardStack.location.x = bottomStack.location.x;
-    newCardStack.location.y = bottomStack.location.y;
-    newCardStack.posZ = bottomStack.posZ;
-    newCardStack.zindex = topStack.zindex;
-    newCardStack.rotate = bottomStack.rotate;
-
-    let bottomCards: Card[] = bottomStack.drawCardAll();
-    let topCards: Card[] = topStack.drawCardAll();
-    for (let card of topCards.concat(bottomCards)) newCardStack.putOnBottom(card);
-
-    bottomStack.setLocation('');
-    bottomStack.destroy();
-
-    topStack.setLocation('');
-    topStack.destroy();
-  }
-
-  private dispatchCardDropEvent() {
-    let element: HTMLElement = this.elementRef.nativeElement;
-    let parent = element.parentElement;
-    let children = parent.children;
-    let event = new CustomEvent('carddrop', { detail: this.cardStack, bubbles: true });
-    for (let i = 0; i < children.length; i++) {
-      children[i].dispatchEvent(event);
-    }
+    return actions;
   }
 
   private showDetail(gameObject: CardStack) {
@@ -635,7 +724,7 @@ export class CardStackComponent implements OnInit, AfterViewInit, OnDestroy {
     let coordinate = this.pointerDeviceService.pointers[0];
     let option: PanelOption = { left: coordinate.x - 200, top: coordinate.y - 300, width: 400, height: 600 };
 
-    this.cardStack.owner = Network.peerContext.userId;
+    this.cardStack.owner = Network.peer.userId;
     let component = this.panelService.open<CardStackListComponent>(CardStackListComponent, option);
     component.cardStack = gameObject;
   }

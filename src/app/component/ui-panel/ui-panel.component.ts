@@ -72,7 +72,7 @@ export class UIPanelComponent implements OnInit {
   isFullScreen: boolean = false;
   isHorizontal: boolean = false;
 
-  get isPointerDragging(): boolean { return this.pointerDeviceService.isDragging; }
+  get isPointerDragging(): boolean { return this.pointerDeviceService.isDragging || this.pointerDeviceService.isTablePickGesture; }
 
   constructor(
     public panelService: PanelService,

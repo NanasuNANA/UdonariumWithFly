@@ -93,7 +93,6 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.chatMessage.isAnimated = true;
-
   }
 
   get isMine(): boolean {

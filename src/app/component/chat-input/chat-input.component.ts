@@ -205,7 +205,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
   //writingPeers: Map<string, NodeJS.Timer> = new Map();
   writingPeers: Map<string, ResettableTimeout> = new Map();
-  writingPeerNameAndColors: { name: string, color: string }[] = [];
+  writingPeerNameAndColors: { name: string, color: string, imageUrl: string }[] = [];
   //writingPeerNames: string[] = [];
 
   get diceBotInfos() { return DiceBot.diceBotInfos }
@@ -236,8 +236,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           this.updateWritingPeerNameAndColors();
         }
       })
-      .on('UPDATE_GAME_OBJECT', event => {
-        if (event.data.aliasName !== GameCharacter.aliasName) return;
+      .on(`UPDATE_GAME_OBJECT/aliasName/${GameCharacter.aliasName}`, event => {
         this.shouldUpdateCharacterList = true;
         if (event.data.identifier !== this.sendFrom) return;
         let gameCharacter = ObjectStore.instance.get<GameCharacter>(event.data.identifier);
@@ -315,7 +314,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     this.calcFitHeight();
   }
 
-  moveHistory(event: KeyboardEvent, direction: number) {
+  moveHistory(event: Partial<KeyboardEvent>, direction: number) {
     if (event) event.preventDefault();
     if (this.currentHistoryIndex < 0) this.tmpText = this.text;
 
@@ -343,7 +342,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     this.calcFitHeight();
   }
 
-   sendChat(event: KeyboardEvent) {
+   sendChat(event: Partial<KeyboardEvent>) {
     if (event) event.preventDefault();
     //if (!this.text.length) return;
     if (event && event.keyCode !== 13) return;
@@ -967,8 +966,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       case 'graveyard':
         return false;
       default:
-        for (const conn of Network.peerContexts) {
-          if (conn.isOpen && gameCharacter.location.name === conn.peerId) {
+        for (const peer of Network.peers) {
+          if (peer.isOpen && gameCharacter.location.name === peer.peerId) {
             return false;
           }
         }

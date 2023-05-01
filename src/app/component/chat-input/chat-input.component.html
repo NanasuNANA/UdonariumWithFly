@@ -35,14 +35,14 @@
         </select>
       </span>
       <span style="white-space: nowrap">
-        <select *ngIf="diceBotInfosIndexed.length > 0" style="width: 12em;" (change)="loadDiceBot($event.target.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}"
+        <select #select *ngIf="diceBotInfosIndexed.length > 0" style="width: 12em;" (change)="loadDiceBot(select.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}"
           [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
           <option value="DiceBot" class="not-specified">ダイスボット指定なし</option>
           <optgroup *ngFor="let group of diceBotInfosIndexed" class="dice-bot-group" label="{{group.index}}">
-            <option *ngFor="let diceBotInfo of group.infos" value="{{diceBotInfo.script}}">{{diceBotInfo.game}}</option>
+            <option *ngFor="let diceBotInfo of group.infos" value="{{diceBotInfo.id}}">{{diceBotInfo.game}}</option>
           </optgroup>
         </select>
-        <select *ngIf="diceBotInfosIndexed.length < 1" style="width: 12em;" (change)="loadDiceBot($event.target.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}" disabled
+        <select #select *ngIf="diceBotInfosIndexed.length < 1" style="width: 12em;" (change)="loadDiceBot(select.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}" disabled
           [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
           <option value="DiceBot" class="not-specified">ダイスボット読込中…</option>
         </select>

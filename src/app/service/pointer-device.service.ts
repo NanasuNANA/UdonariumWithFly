@@ -37,8 +37,13 @@ export class PointerDeviceService {
   get isDragging(): boolean { return this._isDragging; }
   set isDragging(isDragging: boolean) {
     if (isDragging === this._isDragging) return;
-    this.ngZone.run(() => this._isDragging = isDragging);
+    this.ngZone.run(() => {
+      this._isDragging = isDragging;
+      document.body.dispatchEvent(new CustomEvent('draggingstate', { detail: isDragging, bubbles: true }));
+    });
   }
+
+  isTablePickGesture = false;
 
   constructor(private ngZone: NgZone) { }
 
@@ -74,7 +79,7 @@ export class PointerDeviceService {
   private onMouseMove(e: MouseEvent) {
     let mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
     if (this.isSyntheticEvent(mosuePointer)) return;
-    if (this._isAllowedToOpenContextMenu) this.preventContextMenuIfNeeded(mosuePointer);
+    if (this._isAllowedToOpenContextMenu) this.preventContextMenuIfNeeded(mosuePointer, 3);
     this.pointers = [mosuePointer];
     this.primaryPointer = mosuePointer;
   }
@@ -86,7 +91,7 @@ export class PointerDeviceService {
     for (let i = 0; i < length; i++) {
       let touch = e.touches[i];
       let touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
-      if (this._isAllowedToOpenContextMenu) this.preventContextMenuIfNeeded(touchPointer);
+      if (this._isAllowedToOpenContextMenu) this.preventContextMenuIfNeeded(touchPointer, 12);
       this.pointers.push(touchPointer);
     }
     this.primaryPointer = this.pointers[0];

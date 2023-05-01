@@ -19,8 +19,8 @@
     <span>
       <ng-container *ngIf="networkService.isOpen">
         <span class="id-input-container">
-          <span class="id-spacer">{{ networkService.peerContext.userId }}</span>
-          <input class="id-input" type="text" value="{{ networkService.peerContext.userId }}" readonly>
+          <span class="id-spacer">{{ networkService.peer.userId }}</span>
+          <input class="id-input" type="text" value="{{ networkService.peer.userId }}" readonly>
         </span>
         <button *ngIf="isAbleClipboardCopy" (click)="copyPeerId()" [disabled]="isCopied"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
         <span [@fadeInOut]="isCopied" class="copied" [style.color]="myPeerColor"> {{ isCopied ? 'クリップボードにコピーしました。' : '' }}</span>
@@ -29,21 +29,21 @@
     <span *ngIf="!networkService.isOpen" style="font-weight: bold;">???</span>
   </div>
 </div>
-<ng-container *ngIf="networkService.peerContext.isRoom">
+<ng-container *ngIf="networkService.peer.isRoom">
   <hr/>
   <div>ルーム名：
     <span>
       <ng-container *ngIf="networkService.isOpen">
         <span class="id-input-container">
-          <span class="id-spacer room-data">{{ networkService.peerContext.roomName }}/{{ networkService.peerContext.roomId }}</span>
-          <input class="id-input room-data" type="text" value="{{ networkService.peerContext.roomName + '/' + networkService.peerContext.roomId }}" readonly>
+          <span class="id-spacer room-data">{{ networkService.peer.roomName }}/{{ networkService.peer.roomId }}</span>
+          <input class="id-input room-data" type="text" value="{{ networkService.peer.roomName + '/' + networkService.peer.roomId }}" readonly>
         </span>
         <button *ngIf="isAbleClipboardCopy" (click)="copyRoomName()" [disabled]="isRoomNameCopied"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
         <span [@fadeInOut]="isRoomNameCopied" class="copied" [style.color]="myPeerColor"> {{ isRoomNameCopied ? 'クリップボードにコピーしました。' : '' }}</span>
       </ng-container>
     </span>
   </div>
-  <ng-container *ngIf="networkService.peerContext.password">
+  <ng-container *ngIf="networkService.peer.password">
     <div>
       パスワード
       <label sytle="white-space: nowrap">
@@ -52,8 +52,8 @@
       </label>
       <div style="display: inline">
         <span *ngIf="isPasswordOpen" class="id-input-container">
-          <span class="id-spacer room-data">{{ networkService.peerContext.password }}</span>
-          <input class="id-input room-data" type="text" value="{{ networkService.peerContext.password }}" readonly>
+          <span class="id-spacer room-data">{{ networkService.peer.password }}</span>
+          <input class="id-input room-data" type="text" value="{{ networkService.peer.password }}" readonly>
         </span>
         <div style="display: inline" *ngIf="!isPasswordOpen" class="masked-password" draggable="false">{{ maskedPassword }}</div>
         <button *ngIf="isAbleClipboardCopy && isPasswordOpen" (click)="copyPassword()" [disabled]="isPasswordCopied"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
@@ -63,7 +63,7 @@
   </ng-container>
 </ng-container>
 <hr/>
-<div *ngFor="let context of networkService.peerContexts; index as i">
+<div *ngFor="let context of networkService.peers; index as i">
   <div *ngIf="i == 0" style="font-weight: bold">他の参加者と接続状態<span class="health">（良好 </span><i class="material-icons health health-blue">sentiment_very_satisfied</i><span class="health"> ＞ </span><i class="material-icons health health-green">sentiment_dissatisfied</i><span class="health"> ＞ </span><i class="material-icons health health-yellow">mood_bad</i><span class="health"> ＞ </span><i class="material-icons health health-red">sentiment_very_dissatisfied</i><span class="health"> 不良）</span>：</div>
   <div>
     <div *ngIf="!context.isOpen">[接続中]</div>
@@ -71,18 +71,18 @@
   </div>
 </div>
 <div *ngIf="!isGMMode && !isGMHold">
-  <ng-container *ngIf="!networkService.peerContext.isRoom">
+  <ng-container *ngIf="!networkService.peer.isRoom">
     <input [(ngModel)]="targetUserId" placeholder="接続したい相手のID" name="targetUserId" [disabled]="isDisableConnect" />
     <button (click)="connectPeer()" [disabled]="!networkService.isOpen || targetUserId == null || targetUserId == '' || isDisableConnect">プライベート接続</button><br>
   </ng-container>
   <button *ngIf="networkService.peerIds.length <= 1" (click)="showLobby()" [disabled]="!networkService.isOpen || isDisableConnect">ロビー（ルーム一覧）を表示</button>
 </div>
 <ng-container *ngIf="!isGMMode && !isGMHold">
-  <ng-container *ngIf="!networkService.peerContext.isRoom">
-    <div style="font-size: 12px" *ngIf="networkService.peerContexts.length < 1">※プライベート接続を使用する場合は、お互いのIDをユドナリウム外で共有してください。</div>
-    <div style="font-size: 12px" *ngIf="networkService.peerContexts.length < 1">※一人で動作確認を行いたい場合はブラウザを2つ開くと良いと思います。</div>
+  <ng-container *ngIf="!networkService.peer.isRoom">
+    <div style="font-size: 12px" *ngIf="networkService.peers.length < 1">※プライベート接続を使用する場合は、お互いのIDをユドナリウム外で共有してください。</div>
+    <div style="font-size: 12px" *ngIf="networkService.peers.length < 1">※一人で動作確認を行いたい場合はブラウザを2つ開くと良いと思います。</div>
   </ng-container>
-  <ng-container *ngIf="networkService.peerContext.isRoom">
+  <ng-container *ngIf="networkService.peer.isRoom">
     <div style="font-size: 12px">※ルーム機能を利用している時はプライベート接続を利用できません。</div>
   </ng-container>
 </ng-container>

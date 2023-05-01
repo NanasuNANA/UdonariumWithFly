@@ -4,14 +4,15 @@
     <div appRotable [rotable.option]="rotableOption" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()"
       class="component-content is-3d is-pointer-events-auto">
       <div class="pedestal-inner" [ngClass]="{'is-gray-border': hasOwner}"></div>
+      <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
       <div class="pedestal-outer"></div>
       <ng-container *ngIf="!isIconHidden">
-      <div class="pedestal-grab rotate-grab is-3d">
-        <div class="pedestal-grab-border">
-          <div class="material-icons of-front">autorenew</div>
-          <div class="material-icons of-back">autorenew</div>
+        <div class="pedestal-grab rotate-grab is-3d">
+          <div class="pedestal-grab-border">
+            <div class="material-icons of-front">autorenew</div>
+            <div class="material-icons of-back">autorenew</div>
+          </div>
         </div>
-      </div>
       </ng-container>
       <div class="component-content is-3d">
         <div class="upright-transform is-fit-width is-3d">

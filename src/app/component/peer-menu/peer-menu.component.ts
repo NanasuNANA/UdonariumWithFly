@@ -132,11 +132,11 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     let targetUserId = this.targetUserId;
     this.targetUserId = '';
     if (targetUserId.length < 1) return;
-
-    let context = PeerContext.create(targetUserId);
-    if (context.isRoom) return;
+    this.help = '';
+    let peer = PeerContext.create(targetUserId);
+    if (peer.isRoom) return;
     ObjectStore.instance.clearDeleteHistory();
-    Network.connect(context.peerId);
+    Network.connect(peer);
     if (PeerCursor.isGMHold || this.isGMMode) {
       PeerCursor.isGMHold = false;
       this.isGMMode = false;
@@ -190,7 +190,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
 
   copyPeerId() {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(this.networkService.peerContext.userId);
+      navigator.clipboard.writeText(this.networkService.peer.userId);
       this.isCopied = true;
       clearTimeout(this._timeOutId);
       this._timeOutId = setTimeout(() => {
@@ -201,7 +201,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
 
   copyRoomName() {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(this.networkService.peerContext.roomName + '/' + this.networkService.peerContext.roomId);
+      navigator.clipboard.writeText(this.networkService.peer.roomName + '/' + this.networkService.peer.roomId);
       this.isRoomNameCopied = true;
       clearTimeout(this._timeOutId2);
       this._timeOutId2 = setTimeout(() => {
@@ -212,7 +212,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
 
   copyPassword() {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(this.networkService.peerContext.password);
+      navigator.clipboard.writeText(this.networkService.peer.password);
       this.isPasswordCopied = true;
       clearTimeout(this._timeOutId3);
       this._timeOutId2 = setTimeout(() => {

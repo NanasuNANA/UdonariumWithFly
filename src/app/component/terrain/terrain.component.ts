@@ -7,12 +7,10 @@ import {
   HostListener,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
-  OnInit,
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
-import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
-import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
@@ -22,13 +20,14 @@ import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { InputHandler } from 'directive/input-handler';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
-import { ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 import { ModalService } from 'service/modal.service';
+import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
 import { CoordinateService } from 'service/coordinate.service';
 import { ImageService } from 'service/image.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { TabletopActionService } from 'service/tabletop-action.service';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
   selector: 'terrain',
@@ -36,7 +35,7 @@ import { TabletopActionService } from 'service/tabletop-action.service';
   styleUrls: ['./terrain.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
+export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() terrain: Terrain = null;
   @Input() is3D: boolean = false;
 
@@ -89,6 +88,10 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
   get isVisibleWallTopBottom(): boolean { return 0 < this.width * this.height; }
   get isVisibleWallLeftRight(): boolean { return 0 < this.depth * this.height; }
 
+  get selectionState(): SelectionState { return this.selectionService.state(this.terrain); }
+  get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
+  get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
+
   gridSize: number = 50;
 
   get isWallExist(): boolean {
@@ -117,6 +120,7 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
     private elementRef: ElementRef<HTMLElement>,
     private panelService: PanelService,
     private changeDetector: ChangeDetectorRef,
+    private selectionService: TabletopSelectionService,
     private pointerDeviceService: PointerDeviceService,
     private modalService: ModalService,
     private coordinateService: CoordinateService,
@@ -124,14 +128,14 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   viewRotateZ = 10;
 
-  ngOnInit() {
+  ngOnChanges(): void {
+    EventSystem.unregister(this);
     EventSystem.register(this)
-      .on('UPDATE_GAME_OBJECT', event => {
-        let object = ObjectStore.instance.get(event.data.identifier);
-        if (!this.terrain || !object) return;
-        if (this.terrain === object || (object instanceof ObjectNode && this.terrain.contains(object))) {
-          this.changeDetector.markForCheck();
-        }
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.terrain?.identifier}`, event => {
+        this.changeDetector.markForCheck();
+      })
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.terrain?.identifier}`, event => {
+        this.changeDetector.markForCheck();
       })
       .on('SYNCHRONIZE_FILE_LIST', event => {
         this.changeDetector.markForCheck();
@@ -144,6 +148,9 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
           this.viewRotateZ = event.data['z'];
           this.changeDetector.markForCheck();
         });
+      })
+      .on(`UPDATE_SELECTION/identifier/${this.terrain?.identifier}`, event => {
+        this.changeDetector.markForCheck();
       });
     this.movableOption = {
       tabletopObject: this.terrain,
@@ -177,7 +184,7 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // TODO:もっと良い方法考える
     if (this.isLocked) {
-      EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
+      EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
     }
   }
 
@@ -189,8 +196,110 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
 
     let menuPosition = this.pointerDeviceService.pointers[0];
+    let menuActions: ContextMenuAction[] = [];
+    menuActions = menuActions.concat(this.makeSelectionContextMenu());
+    menuActions = menuActions.concat(this.makeContextMenu());
+
+    this.contextMenuService.open(menuPosition, menuActions, this.name);
+  }
+
+  onMove() {
+    this.contextMenuService.close();
+    SoundEffect.play(PresetSound.blockPick);
+  }
+
+  onMoved() {
+    SoundEffect.play(PresetSound.blockPut);
+  }
+
+  get floorModCss() {
+    let ret = '';
+    let tmp = 0;
+    switch (this.slopeDirection) {
+      case SlopeDirection.TOP:
+        tmp = Math.atan(this.height / this.depth);
+        ret = ' rotateX(' + tmp + 'rad) scaleY(' + (1 / Math.cos(tmp)) + ')';
+        break;
+      case SlopeDirection.BOTTOM:
+        tmp = Math.atan(this.height / this.depth);
+        ret = ' rotateX(' + -tmp + 'rad) scaleY(' + (1 / Math.cos(tmp)) + ')';
+        break;
+      case SlopeDirection.LEFT:
+        tmp = Math.atan(this.height / this.width);
+        ret = ' rotateY(' + -tmp + 'rad) scaleX(' + (1 / Math.cos(tmp)) + ')';
+        break;
+      case SlopeDirection.RIGHT:
+        tmp = Math.atan(this.height / this.width);
+        ret = ' rotateY(' + tmp + 'rad) scaleX(' + (1 / Math.cos(tmp)) + ')';
+        break;
+    }
+    return ret;
+  }
+
+  get floorBrightness() {
+    let ret = 1.0;
+    if (!this.isSurfaceShading) return ret;
+    switch (this.slopeDirection) {
+      case SlopeDirection.TOP:
+        ret = 0.4;
+        break;
+      case SlopeDirection.BOTTOM:
+        ret = 1.0;
+        break;
+      case SlopeDirection.LEFT:
+        ret = 0.6;
+        break;
+      case SlopeDirection.RIGHT:
+        ret = 0.9;
+        break;
+    }
+    return ret;
+  }
+
+  private makeSelectionContextMenu(): ContextMenuAction[] {
+    let actions: ContextMenuAction[] = [];
+
+    if (this.selectionService.objects.length) {
+      let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+      actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    }
+
+    if (this.isSelected) {
+      let selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.terrain.aliasName) as Terrain[];
+      actions.push(
+        {
+          name: '選択した地形', action: null, subActions: [
+            {
+              name: 'すべて固定する', action: () => {
+                selectedGameTableMasks().forEach(terrain => terrain.isLocked = true);
+                SoundEffect.play(PresetSound.lock);
+              }
+            },
+            {
+              name: 'すべてのコピーを作る', action: () => {
+                selectedGameTableMasks().forEach(terrain => {
+                  let cloneObject = terrain.clone();
+                  cloneObject.location.x += this.gridSize;
+                  cloneObject.location.y += this.gridSize;
+                  cloneObject.isLocked = false;
+                  if (terrain.parent) terrain.parent.appendChild(cloneObject);
+                });
+                SoundEffect.play(PresetSound.blockPut);
+              }
+            }
+          ]
+        }
+      );
+    }
+    if (this.selectionService.objects.length) {
+      actions.push(ContextMenuSeparator);
+    }
+    return actions;
+  }
+
+  private makeContextMenu(): ContextMenuAction[] {
     let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
-    this.contextMenuService.open(menuPosition, [
+    let actions: ContextMenuAction[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -352,59 +461,9 @@ export class TerrainComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       ContextMenuSeparator,
       { name: 'オブジェクト作成', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
-    ], this.name);
-  }
+    ];
 
-  onMove() {
-    SoundEffect.play(PresetSound.blockPick);
-  }
-
-  onMoved() {
-    SoundEffect.play(PresetSound.blockPut);
-  }
-
-  get floorModCss() {
-    let ret = '';
-    let tmp = 0;
-    switch (this.slopeDirection) {
-      case SlopeDirection.TOP:
-        tmp = Math.atan(this.height / this.depth);
-        ret = ' rotateX(' + tmp + 'rad) scaleY(' + (1 / Math.cos(tmp)) + ')';
-        break;
-      case SlopeDirection.BOTTOM:
-        tmp = Math.atan(this.height / this.depth);
-        ret = ' rotateX(' + -tmp + 'rad) scaleY(' + (1 / Math.cos(tmp)) + ')';
-        break;
-      case SlopeDirection.LEFT:
-        tmp = Math.atan(this.height / this.width);
-        ret = ' rotateY(' + -tmp + 'rad) scaleX(' + (1 / Math.cos(tmp)) + ')';
-        break;
-      case SlopeDirection.RIGHT:
-        tmp = Math.atan(this.height / this.width);
-        ret = ' rotateY(' + tmp + 'rad) scaleX(' + (1 / Math.cos(tmp)) + ')';
-        break;
-    }
-    return ret;
-  }
-
-  get floorBrightness() {
-    let ret = 1.0;
-    if (!this.isSurfaceShading) return ret;
-    switch (this.slopeDirection) {
-      case SlopeDirection.TOP:
-        ret = 0.4;
-        break;
-      case SlopeDirection.BOTTOM:
-        ret = 1.0;
-        break;
-      case SlopeDirection.LEFT:
-        ret = 0.6;
-        break;
-      case SlopeDirection.RIGHT:
-        ret = 0.9;
-        break;
-    }
-    return ret;
+    return actions;
   }
 
   private adjustMinBounds(value: number, min: number = 0): number {

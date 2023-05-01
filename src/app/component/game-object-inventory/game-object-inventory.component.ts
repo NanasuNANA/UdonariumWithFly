@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
 import { GameObject } from '@udonarium/core/synchronize-object/game-object';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
@@ -184,7 +184,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               materialIcon: 'disabled_visible'
             });
           }
-          gameObject.owner = Network.peerContext.userId;
+          gameObject.owner = Network.peer.userId;
           SoundEffect.play(PresetSound.sweep);
           EventSystem.call('UPDATE_INVENTORY', true);
         }

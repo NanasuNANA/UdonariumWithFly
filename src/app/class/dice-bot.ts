@@ -43,10 +43,13 @@ interface DiceRollResult {
   isFumble?: boolean;
 }
 
+let loader: BCDiceLoader;
+let queue: PromiseQueue = initializeDiceBotQueue();
+
 @SyncObject('dice-bot')
 export class DiceBot extends GameObject {
-  private static queue: PromiseQueue = DiceBot.initializeDiceBotQueue();
-  public static loader = new BCDiceLoader();
+  //private static queue: PromiseQueue = DiceBot.initializeDiceBotQueue();
+  //public static loader = new BCDiceLoader();
 
   public static apiUrl: string = null;
   public static apiVersion: number = 1;
@@ -356,6 +359,7 @@ export class DiceBot extends GameObject {
     if (finalResult.result) finalResult.result = finalResult.result.trimRight();;
     return finalResult;
   }
+  //static diceBotInfos: GameSystemInfo[] = [];
 
   // GameObject Lifecycle
   onStoreAdded() {
@@ -616,55 +620,14 @@ export class DiceBot extends GameObject {
   }
 
   static async loadGameSystemAsync(gameType: string): Promise<GameSystemClass> {
-    return await DiceBot.queue.add(() => {
+    return await queue.add(() => {
       const id = this.diceBotInfos.some(info => info.id === gameType) ? gameType : 'DiceBot';
       try {
-        return DiceBot.loader.getGameSystemClass(id);
+        return loader.getGameSystemClass(id);
       } catch {
-        return DiceBot.loader.dynamicLoad(id);
+        return loader.dynamicLoad(id);
       }
     });
-  }
-
-  private static initializeDiceBotQueue(): PromiseQueue {
-    let queue = new PromiseQueue('DiceBotQueue');
-    queue.add(async () => {
-      DiceBot.loader = new (await import(
-        /* webpackChunkName: "lib/bcdice/bcdice-loader" */
-        './bcdice/bcdice-loader')
-      ).default();
-      DiceBot.diceBotInfos = DiceBot.loader.listAvailableGameSystems()
-      .filter(gameSystemInfo => gameSystemInfo.id != 'DiceBot')
-      .sort((a ,b) => {
-        const aKey: string = a.sortKey;
-        const bKey: string = b.sortKey;
-        if (aKey < bKey) {
-          return -1;
-        }
-        if (aKey > bKey) {
-          return 1;
-        }
-        return 0
-      })
-      .map<DiceBotInfo>(gameSystemInfo => {
-        const lang = /.+\:(.+)/.exec(gameSystemInfo.id);
-        let langName;
-        if (lang && lang[1]) {
-          langName = (lang[1] == 'ChineseTraditional') ? '正體中文'
-            : (lang[1] == 'Korean') ? '한국어'
-            : (lang[1] == 'English') ? 'English'
-            : (lang[1] == 'SimplifiedChinese') ? '简体中文'
-            : 'Other';
-        }
-        return {
-          id: gameSystemInfo.id,
-          game: gameSystemInfo.name,
-          lang: langName,
-          sort_key: gameSystemInfo.sortKey
-        };
-      });
-    });
-    return queue;
   }
 
   private static formatRollResult(result: string, id='DiceBot'): string {
@@ -822,4 +785,63 @@ export class DiceBot extends GameObject {
     }
     return isPass;
   }
+/*
+  function initializeDiceBotQueue(): PromiseQueue {
+    let queue = new PromiseQueue('DiceBotQueue');
+    queue.add(async () => {
+      loader = new (await import(
+        
+        './bcdice/bcdice-loader')
+      ).default();
+      DiceBot.diceBotInfos = loader.listAvailableGameSystems()
+        .sort((a, b) => {
+          if (a.sortKey < b.sortKey) return -1;
+          if (a.sortKey > b.sortKey) return 1;
+          return 0;
+        });
+    });
+    return queue;
+  }
+*/
+}
+
+function initializeDiceBotQueue(): PromiseQueue {
+  let queue = new PromiseQueue('DiceBotQueue');
+  queue.add(async () => {
+    loader = new (await import(
+      /* webpackChunkName: "lib/bcdice/bcdice-loader" */
+      './bcdice/bcdice-loader')
+    ).default();
+    DiceBot.diceBotInfos = loader.listAvailableGameSystems()
+    .filter(gameSystemInfo => gameSystemInfo.id != 'DiceBot')
+    .sort((a ,b) => {
+      const aKey: string = a.sortKey;
+      const bKey: string = b.sortKey;
+      if (aKey < bKey) {
+        return -1;
+      }
+      if (aKey > bKey) {
+        return 1;
+      }
+      return 0
+    })
+    .map<DiceBotInfo>(gameSystemInfo => {
+      const lang = /.+\:(.+)/.exec(gameSystemInfo.id);
+      let langName;
+      if (lang && lang[1]) {
+        langName = (lang[1] == 'ChineseTraditional') ? '正體中文'
+          : (lang[1] == 'Korean') ? '한국어'
+          : (lang[1] == 'English') ? 'English'
+          : (lang[1] == 'SimplifiedChinese') ? '简体中文'
+          : 'Other';
+      }
+      return {
+        id: gameSystemInfo.id,
+        game: gameSystemInfo.name,
+        lang: langName,
+        sort_key: gameSystemInfo.sortKey
+      };
+    });
+  });
+  return queue;
 }

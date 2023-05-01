@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { DataElement } from '@udonarium/data-element';
@@ -21,7 +13,7 @@ import { ModalService } from 'service/modal.service';
   styleUrls: ['./game-data-element.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewInit {
+export class GameDataElementComponent implements OnInit, OnDestroy {
   @Input() tabletopObject: TabletopObject = null;
   @Input() gameDataElement: DataElement = null;
   @Input() isEdit: boolean = false;
@@ -111,7 +103,10 @@ export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnInit() {
     if (this.gameDataElement) this.setValues(this.gameDataElement);
+  }
 
+  ngOnChanges(): void {
+    EventSystem.unregister(this);
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', event => {
         let isDetectChange = false;
@@ -123,6 +118,10 @@ export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewIni
         }
         if (isDetectChange) this.changeDetector.markForCheck();
       })
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.gameDataElement?.identifier}`, event => {
+        this.setValues(this.gameDataElement);
+        this.changeDetector.markForCheck();
+      })
       .on('DELETE_GAME_OBJECT', event => {
         if (this.gameDataElement && this.gameDataElement.identifier === event.data.identifier) {
           this.changeDetector.markForCheck();
@@ -132,10 +131,6 @@ export class GameDataElementComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnDestroy() {
     EventSystem.unregister(this);
-  }
-
-  ngAfterViewInit() {
-
   }
 
   addElement() {

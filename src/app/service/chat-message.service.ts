@@ -79,7 +79,7 @@ export class ChatMessageService {
     // もうちょとなんとかする
     let effective = !(isUseFaceIcon && this.findFaceIconIdentifier(sendFrom));
     let chatMessage: ChatMessageContext = {
-      from: Network.peerContext.userId,
+      from: Network.peer.userId,
       to: ChatMessageService.findId(sendTo),
       //to: this.findId(sendTo),
       //name: this.makeMessageName(sendFrom, sendTo),
@@ -109,7 +109,7 @@ export class ChatMessageService {
     for (const chatTab of this.chatTabs) {
       if (chatTab.recieveOperationLogLevel < logLevel) continue;
       let chatMessage: ChatMessageContext = {
-        from: Network.peerContext.userId,
+        from: Network.peer.userId,
         //to: ChatMessageService.findId(PeerCursor.myCursor.userId),
         //to: this.findId(sendTo),
         name: PeerCursor.myCursor.name,
