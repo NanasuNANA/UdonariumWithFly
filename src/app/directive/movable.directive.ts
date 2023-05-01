@@ -409,7 +409,12 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     let isEnable = isCollidable;
     for (let layerName of MovableDirective.layerMap.keys()) {
       if (this.colideLayers.includes(layerName)) {
-        isEnable = this.input.isGrabbing ? isCollidable && !this.tabletopObject.isNotRide : true;
+        //isEnable = this.input.isGrabbing ? isCollidable : true;
+        if (layerName == 'character') {
+          isEnable = this.input.isGrabbing ? isCollidable && !this.tabletopObject.isNotRide : true;
+        } else {
+          isEnable = this.input.isGrabbing ? isCollidable : true;
+        }
       } else {
         isEnable = !isCollidable;
       }
