@@ -18,6 +18,7 @@
             <desc>{{ gridInfo.state }}</desc>
             <ng-container [ngSwitch]="gridInfo.state">
               <ng-container *ngSwitchCase="'scrached'">
+                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#22222288" stroke-width="5" stroke-linejoin="round" />
                 <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#ff3e3e" stroke-width="4" stroke-linejoin="round" />
               </ng-container>
               <ng-container *ngSwitchCase="'scraching'">
@@ -38,6 +39,7 @@
           </g>
         </svg>        
       </div>
+      <div *ngIf="isSelected" class="selected-highlight border" [ngClass]="{'is-magnetic': isMagnetic}"></div>
     </div>
     <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
       <i class="material-icons" style="pointer-events: none; backface-visibility: hidden">{{ isLock ? 'lock' : 'open_with' }}</i>
@@ -63,5 +65,4 @@
       <span class="altitude-indicator is-3d" style="position: absolute; pointer-events: none; transform: rotateY(-180deg)">{{ gameTableMaskAltitude }}</span>
     </div>
   </div>
-  <div *ngIf="isSelected" class="selected-highlight border" [ngClass]="{'is-magnetic': isMagnetic}"></div>
 </div>

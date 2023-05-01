@@ -158,7 +158,7 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editEnd(event: KeyboardEvent=null) {
+  editEnd(event: Partial<KeyboardEvent>=null) {
     if (event) event.preventDefault();
     if (event && event.keyCode !== 13) return;
 

@@ -63,16 +63,8 @@ export class GameTableMask extends TabletopObject {
   }
 
   get hasOwner(): boolean { return 0 < this.owner.length; }
-  get ownerIsOnline(): boolean {
-    if (!this.hasOwner) return false; 
-    return (Network.peerContext.userId === this.owner && Network.peerContext.isOpen)
-      || Network.peerContexts.some(context => {
-        const cursor = PeerCursor.findByPeerId(context.peerId); // とりあえずPeerCursorから取る
-        return cursor && cursor.userId === this.owner && context.isOpen;
-      }); 
-  }
-  
-  get isMine(): boolean { return Network.peerContext.userId === this.owner; }
+  get ownerIsOnline(): boolean { return this.hasOwner && (this.isMine || Network.peers.some(peer => peer.userId === this.owner && peer.isOpen)); }
+  get isMine(): boolean { return Network.peer.userId === this.owner; }
 
   complement(): void {
     let element = this.getElement('fontsize', this.commonDataElement);

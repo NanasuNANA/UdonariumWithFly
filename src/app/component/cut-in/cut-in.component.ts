@@ -387,6 +387,10 @@ export class CutInComponent implements OnInit, OnDestroy {
     return this._cutInImgageUrl; 
   }
 
+  get videoStart(): number {
+    return parseInt(this.cutIn.videoStart);
+  }
+
   play() {
     if (this.isEnd) return;
     if (this._isVisible) {

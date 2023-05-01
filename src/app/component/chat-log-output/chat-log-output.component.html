@@ -1,6 +1,6 @@
 <div class="flex-container">
     <div class="flex-item no-grow">
-      <select style="width: 140px" size="10" (change)="onChangeSelectTab($event.target.value)" [ngModel]="selectedTab?.identifier" [disabled]="isAllTabs">
+      <select #select style="width: 140px" size="10" (change)="onChangeSelectTab(select.value)" [ngModel]="selectedTab?.identifier" [disabled]="isAllTabs">
         <option *ngFor="let chatTab of chatTabs" value="{{chatTab.identifier}}">{{chatTab.name}}</option>
       </select>
     </div>

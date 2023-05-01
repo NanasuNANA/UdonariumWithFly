@@ -310,7 +310,7 @@
       <ng-container *ngSwitchCase="'url'">
         <div class="tag">
           <span *ngIf="!stringUtil.validUrl(dataElm.value)" title="URLが不正です">⚠️</span><a draggable="false" [attr.title]="dataElm.value" [ngClass]="{'outer-link': !stringUtil.sameOrigin(dataElm.value) && stringUtil.validUrl(dataElm.value), 'invalid': !stringUtil.validUrl(dataElm.value)}" target="_blank" [attr.href]="(stringUtil.validUrl(dataElm.value) ? dataElm.value : '') | safe: 'url'" [attr.disabled]="!stringUtil.validUrl(dataElm.value) ? '' : null"
-          (click)="return (stringUtil.validUrl(dataElm.value) ? openUrl(dataElm.value, name, dataElm.name) : false)"><span class="url-link">{{dataElm.name}}</span></a>
+          (click)="stringUtil.validUrl(dataElm.value) ? openUrl(dataElm.value, name, dataElm.name) : false"><span class="url-link">{{dataElm.name}}</span></a>
         </div>
       </ng-container>
       <ng-container *ngSwitchDefault>
@@ -327,7 +327,7 @@
 
 <ng-template #imageView>
   <div class="image-view-background is-fill" (click)="chanageImageView(false)" [@fadeInOut]="'in'">
-    <div *ngIf="(tabletopObject.aliasName == 'card' && !(cardState === CardStateBack) && (cardState == CardStateFront || tabletopObject.isFront || tabletopObject.isHand || tabletopObject.isGMMode)) || (tabletopObject.aliasName == 'card-stack' && tabletopObject.topCard.isFront)"
+    <div *ngIf="(tabletopObject.aliasName == 'card' && !(cardState === CardStateBack) && (cardState == CardStateFront || $any(tabletopObject).isFront || $any(tabletopObject).isHand || tabletopObject.isGMMode)) || (tabletopObject.aliasName == 'card-stack' && $any(tabletopObject).topCard.isFront)"
       class="text" style="z-index: 5"
       [style.width.px]="fullImageAreaRect.width" [style.height.px]="fullImageAreaRect.height" [style.left.px]="fullImageAreaRect.left" [style.top.px]="fullImageAreaRect.top"
       [ngStyle]="{transform: 'scale(' + fullImageAreaRect.scale + ')'}">

@@ -3,7 +3,7 @@
     <div>
       <button style="font-size: smaller; margin-bottom: 3px" (click)="add()">カットインの追加</button>
     </div>
-    <select #cutInSelecter style="width: 12em;" size="15" (change)="onChangeCutIn($event.target.value)">
+    <select #cutInSelecter style="width: 12em;" size="15" (change)="onChangeCutIn(cutInSelecter.value)">
       <option *ngFor="let cutIn of cutIns" value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name == '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name == '' ? '(無名のカットイン)' : cutIn.name) }}</option>
     </select>
   </div>
@@ -121,13 +121,13 @@
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-sound" [(ngModel)]="cutInIsVideo" [checked]="!cutInIsVideo" [value]="false" [attr.disabled]="!isEditable || isPlaying ? '' : null">
             <label for="{{panelId}}-media-sound"><b>音楽ファイル: </b></label>
-            <select 
+            <select #audioSelect
               [style.min-width.em]="isValidAudio ? 10 : 5"
               [style.max-width.em]="isValidAudio ? 20 : 5"
               [(ngModel)]="cutInAudioIdentifier" 
               [ngClass]="{'not-specified': cutInAudioIdentifier == ''}" 
               [attr.disabled]="cutInIsVideo || !isEditable || isPlaying ? '' : null"
-              (change)="onAudioFileChange($event.target.value)">
+              (change)="onAudioFileChange(audioSelect.value)">
               <option value="" class="not-specified">効果音なし</option>
               <option style="color: black" *ngFor="let audio of audios" value="{{audio.identifier}}">{{ audio.name }}</option>
             </select>

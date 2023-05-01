@@ -55,7 +55,6 @@ import { TabletopService } from 'service/tabletop.service';
 
 import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { StandSettingComponent } from './component/stand-setting/stand-setting.component';
 import { StandElementComponent } from './component/stand-element/stand-element.component';
@@ -139,7 +138,7 @@ import { RangeComponent } from './component/range/range.component';
     FormsModule,
     LinkyModule,
     YouTubePlayerModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js')
   ],
   providers: [
     AppConfigService,

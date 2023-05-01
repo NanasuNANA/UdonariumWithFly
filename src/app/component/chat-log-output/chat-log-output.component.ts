@@ -44,8 +44,8 @@ export class ChatLogOutputComponent implements OnInit {
   get isDiable(): boolean { return this.isEmpty || (!this.isAllTabs && (!this.selectedTab || this.isDeleted)) }
 
   get roomName():string {
-    let roomName = Network.peerContext && 0 < Network.peerContext.roomName.length
-      ? Network.peerContext.roomName
+    let roomName = Network.peer && 0 < Network.peer.roomName.length
+      ? Network.peer.roomName
       : 'ルームデータ';
     return roomName;
   }
