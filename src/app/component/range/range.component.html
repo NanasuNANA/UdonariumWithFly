@@ -3,9 +3,11 @@
   <div class="is-3d" [style.transform]="'translateZ(' + (altitude * gridSize) + 'px)'" [ngClass]="{fall: altitude == 0}">
     <div class="is-3d" [style.clip-path]="gripPathText" style="position: absolute">
       <div class="is-fill" style="position: absolute; pointer-events: auto; top: -100%" 
-      [style.left.px]="-gripLength * 1.5 * gridSize" 
-      [style.width.px]="gripLength * 3 * gridSize"
-      [style.height.px]="gripWidth * 3 * gridSize"></div>
+        [style.left.px]="-gripLength * 1.5 * gridSize" 
+        [style.width.px]="gripLength * 3 * gridSize"
+        [style.height.px]="gripWidth * 3 * gridSize">
+        <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+      </div>
     </div>
     <div class="is-3d" style="position: absolute; pointer-events: none" [style.width.px]="0" [style.height.px]="0" [style.clip-path]="clipPathText">
       <div class="is-3d" style="position: absolute; z-index: 0" [style.top.px]="0" [style.left.px]="( -1 * areaQuadrantSize) * gridSize">
@@ -16,7 +18,7 @@
       </div>
       <div class="component-content is-3d" style="z-index: 3" [style.opacity]="isMoving ? 0.7 : 1"
         appRotable [rotable.option]="rotableOption" [rotable.polygonal]="range.subDivisionSnapPolygonal ? 360 : 24" 
-        (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()" [rotable.disable]="isLocked" 
+        (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()" [rotable.disable]="isLocked || (range.type == 'CIRCLE') || (range.type == 'SQUARE') || (range.type == 'DIAMOND')" 
         style="transform: rotateZ(0deg);" #rotate>
         <div class="is-3d" *ngIf="(range.type == 'CIRCLE') || (range.type == 'SQUARE') || (range.type == 'DIAMOND')" class="lock-icon is-center">
           <i class="material-icons">{{ isLocked ? 'lock' : 'open_with' }}</i>

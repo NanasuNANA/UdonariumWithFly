@@ -7,8 +7,8 @@ import {
   HostListener,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
-  OnInit,
   ViewChild,
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
@@ -37,6 +37,7 @@ import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { ModalService } from 'service/modal.service';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { GameCharacter } from '@udonarium/game-character';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
   selector: 'range',
@@ -44,7 +45,7 @@ import { GameCharacter } from '@udonarium/game-character';
   styleUrls: ['./range.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RangeComponent implements OnInit, OnDestroy, AfterViewInit {
+export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() range: RangeArea = null;
   @Input() is3D: boolean = false;
 //  @Input() rotateDeg : string = ''
@@ -299,6 +300,10 @@ export class RangeComponent implements OnInit, OnDestroy, AfterViewInit {
   get isLocked(): boolean { return this.range.isLocked; }
   set isLocked(isLock: boolean) { this.range.isLocked = isLock; }
 
+  get selectionState(): SelectionState { return this.selectionService.state(this.range); }
+  get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
+  get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
+
   get areaQuadrantSize(): number { 
     let w = this.width < 1 ? 1 : this.width;
     let l = this.rangeLength < 1 ? 1 : this.rangeLength;
@@ -397,13 +402,13 @@ export class RangeComponent implements OnInit, OnDestroy, AfterViewInit {
     private changeDetector: ChangeDetectorRef,
     private pointerDeviceService: PointerDeviceService,
     private coordinateService: CoordinateService,
-
+    private selectionService: TabletopSelectionService,
     private tabletopService: TabletopService,
-
     private modalService: ModalService,
   ) { }
 
-  ngOnInit() {
+  ngOnChanges() {
+    EventSystem.unregister(this);
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', -1000, event => {
         let object = ObjectStore.instance.get(event.data.identifier);
@@ -436,6 +441,9 @@ export class RangeComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
         if (markForCheck) this.changeDetector.markForCheck();
+      })
+      .on(`UPDATE_SELECTION/identifier/${this.range?.identifier}`, event => {
+        this.changeDetector.markForCheck();
       })
       .on('SYNCHRONIZE_FILE_LIST', event => {
         this.changeDetector.markForCheck();
@@ -500,6 +508,12 @@ export class RangeComponent implements OnInit, OnDestroy, AfterViewInit {
     let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
 
     let menuArray = [];
+
+    if (this.selectionService.objects.length) {
+      menuArray.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+      menuArray.push(ContextMenuSeparator);
+    }
+
     menuArray.push(
       this.isLocked
         ? {
