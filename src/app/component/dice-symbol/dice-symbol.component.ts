@@ -349,33 +349,64 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
 
     if (this.isSelected) {
       let selectedDiceSymbols = () => this.selectionService.objects.filter(object => object.aliasName === this.diceSymbol.aliasName) as DiceSymbol[];
+      const isContainCoin = selectedDiceSymbols().some(diceSymbol => diceSymbol.isCoin);
+      const isContainDice = selectedDiceSymbols().some(diceSymbol => !diceSymbol.isCoin);
       actions.push(
         {
-          name: '選択したコイン/ダイス', action: null, subActions: [
+          name: `選択した${isContainCoin ? 'コイン' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? 'ダイス' : ''}`, action: null, subActions: [
             {
-              name: 'すべて振る', action: () => {
+              name: `すべて${isContainCoin ? 'トス' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '振る' : ''}`, action: () => {
                 let needsSound = false;
+                let isContainCoin = false;
+                let isContainDice = false;
+                const messages: string[] = [];
                 selectedDiceSymbols().forEach(diceSymbol => {
                   if (diceSymbol.isVisible) {
                     needsSound = true;
+                    isContainCoin = isContainCoin || diceSymbol.isCoin;
+                    isContainDice = isContainDice || !diceSymbol.isCoin;
                     EventSystem.call('ROLL_DICE_SYMBOL', { identifier: diceSymbol.identifier });
-                    diceSymbol.diceRoll();
+                    let face = diceSymbol.diceRoll();
+                    let message = `${diceSymbol.name == '' ? '(無名の' + (diceSymbol.isCoin ? 'コイン' : 'ダイス') + ')' : diceSymbol.name} を${diceSymbol.isCoin ? 'トスした' : '振った'}`;
+                    if (diceSymbol.owner === '') message += ` → ${face}`;
+                    messages.push(message);
                   }
                 });
-                if (needsSound) SoundEffect.play(PresetSound.diceRoll1);
+                if (messages.length) this.chatMessageService.sendOperationLog(messages.join('、'));
+                if (needsSound) {
+                  if (isContainCoin) SoundEffect.play(PresetSound.coinToss);
+                  if (isContainDice) SoundEffect.play(PresetSound.diceRoll1);
+                }
               }
             },
             {
               name: 'すべて公開', action: () => {
-                selectedDiceSymbols().forEach(diceSymbol => diceSymbol.owner = '');
+                const messages: string[] = []; 
+                selectedDiceSymbols().forEach(diceSymbol => {
+                  if (diceSymbol.owner != '') {
+                    messages.push(`${diceSymbol.name == '' ? '(無名の' + (diceSymbol.isCoin ? 'コイン' : 'ダイス') + ')' : diceSymbol.name} の${diceSymbol.isCoin ? '表／裏' : '目'}を公開 → ${diceSymbol.face}`);
+                  }
+                  diceSymbol.owner = '';
+                });
+                if (messages.length) this.chatMessageService.sendOperationLog(messages.join('、'));
                 SoundEffect.play(PresetSound.unlock);
-              }
+              },
+              disabled: !selectedDiceSymbols().some(diceSymbol => diceSymbol.owner != '')
             },
             {
               name: 'すべて自分だけ見る', action: () => {
-                selectedDiceSymbols().forEach(diceSymbol => diceSymbol.owner = Network.peer.userId);
+                const names: string[] = []; 
+                selectedDiceSymbols().forEach(diceSymbol => {
+                  if (diceSymbol.owner != Network.peer.userId) {
+                    names.push(diceSymbol.name == '' ? '(無名の' + (diceSymbol.isCoin ? 'コイン' : 'ダイス') + ')' : diceSymbol.name);
+                  }
+                  diceSymbol.owner = Network.peer.userId;
+                });
+                if (names.length) this.chatMessageService.sendOperationLog(names.join('、') + ' を自分だけ見た');
                 SoundEffect.play(PresetSound.lock);
-              }
+              },
+              disabled: !selectedDiceSymbols().some(diceSymbol => diceSymbol.owner != Network.peer.userId)
+
             },
           ]
         }
