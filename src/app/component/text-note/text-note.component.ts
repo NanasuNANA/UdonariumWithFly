@@ -418,4 +418,8 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
+
+  activate() {
+    this.textAreaElementRef.nativeElement.focus();
+  }
 }

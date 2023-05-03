@@ -9,7 +9,7 @@
           <div *ngIf="title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
           <textarea #textArea (input)="calcFitHeight();" class="textarea is-3d" [ngClass]="{'is-pointer-events-none': !isEditorSelected, 'is-pointer-events-auto': isEditorSelected, 'hide-area': !isEditorSelected}"
             [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false"></textarea>
-          <div class="is-3d is-outline-text note-text" style="margin-top:-18px" [ngClass]="{'hide-area': isEditorSelected}"
+          <div class="is-3d is-outline-text note-text" style="margin-top:-18px" [ngClass]="{'hide-area': isEditorSelected}" (click)="activate()"
             [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
             <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
         </div>
