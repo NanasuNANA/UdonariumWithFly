@@ -367,8 +367,18 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
         {
           name: '選択したカード', action: null, subActions: [
             {
-              name: 'すべて表にする', action: () => {
-                selectedCards().forEach(card => card.faceUp());
+              name: 'すべて表にする（公開する）', action: () => {
+                const counter: Map<string, number> = new Map<string, number>();
+                selectedCards().forEach(card => {
+                  if (card.hasOwner || !card.isFront) {
+                    const name = card.name == '' ? '(無名のカード)' : card.name;
+                    let count = counter.get(name) || 0;
+                    count += 1;
+                    counter.set(name, count);
+                  }
+                  card.faceUp();
+                });
+                this.chatMessageService.sendOperationLog([...counter.keys()].map(key => `${key}×${counter.get(key)}`).join('、') + ' 枚を公開')
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
@@ -379,11 +389,26 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
               }
             },
             {
-              name: 'すべて自分だけ見る', action: () => {
+              name: 'すべて自分だけ見る（手札にする）', action: () => {
+                const counter: Map<string, number> = new Map<string, number>();
+                let faceDownCount = 0;
                 selectedCards().forEach(card => {
+                  if (!card.isHand) {
+                    if (card.isFront) {
+                      const name = card.name == '' ? '(無名のカード)' : card.name;
+                      let count = counter.get(name) || 0;
+                      count += 1;
+                      counter.set(name, count);
+                    } else {
+                      faceDownCount += 1;
+                    }
+                  }
                   card.faceDown();
                   card.owner = Network.peer.userId;
                 });
+                const messages = [...counter.keys()].map(key => `${key}×${counter.get(key)}`);
+                if (faceDownCount) messages.push(`(伏せたカード)×${faceDownCount}`);
+                this.chatMessageService.sendOperationLog(messages.join('、') + ' 枚を自分だけ見た');
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },

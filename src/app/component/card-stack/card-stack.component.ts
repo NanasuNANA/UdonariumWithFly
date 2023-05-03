@@ -546,15 +546,16 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
                 } else {
                   const counter = new Map();
                   for (const card of frontCards) {
-                    let count = counter.get(card.name) || 0;
+                    const name = card.name == '' ? '(無名のカード)' : card.name;
+                    let count = counter.get(name) || 0;
                     count += 1;
-                    counter.set(card.name == '' ? '(無名のカード)' : card.name, count);
+                    counter.set(name, count);
                   }
-                  let text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${[...counter.keys()].map(key => `${key} を ${counter.get(key)}枚`).join('、')}`;
+                  let text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${[...counter.keys()].map(key => `${key}×${counter.get(key)}`).join('、')}`;
                   if (frontCards.length === cards.length) {
-                    text += '引いた'
+                    text += ' 枚引いた'
                   } else {
-                    text += `引き、${cards.length - frontCards.length}枚を伏せた`;
+                    text += ` 枚引き、${cards.length - frontCards.length}枚を伏せた`;
                   }
                   this.chatMessageService.sendOperationLog(text);
                 }
