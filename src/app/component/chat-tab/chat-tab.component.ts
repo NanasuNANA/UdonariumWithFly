@@ -411,7 +411,7 @@ export class ChatTabComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
     message.name = name;
     message.toName = toName;
     message.color = '#444444';
-    message.toColor = '#444444';
+    message.toColor = toName ? '#444444' : null;
     message.tag = tag;
     message.value = text;
     return message;

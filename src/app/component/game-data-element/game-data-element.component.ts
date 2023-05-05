@@ -34,7 +34,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
   set value(value: number | string) { this._value = value; this.setUpdateTimer(); }
 
   private _currentValue: number | string = 0;
-  get currentValue(): number | string { return this._currentValue; }
+  get currentValue(): number | string { return this._currentValue == null ? '' : this._currentValue; }
   set currentValue(currentValue: number | string) { this._currentValue = currentValue; this.setUpdateTimer(); }
 
   get abilityScore(): number { return this.gameDataElement.calcAbilityScore(); }
