@@ -185,11 +185,19 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
       tabletopObject: this.textNote
     };
   }
+  
+  ngAfterViewInit() {
+    this.ngZone.runOutsideAngular(() => {
+      this.input = new InputHandler(this.elementRef.nativeElement);
+    });
+    this.input.onStart = this.onInputStart.bind(this);
+  }
 
   ngOnDestroy() {
     if (this._transitionTimeout) clearTimeout(this._transitionTimeout);
     if (this._fallTimeout) clearTimeout(this._fallTimeout)
     EventSystem.unregister(this);
+    this.input.destroy();
   }
 
   @HostListener('dragstart', ['$event'])
@@ -198,9 +206,18 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
     e.preventDefault();
   }
 
+  onInputStart(e: any) {
+    this.input.cancel();
+
+    // TODO:もっと良い方法考える
+    if (this.isLocked) {
+      EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
+    }
+  }
+
   @HostListener('mousedown', ['$event'])
   onMouseDown(e: any) {
-    if (this.isActive) return;
+    if (this.isActive || this.isLocked) return;
     e.preventDefault();
     this.textNote.toTopmost();
 
@@ -420,6 +437,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   }
 
   activate() {
-    this.textAreaElementRef.nativeElement.focus();
+    if (!this.isLocked) this.textAreaElementRef.nativeElement.focus();
   }
 }

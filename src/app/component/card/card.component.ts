@@ -279,10 +279,13 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     this.startDoubleClickTimer(e);
     this.card.toTopmost();
     this.startIconHiddenTimer();
-
+    
     // TODO:もっと良い方法考える
     if (this.isLocked) {
-      EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
+      this.input.cancel();
+      e.stopPropagation();
+      e.preventDefault();
+      EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
     }
   }
 
