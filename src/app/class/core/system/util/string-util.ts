@@ -67,7 +67,7 @@ export namespace StringUtil {
 
   export function parseCommands(input: string, quote=false): OperateCommandsInfo {
     const separatorRegExp = /[:：]/;
-    const operatorRegExp = /[＋＝+\-=―ー—‐－>＞]/; 
+    const operatorRegExp = /[＋＝+\-=―—‐－>＞]/; 
     const spaceRegExp = /[\s　]/; 
     const endRegExp = /[:：\s　]/; 
     const qupteOpenTestRegExps = [separatorRegExp, operatorRegExp];
