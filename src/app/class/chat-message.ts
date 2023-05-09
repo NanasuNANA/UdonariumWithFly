@@ -71,6 +71,14 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
   private _to: string;
   private _sendTo: string[] = [];
   get sendTo(): string[] {
+    // 応急処置
+    if (this.to === 'undefined') {
+      if (this._to !== '') {
+        this._to = '';
+        this._sendTo = [];
+      }
+      return this._sendTo;
+    }
     if (this._to !== this.to) {
       this._to = this.to;
       this._sendTo = this.to != null && 0 < this.to.trim().length ? this.to.trim().split(/\s+/) : [];
