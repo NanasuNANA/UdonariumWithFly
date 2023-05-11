@@ -22,6 +22,7 @@ import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { InputHandler } from 'directive/input-handler';
+import { ObjectInteractGesture } from 'component/game-table/object-interact-gesture';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
 import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
@@ -139,10 +140,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};
 
-  private doubleClickTimer: NodeJS.Timer = null;
-  private doubleClickPoint = { x: 0, y: 0 };
-
-  private input: InputHandler = null;
+  private interactGesture: ObjectInteractGesture = null;
 
   constructor(
     private ngZone: NgZone,
@@ -201,13 +199,15 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
   ngAfterViewInit() {
     this.ngZone.runOutsideAngular(() => {
-      this.input = new InputHandler(this.elementRef.nativeElement);
+      this.interactGesture = new ObjectInteractGesture(this.elementRef.nativeElement);
     });
-    this.input.onStart = e => this.ngZone.run(() => this.onInputStart(e));
+
+    this.interactGesture.onstart = this.onInputStart.bind(this);
+    this.interactGesture.oninteract = this.onDoubleClick.bind(this);
   }
 
   ngOnDestroy() {
-    this.input.destroy();
+    this.interactGesture.destroy();
     EventSystem.unregister(this);
   }
 
@@ -233,39 +233,14 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     }
   }
 
-  startDoubleClickTimer(e) {
-    if (!this.doubleClickTimer) {
-      this.stopDoubleClickTimer();
-      this.doubleClickTimer = setTimeout(() => this.stopDoubleClickTimer(), e.touches ? 500 : 300);
-      this.doubleClickPoint = this.input.pointer;
-      return;
-    }
-
-    if (e.touches) {
-      this.input.onEnd = this.onDoubleClick.bind(this);
-    } else {
-      this.onDoubleClick();
-    }
-  }
-
-  stopDoubleClickTimer() {
-    clearTimeout(this.doubleClickTimer);
-    this.doubleClickTimer = null;
-    this.input.onEnd = null;
-  }
-
   onDoubleClick() {
-    if (this.isLocked) return;
-    this.stopDoubleClickTimer();
-    let distance = (this.doubleClickPoint.x - this.input.pointer.x) ** 2 + (this.doubleClickPoint.y - this.input.pointer.y) ** 2;
-    if (distance < 10 ** 2) {
-      console.log('onDoubleClick !!!!');
-      if (this.ownerIsOnline && !this.isHand) return;
+    if (this.isLocked || (this.ownerIsOnline && !this.isHand)) return;
+    this.ngZone.run(() => {
       this.state = this.isVisible && !this.isHand ? CardState.BACK : CardState.FRONT;
       this.owner = '';
       if (this.state === CardState.FRONT) this.chatMessageService.sendOperationLog((this.card.name == '' ? '(無名のカード)' : this.card.name)  + ' を公開');
       SoundEffect.play(PresetSound.cardDraw);
-    }
+    });
   }
 
   @HostListener('dragstart', ['$event'])
@@ -274,19 +249,19 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     e.preventDefault();
   }
 
-  onInputStart(e: MouseEvent | TouchEvent) {
-    if (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.shiftKey)) return;
-    this.startDoubleClickTimer(e);
-    this.card.toTopmost();
-    this.startIconHiddenTimer();
-    
+  onInputStart(e: MouseEvent | TouchEvent) {    
     // TODO:もっと良い方法考える
     if (this.isLocked) {
-      this.input.cancel();
       e.stopPropagation();
       e.preventDefault();
       EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
+      return;
     }
+
+    this.ngZone.run(() => {
+      this.card.toTopmost();
+      this.startIconHiddenTimer();
+    });
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -304,7 +279,6 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   }
 
   onMove() {
-    this.input.cancel();
     this.contextMenuService.close();
     SoundEffect.play(PresetSound.cardPick);
   }
@@ -342,7 +316,6 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   }
 
   private dispatchCardDropEvent() {
-    console.log('dispatchCardDropEvent');
     let element: HTMLElement = this.elementRef.nativeElement;
     let parent = element.parentElement;
     let children = parent.children;
@@ -353,16 +326,16 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   }
 
   private makeSelectionContextMenu(): ContextMenuAction[] {
+    if (this.selectionService.objects.length < 1) return [];
+
     let actions: ContextMenuAction[] = [];
 
-    if (this.selectionService.objects.length) {
-      let objectPosition = {
-        x: this.card.location.x + (this.card.size * this.gridSize) / 2,
-        y: this.card.location.y + (this.card.size * this.gridSize) / 2,
-        z: this.card.posZ
-      };
-      actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
-    }
+    let objectPosition = {
+      x: this.card.location.x + (this.card.size * this.gridSize) / 2,
+      y: this.card.location.y + (this.card.size * this.gridSize) / 2,
+      z: this.card.posZ
+    };
+    actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
       let selectedCards = () => this.selectionService.objects.filter(object => object.aliasName === this.card.aliasName) as Card[];
@@ -419,9 +392,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
         }
       );
     }
-    if (this.selectionService.objects.length) {
-      actions.push(ContextMenuSeparator);
-    }
+    actions.push(ContextMenuSeparator);
     return actions;
   }
 

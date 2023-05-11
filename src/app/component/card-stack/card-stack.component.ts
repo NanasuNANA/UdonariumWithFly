@@ -23,6 +23,7 @@ import { CardStackListComponent } from 'component/card-stack-list/card-stack-lis
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { InputHandler } from 'directive/input-handler';
+import { ObjectInteractGesture } from 'component/game-table/object-interact-gesture';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
 import { ContextMenuAction, ContextMenuSeparator, ContextMenuService } from 'service/context-menu.service';
@@ -126,10 +127,10 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     return 90 < rotate && rotate < 270
   }
 
-  private doubleClickTimer: NodeJS.Timer = null;
   private doubleClickPoint = { x: 0, y: 0 };
 
   private input: InputHandler = null;
+  private interactGesture: ObjectInteractGesture = null;
 
   constructor(
     private ngZone: NgZone,
@@ -214,13 +215,15 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.ngZone.runOutsideAngular(() => {
-      this.input = new InputHandler(this.elementRef.nativeElement);
+      this.interactGesture = new ObjectInteractGesture(this.elementRef.nativeElement);
     });
-    this.input.onStart = e => this.ngZone.run(() => this.onInputStart(e));
+
+    this.interactGesture.onstart = this.onInputStart.bind(this);
+    this.interactGesture.oninteract = this.onDoubleClick.bind(this);
   }
 
   ngOnDestroy() {
-    this.input.destroy();
+    this.interactGesture.destroy();
     EventSystem.unregister(this);
   }
 
@@ -258,33 +261,9 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
   }
 
-  startDoubleClickTimer(e) {
-    if (!this.doubleClickTimer) {
-      this.stopDoubleClickTimer();
-      this.doubleClickTimer = setTimeout(() => this.stopDoubleClickTimer(), e.touches ? 500 : 300);
-      this.doubleClickPoint = this.input.pointer;
-      return;
-    }
-
-    if (e.touches) {
-      this.input.onEnd = this.onDoubleClick.bind(this);
-    } else {
-      this.onDoubleClick();
-    }
-  }
-
-  stopDoubleClickTimer() {
-    clearTimeout(this.doubleClickTimer);
-    this.doubleClickTimer = null;
-    this.input.onEnd = null;
-  }
-
   onDoubleClick() {
-    this.stopDoubleClickTimer();
-    let distance = (this.doubleClickPoint.x - this.input.pointer.x) ** 2 + (this.doubleClickPoint.y - this.input.pointer.y) ** 2;
-    if (distance < 10 ** 2) {
-      console.log('onDoubleClick !!!!');
-
+    this.ngZone.run(() => {
+      //if (this.drawCard() != null) SoundEffect.play(PresetSound.cardDraw);
       const card = this.drawCard();
       if (card) {
         SoundEffect.play(PresetSound.cardDraw);
@@ -296,7 +275,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         }
         this.chatMessageService.sendOperationLog(text);
       }
-    }
+    });
   }
 
   @HostListener('dragstart', ['$event'])
@@ -306,17 +285,17 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onInputStart(e: MouseEvent | TouchEvent) {
-    if (e instanceof MouseEvent && (e.button !== 0 || e.ctrlKey || e.shiftKey)) return;
-    this.startDoubleClickTimer(e);
-    this.cardStack.toTopmost();
-    this.startIconHiddenTimer();
-
     // TODO:もっと良い方法考える
     if (this.isLocked) {
       EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
+      return;
     }
 
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: this.cardStack.identifier, className: 'GameCharacter' });
+    this.ngZone.run(() => {
+      this.cardStack.toTopmost();
+      this.startIconHiddenTimer();
+    });
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -438,17 +417,17 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private makeSelectionContextMenu(): ContextMenuAction[] {
+    if (this.selectionService.objects.length < 1) return [];
+
     let actions: ContextMenuAction[] = [];
 
-    if (this.selectionService.objects.length) {
-      let size = this.cardStack.topCard?.size ?? 2;
-      let objectPosition = {
-        x: this.cardStack.location.x + (size * this.gridSize) / 2,
-        y: this.cardStack.location.y + (size * this.gridSize) / 2,
-        z: this.cardStack.posZ
-      };
-      actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
-    }
+    let size = this.cardStack.topCard?.size ?? 2;
+    let objectPosition = {
+      x: this.cardStack.location.x + (size * this.gridSize) / 2,
+      y: this.cardStack.location.y + (size * this.gridSize) / 2,
+      z: this.cardStack.posZ
+    };
+    actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
       let selectedCardStacks = () => this.selectionService.objects.filter(object => object.aliasName === this.cardStack.aliasName) as CardStack[];
@@ -487,9 +466,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         }
       );
     }
-    if (this.selectionService.objects.length) {
-      actions.push(ContextMenuSeparator);
-    }
+    actions.push(ContextMenuSeparator);
     return actions;
   }
 

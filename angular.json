@@ -34,19 +34,20 @@
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
+              "base-x",
               "bcdice",
-              "hammerjs",
-              "crypto-js/sha256",
               "crypto-js/lib-typedarrays",
+              "crypto-js/sha256",
               "file-saver",
-              "msgpack-lite",
+              "hammerjs",
+              "jszip",
               "lzbase62",
               "pako",
-              "jszip",
               "events",
               "localforage",
-              "vkbeautify",
-              "lodash"
+              "lodash",
+              "msgpack-lite",
+              "vkbeautify"
             ]
           },
           "configurations": {

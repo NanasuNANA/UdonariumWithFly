@@ -230,7 +230,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     PresetSound.puyon = AudioStorage.instance.add('./assets/sounds/soundeffect-lab/puyon1.mp3').identifier;
     PresetSound.surprise = AudioStorage.instance.add('./assets/sounds/otologic/Onmtp-Surprise02-1.mp3').identifier;
     PresetSound.coinToss = AudioStorage.instance.add('./assets/sounds/niconicomons/nc146227.mp3').identifier;
-    PresetSound.selection = AudioStorage.instance.add('./assets/sounds/soundeffect-lab/decision50.mp3').identifier;
+    PresetSound.selectionStart = AudioStorage.instance.add('./assets/sounds/soundeffect-lab/decision50.mp3').identifier;
 
     AudioStorage.instance.get(PresetSound.dicePick).isHidden = true;
     AudioStorage.instance.get(PresetSound.dicePut).isHidden = true;
@@ -251,7 +251,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     AudioStorage.instance.get(PresetSound.surprise).isHidden = true;
     AudioStorage.instance.get(PresetSound.coinToss).isHidden = true;
     AudioStorage.instance.get(PresetSound.sweep).isHidden = true;
-    AudioStorage.instance.get(PresetSound.selection).isHidden = true;
+    AudioStorage.instance.get(PresetSound.selectionStart).isHidden = true;
 
     PeerCursor.createMyCursor().then(() => {
       if (PeerCursor.myCursor.name == null || PeerCursor.myCursor.name === '') PeerCursor.myCursor.name = PeerCursor.CHAT_DEFAULT_NAME;
