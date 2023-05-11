@@ -209,7 +209,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
       { name: 'その他', subActions: [
         { name: '固定・ロック／解除', action: () => { this.playSETest(PresetSound.lock); }},
         { name: '落下／取り除く／削除', action: () => { this.playSETest(PresetSound.sweep); }},
-        { name: 'オブジェクト選択', action: () => { this.playSETest(PresetSound.selection); }},
+        { name: 'オブジェクト選択', action: () => { this.playSETest(PresetSound.selectionStart); }},
         { name: '変身！', action: () => { this.playSETest(PresetSound.surprise); }}
       ]}
     ];
