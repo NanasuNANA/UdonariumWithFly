@@ -21,7 +21,6 @@ import { PeerCursor } from '@udonarium/peer-cursor';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
-import { InputHandler } from 'directive/input-handler';
 import { ObjectInteractGesture } from 'component/game-table/object-interact-gesture';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
@@ -254,6 +253,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     if (this.isLocked) {
       e.stopPropagation();
       e.preventDefault();
+      this.card.toTopmost();
       EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
       return;
     }

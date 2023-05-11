@@ -22,7 +22,6 @@ import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { CardStackListComponent } from 'component/card-stack-list/card-stack-list.component';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
-import { InputHandler } from 'directive/input-handler';
 import { ObjectInteractGesture } from 'component/game-table/object-interact-gesture';
 import { MovableOption } from 'directive/movable.directive';
 import { RotableOption } from 'directive/rotable.directive';
@@ -127,9 +126,6 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     return 90 < rotate && rotate < 270
   }
 
-  private doubleClickPoint = { x: 0, y: 0 };
-
-  private input: InputHandler = null;
   private interactGesture: ObjectInteractGesture = null;
 
   constructor(
@@ -287,6 +283,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   onInputStart(e: MouseEvent | TouchEvent) {
     // TODO:もっと良い方法考える
     if (this.isLocked) {
+      this.cardStack.toTopmost();
       EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
       return;
     }
