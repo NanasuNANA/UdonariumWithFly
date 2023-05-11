@@ -401,7 +401,7 @@ export class TabletopActionService {
         }
       });
     });
-    return { name: 'ダイスを作成', action: null, subActions: subMenus };
+    return { name: 'コイン／ダイスを作成', action: null, subActions: subMenus };
   }
 
   private getCreateRangeMenu(position: PointerCoordinate): ContextMenuAction {
