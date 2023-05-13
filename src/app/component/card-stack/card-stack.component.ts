@@ -525,11 +525,11 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
                     count += 1;
                     counter.set(name, count);
                   }
-                  let text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${[...counter.keys()].map(key => `${key}×${counter.get(key)}`).join('、')}`;
+                  let text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${[...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}枚`)).join('、')}`;
                   if (frontCards.length === cards.length) {
-                    text += ' 枚引いた'
+                    text += ' を引いた'
                   } else {
-                    text += ` 枚引き、${cards.length - frontCards.length}枚を伏せた`;
+                    text += ` を引き、${cards.length - frontCards.length}枚を伏せた`;
                   }
                   this.chatMessageService.sendOperationLog(text);
                 }

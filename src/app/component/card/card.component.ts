@@ -354,7 +354,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
                   }
                   card.faceUp();
                 });
-                this.chatMessageService.sendOperationLog([...counter.keys()].map(key => `${key}×${counter.get(key)}`).join('、') + ' 枚を公開')
+                this.chatMessageService.sendOperationLog([...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}枚`)).join('、') + ' を公開')
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
@@ -382,9 +382,9 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
                   card.faceDown();
                   card.owner = Network.peer.userId;
                 });
-                const messages = [...counter.keys()].map(key => `${key}×${counter.get(key)}`);
-                if (faceDownCount) messages.push(`(伏せたカード)×${faceDownCount}`);
-                this.chatMessageService.sendOperationLog(messages.join('、') + ' 枚を自分だけ見た');
+                const messages = [...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}枚`));
+                if (faceDownCount) messages.push(`(伏せたカード)×${faceDownCount}枚`);
+                this.chatMessageService.sendOperationLog(messages.join('、') + ' を自分だけ見た');
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
