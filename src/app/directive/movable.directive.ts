@@ -97,7 +97,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   private collidableElements: HTMLElement[] = [];
   private input: InputHandler = new InputHandler(this.nativeElement, false);
 
-  private synchronizer: MovableSelectionSynchronizer = new MovableSelectionSynchronizer(this, this.selectionService, this.pointerDeviceService);
+  private synchronizer: MovableSelectionSynchronizer = new MovableSelectionSynchronizer(this, this.selectionService, this.pointerDeviceService, this.coordinateService);
   get state(): SelectionState { return this.selectionService.state(this.tabletopObject); }
   set state(state: SelectionState) { this.selectionService.add(this.tabletopObject, state); }
 
