@@ -98,7 +98,9 @@ export class DataElement extends ObjectNode {
   calcAbilityScore(): number {
     if (!this.isAbilityScore || !this.value) return 0;
     let match;
-    if (match = this.currentValue.toString().match(/^div(\d+)$/)) {
+    if (this.currentValue == null) {
+      return +this.value;
+    } else if (match = this.currentValue.toString().match(/^div(\d+)$/)) {
       return Math.floor(+this.value / +match[1]);
     // 現状3.0以降のみ
     } else if (match = this.currentValue.toString().match(/^DnD/)) {
