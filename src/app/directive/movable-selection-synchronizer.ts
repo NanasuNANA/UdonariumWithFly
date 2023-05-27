@@ -4,7 +4,6 @@ import { PointerCoordinate, PointerDeviceService } from 'service/pointer-device.
 import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 import { MovableDirective } from './movable.directive';
-import { CoordinateService } from 'service/coordinate.service';
 
 export class MovableSelectionSynchronizer {
   private static readonly objectMap: Map<TabletopObject, Set<MovableDirective>> = new Map();
@@ -28,7 +27,6 @@ export class MovableSelectionSynchronizer {
     private movable: MovableDirective,
     private selection: TabletopSelectionService,
     private pointerDevice: PointerDeviceService,
-    private coordinateService: CoordinateService
   ) { }
 
   initialize() {
@@ -70,26 +68,11 @@ export class MovableSelectionSynchronizer {
     let height: number = e.detail.height;
 
     let targetRect = this.movable.nativeElement.getBoundingClientRect();
-    let targetTaletopObject = this.movable.tabletopObject;
-    let target3d = {
-      x: targetTaletopObject.location.x,
-      y: targetTaletopObject.location.y,
-      z: targetTaletopObject.altitude * 50,
-    };
-    let target2d = this.coordinateService.convertToGlobal(target3d, this.coordinateService.tabletopOriginElement);
-
-    //console.log(`targetRect x: ${targetRect.x}, y: ${targetRect.y}`)
 
     if ((targetRect.x <= x + width && x <= targetRect.x + targetRect.width)
       && (targetRect.y <= y + height && y <= targetRect.y + targetRect.height)) {
       this.movable.state = SelectionState.SELECTED;
     }
-
-    if ((target2d.x <= x + width && x <= target2d.x + targetRect.width)
-      && (target2d.y <= y + height && y <= target2d.y + targetRect.height)) {
-      this.movable.state = SelectionState.SELECTED;
-    }
-
   }
 
   toggleState() {
