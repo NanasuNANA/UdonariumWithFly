@@ -170,9 +170,15 @@
 
 .edit-buttons {
   visibility: hidden;
+  display: none;
 }
-.container:hover .edit-buttons{
+.container:hover .edit-buttons {
   visibility: visible;
+  display: inline-block;
+}
+.editing .edit-buttons {
+  visibility: visible;
+  display: inline-block;
 }
 
 textarea {

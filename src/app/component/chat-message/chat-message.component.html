@@ -77,7 +77,7 @@
   <span><s>（シークレットダイス）</s></span>
 </ng-template>
 <ng-template #editor>
-  <span class="edit-buttons" [style.visibility]="isEditing ? 'visible' : ''" style="margin-left: 4px; white-space: nowrap">
+  <span class="edit-buttons" style="margin-left: 4px; white-space: nowrap">
     <button *ngIf="!isEditing" class="edit-button" (click)="editStart()" title="編集"><i class="material-icons small-font">edit</i></button>
     <button *ngIf="!isEditing" class="edit-button" aria-hidden="true" style="visibility: hidden"><i class="material-icons small-font">clear</i></button>
     <button *ngIf="isEditing" class="edit-button" [disabled]="editingText.trim().length == 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
