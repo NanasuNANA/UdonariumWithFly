@@ -8,12 +8,12 @@ import {
   Input,
   NgZone,
   OnChanges,
-  OnDestroy,
-  OnInit
+  OnDestroy
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
+import { MathUtil } from '@udonarium/core/system/util/math-util';
 import { GameTableMask } from '@udonarium/game-table-mask';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
@@ -70,8 +70,8 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   @Input() is3D: boolean = false;
 
   get name(): string { return this.gameTableMask.name; }
-  get width(): number { return this.adjustMinBounds(this.gameTableMask.width); }
-  get height(): number { return this.adjustMinBounds(this.gameTableMask.height); }
+  get width(): number { return MathUtil.clampMin(this.gameTableMask.width); }
+  get height(): number { return MathUtil.clampMin(this.gameTableMask.height); }
   get opacity(): number { return this.gameTableMask.opacity; }
   get imageFile(): ImageFile { return this.gameTableMask.imageFile; }
   get isLock(): boolean { return this.gameTableMask.isLock; }
@@ -729,10 +729,6 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     ];
     
     return actions;
-  }
-
-  private adjustMinBounds(value: number, min: number = 0): number {
-    return value < min ? min : value;
   }
 
   private showDetail(gameObject: GameTableMask) {

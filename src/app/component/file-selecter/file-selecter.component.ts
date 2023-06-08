@@ -5,7 +5,7 @@ import {
   Component,
   Input,
   OnDestroy,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { EventSystem, Network } from '@udonarium/core/system';

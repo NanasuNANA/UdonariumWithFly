@@ -54,10 +54,6 @@ export class ContextMenuService {
   titleColor: string = PeerCursor.CHAT_DEFAULT_COLOR;
   titleBold: boolean = false;
 
-  constructor(
-    //private componentFactoryResolver: ComponentFactoryResolver
-  ) { }
-
   get isShow(): boolean {
     return this.panelComponentRef ? true : false;
   }
@@ -67,13 +63,9 @@ export class ContextMenuService {
     if (!parentViewContainerRef) {
       parentViewContainerRef = ContextMenuService.defaultParentViewContainerRef;
     }
-    let panelComponentRef: ComponentRef<any>;
 
-    //const injector = parentViewContainerRef.injector;
-    //const panelComponentFactory = this.componentFactoryResolver.resolveComponentFactory(ContextMenuService.ContextMenuComponentClass);
-
-    //panelComponentRef = parentViewContainerRef.createComponent(panelComponentFactory, parentViewContainerRef.length, injector);
-    panelComponentRef = parentViewContainerRef.createComponent(ContextMenuService.ContextMenuComponentClass, {index: parentViewContainerRef.length, injector: parentViewContainerRef.injector});
+    const injector = parentViewContainerRef.injector;
+    let panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ContextMenuService.ContextMenuComponentClass, { index: parentViewContainerRef.length, injector: injector });
 
     const childPanelService: ContextMenuService = panelComponentRef.injector.get(ContextMenuService);
 

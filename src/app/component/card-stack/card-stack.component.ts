@@ -9,7 +9,7 @@ import {
   Input,
   NgZone,
   OnChanges,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { Card } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
@@ -17,6 +17,7 @@ import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
+import { MathUtil } from '@udonarium/core/system/util/math-util';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { CardStackListComponent } from 'component/card-stack-list/card-stack-list.component';
@@ -89,7 +90,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   get isEmpty(): boolean { return this.cardStack.isEmpty; }
   get size(): number {
     let card = this.cardStack.topCard;
-    return (card ? card.size : 2);
+    return card ? MathUtil.clampMin(card.size) : 2;
   }
 
   get hasOwner(): boolean { return this.cardStack.hasOwner; }
@@ -242,14 +243,14 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     if (e.detail instanceof Card) {
       let card: Card = e.detail;
-      let distance: number = (card.location.x - this.cardStack.location.x) ** 2 + (card.location.y - this.cardStack.location.y) ** 2 + (card.posZ - this.cardStack.posZ) ** 2;
+      let distance: number = this.cardStack.calcSqrDistance(card);
       if (distance < 50 ** 2) {
         this.chatMessageService.sendOperationLog(`${card.isFront ? (card.name == '' ? '(無名のカード)' : card.name) : '伏せたカード'} を ${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} に乗せた`);
         this.cardStack.putOnTop(card);
       }
     } else if (e.detail instanceof CardStack) {
       let cardStack: CardStack = e.detail;
-      let distance: number = (cardStack.location.x - this.cardStack.location.x) ** 2 + (cardStack.location.y - this.cardStack.location.y) ** 2 + (cardStack.posZ - this.cardStack.posZ) ** 2;
+      let distance: number = this.cardStack.calcSqrDistance(cardStack);
       if (distance < 25 ** 2) {
         this.chatMessageService.sendOperationLog(`${cardStack.name == '' ? '(無名の山札)' : cardStack.name} を全て ${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} に乗せた`);
         this.concatStack(cardStack);

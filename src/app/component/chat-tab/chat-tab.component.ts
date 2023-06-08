@@ -12,7 +12,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 
 import { ChatMessage, ChatMessageContext } from '@udonarium/chat-message';
@@ -44,23 +44,7 @@ export class ChatTabComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
     this.makeSampleMessage('System', '???', 'チュートリアル', 'プレイヤー', 'ダイレクトメッセージ（秘密会話）はセーブデータに記録されません。', 'mine direct'),
     this.makeSampleMessage('System', '???', 'チュートリアル', 'プレイヤー', 'また、過去のダイレクトメッセージはあなたのIDが更新されると同じルーム内であっても見えなくなります。注意してください。', 'mine direct'),
     this.makeSampleMessage('System', null, 'チュートリアル', null, '動作推奨環境はデスクトップChromeです。今のところ、スマホからだと上手く操作できません。'),
-    this.makeSampleMessage('System', null, 'チュートリアル', null, 'チュートリアルは以上です。このチュートリアルは最初のチャットを入力すると非表示になります。'),
-  /*
-    { from: 'System', timestamp: 0, imageIdentifier: '', color: '#444444', tag: 'mine', name: 'チュートリアル', text: 'サーバーを使用しないTRPGオンセツールです。参加者同士で接続し、コマや画像ファイルなどを同期します。' },
-    { from: 'System', timestamp: 0, imageIdentifier: '', color: '#444444', tag: 'mine', name: 'チュートリアル', text: '全てのデータが各参加者のブラウザ内にあるため、ルームの状態を次回に持ち越したい場合は、必ず「保存」を実行してセーブデータ（zip）を生成してください。保存したzipの読み込みはブラウザ画面へのファイルドロップで行えます。' },
-    { from: 'System', timestamp: 0, imageIdentifier: '', color: '#444444', toColor: '#444444', tag: 'mine direct', name: 'チュートリアル', toName: 'プレイヤー' ,text: 'ダイレクトメッセージ（秘密会話）はセーブデータに記録されません。' },
-    { from: 'System', timestamp: 0, imageIdentifier: '', color: '#444444', toColor: '#444444', tag: 'mine direct', name: 'チュートリアル', toName: 'プレイヤー', text: 'また、過去のダイレクトメッセージはあなたのIDが更新されると同じルーム内であっても見えなくなります。注意してください。' },
-    { from: 'System', timestamp: 0, imageIdentifier: '', color: '#444444', tag: 'mine', name: 'チュートリアル', text: '動作推奨環境はデスクトップChromeです。今のところ、スマホからだと上手く操作できません。' },
-    { from: 'System', timestamp: 0, imageIdentifier: '', color: '#444444', tag: 'mine', name: 'チュートリアル', text: 'チュートリアルは以上です。このチュートリアルは最初のチャットを入力すると非表示になります。' },
-  
-  sampleMessages: ChatMessage[] = [
-    this.makeSampleMessage('System', null, 'チュートリアル', 'サーバーを使用しないTRPGオンセツールです。参加者同士で接続し、コマや画像ファイルなどを同期します。'),
-    this.makeSampleMessage('System', null, 'チュートリアル', '全てのデータが各参加者のブラウザ内にあるため、ルームの状態を次回に持ち越したい場合は、必ず「保存」を実行してセーブデータ（zip）を生成してください。保存したzipの読み込みはブラウザ画面へのファイルドロップで行えます。'),
-    this.makeSampleMessage('System', '???', 'チュートリアル > プレイヤー', 'ダイレクトメッセージ（秘密会話）はセーブデータに記録されません。'),
-    this.makeSampleMessage('System', '???', 'チュートリアル > プレイヤー', 'また、過去のダイレクトメッセージはあなたのIDが更新されると同じルーム内であっても見えなくなります。注意してください。'),
-    this.makeSampleMessage('System', null, 'チュートリアル', '動作推奨環境はデスクトップChromeです。今のところ、スマホからだと上手く操作できません。'),
-    this.makeSampleMessage('System', null, 'チュートリアル', 'チュートリアルは以上です。このチュートリアルは最初のチャットを入力すると非表示になります。'),
-  */
+    this.makeSampleMessage('System', null, 'チュートリアル', null, 'チュートリアルは以上です。このチュートリアルは最初のチャットを入力すると非表示になります。')
   ];
 
   private topTimestamp = 0;

@@ -32,10 +32,6 @@ export class PanelService {
 
   scrollablePanel: HTMLDivElement = null;
 
-  constructor(
-    //private componentFactoryResolver: ComponentFactoryResolver
-  ) { }
-
   get isShow(): boolean {
     return this.panelComponentRef ? true : false;
   }
@@ -44,15 +40,10 @@ export class PanelService {
     if (!parentViewContainerRef) {
       parentViewContainerRef = PanelService.defaultParentViewContainerRef;
     }
-    let panelComponentRef: ComponentRef<any>;
 
-    //const injector = parentViewContainerRef.injector;
+    const injector = parentViewContainerRef.injector;
 
-    //const panelComponentFactory = this.componentFactoryResolver.resolveComponentFactory(PanelService.UIPanelComponentClass);
-    //const bodyComponentFactory = this.componentFactoryResolver.resolveComponentFactory(childComponent);
-
-    //panelComponentRef = parentViewContainerRef.createComponent(panelComponentFactory, parentViewContainerRef.length, injector);
-    panelComponentRef = parentViewContainerRef.createComponent(PanelService.UIPanelComponentClass, {index: parentViewContainerRef.length, injector: parentViewContainerRef.injector});
+    let panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(PanelService.UIPanelComponentClass, { index: parentViewContainerRef.length, injector: injector });
     let bodyComponentRef: ComponentRef<any> = panelComponentRef.instance.content.createComponent(childComponent);
 
     const childPanelService: PanelService = panelComponentRef.injector.get(PanelService);

@@ -1,3 +1,4 @@
+import { MathUtil } from '@udonarium/core/system/util/math-util';
 import { InputHandler } from 'directive/input-handler';
 import { PointerCoordinate, PointerDeviceService } from 'service/pointer-device.service';
 import { TabletopSelectionService } from 'service/tabletop-selection.service';
@@ -20,9 +21,9 @@ export class TablePickGesture {
   private get isActive(): boolean { return this.pointerDevice.isTablePickGesture; }
   private set isActive(isActive: boolean) { this.pointerDevice.isTablePickGesture = isActive; }
 
-  private isPickObjectMode = false;
-  private isPickRegionMode = false;
-  private isMagneticMode = false;
+  isPickObjectMode = false;
+  isPickRegionMode = false;
+  isMagneticMode = false;
   isStrokeMode = false;
   isKeepSelection = false;
   private isObjectDragging = false;
@@ -98,52 +99,16 @@ export class TablePickGesture {
     this.clearActivateTimer();
     this.pickCursor.update(this.input.pointer);
 
-    if ((e instanceof MouseEvent && e.button === 0) || (e as TouchEvent).touches) {
-      this.isStrokeMode = (e instanceof MouseEvent && e.button === 0 && e.ctrlKey);
-      let isQuickActivate = (e instanceof MouseEvent && e.button === 0 && e.shiftKey);
+    let isMainButton = (e instanceof MouseEvent && e.button === 0) || (e as TouchEvent).touches;
+    if (!isMainButton) return this.cancel();
 
-      if (this.isStrokeMode || isQuickActivate) {
-        this.isActive = true;
-        this.pickCursor.active();
-        this.pickCursor.disableAnimation();
-        this.pickCursor.scale(1.0);
-        requestAnimationFrame(() => this.pickCursor.scale(0.6));
+    this.isStrokeMode = (e instanceof MouseEvent && e.button === 0 && e.ctrlKey);
+    let isQuickActivate = (e instanceof MouseEvent && e.button === 0 && e.shiftKey);
 
-        this.pointerDevice.isDragging = false;
-        this.pickStart();
-
-        if (this.isStrokeMode) {
-          let target = e.target as HTMLElement;
-          if (target.contains(this.gameObjectsElement)) {
-            this.selection.excludeElement = document.body;
-          } else {
-            this.isKeepSelection = true;
-            this.selection.excludeElement = null;
-            this.pickObject(e);
-          }
-        }
-      } else {
-        let target = e.target as HTMLElement;
-        if (!target.contains(this.gameObjectsElement)) {
-          this.target = target;
-        }
-
-        this.isMagneticMode = this.target != null && this.pointerDevice.isDragging && this.tappedTimer != null && this.calcMagnitude(this.tappedPointer, this.input.pointer) < 25 ** 2;
-        this.isPickObjectMode = this.target != null && this.pointerDevice.isDragging && !this.isMagneticMode;
-        this.isPickRegionMode = this.target == null || (!this.isPickObjectMode && !this.isMagneticMode);
-
-        if (this.isPickObjectMode) return;
-
-        this.setActivateTimer();
-        this.setKeyDownTimer();
-
-        this.pickCursorScale = (e as TouchEvent).touches ? 4.5 : 1.0;
-        this.pickCursor.active();
-        this.pickCursor.scale(this.pickCursorScale);
-        if (this.isMagneticMode) this.pickCursor.color(CursorColor.MAGNETIC, CursorColor.MAGNETIC_FILL);
-      }
+    if (this.isStrokeMode || isQuickActivate) {
+      this.startQuickCursor(e);
     } else {
-      this.cancel();
+      this.startLongPressCursor(e);
     }
   }
 
@@ -165,16 +130,9 @@ export class TablePickGesture {
     this.pickCursor.update(this.input.pointer);
     this.pickCursor.scale(0);
 
-    if (this.isStrokeMode) {
-      if (e instanceof MouseEvent && e.ctrlKey) {
-        let target = e.target as HTMLElement;
-        if (target.contains(this.gameObjectsElement)) {
-          this.selection.excludeElement = document.body;
-        } else {
-          this.pickObject(e);
-        }
-      }
-    } else if (this.isPointerMoved && !this.isMagneticMode) {
+    if (this.isPickObjectMode && e instanceof MouseEvent && e.ctrlKey) {
+      this.pickObject(e);
+    } else if (this.isPointerMoved && this.isPickRegionMode) {
       this.pickRegion(e);
     }
 
@@ -224,6 +182,47 @@ export class TablePickGesture {
     }
   }
 
+  private startQuickCursor(e: MouseEvent | TouchEvent) {
+    this.isActive = true;
+    this.pickCursor.active();
+    this.pickCursor.disableAnimation();
+    this.pickCursor.scale(1.0);
+    requestAnimationFrame(() => this.pickCursor.scale(0.6));
+
+    this.isMagneticMode = false;
+    this.isPickObjectMode = this.isStrokeMode;
+    this.isPickRegionMode = !this.isStrokeMode;
+
+    this.pointerDevice.isDragging = false;
+    this.pickStart();
+
+    if (this.isPickObjectMode) {
+      this.selection.excludeElement = null;
+      this.pickObject(e);
+    }
+  }
+
+  private startLongPressCursor(e: MouseEvent | TouchEvent) {
+    let target = e.target as HTMLElement;
+    if (!target.contains(this.gameObjectsElement)) {
+      this.target = target;
+    }
+
+    this.isMagneticMode = this.target != null && this.pointerDevice.isDragging && this.tappedTimer != null && MathUtil.sqrMagnitude(this.tappedPointer, this.input.pointer) < 25 ** 2;
+    this.isPickObjectMode = this.target != null && this.pointerDevice.isDragging && !this.isMagneticMode;
+    this.isPickRegionMode = this.target == null || (!this.isPickObjectMode && !this.isMagneticMode);
+
+    if (this.isPickObjectMode) return;
+
+    this.setActivateTimer();
+    this.setKeyDownTimer();
+
+    this.pickCursorScale = (e as TouchEvent).touches ? 4.5 : 1.0;
+    this.pickCursor.active();
+    this.pickCursor.scale(this.pickCursorScale);
+    if (this.isMagneticMode) this.pickCursor.color(CursorColor.MAGNETIC, CursorColor.MAGNETIC_FILL);
+  }
+
   private pickStart() {
     let event = new CustomEvent('pickstart', {
       detail: {
@@ -244,13 +243,18 @@ export class TablePickGesture {
 
   private pickObject(srcEvent: Event) {
     let target = srcEvent.target as HTMLElement;
-    let event = new CustomEvent(
-      'pickobject',
-      {
-        detail: { srcEvent: srcEvent, first: this.input.startPointer, last: this.input.pointer },
-        bubbles: true
-      });
-    target.dispatchEvent(event);
+    if (target.contains(this.gameObjectsElement)) {
+      this.selection.excludeElement = document.body;
+    } else {
+      this.isKeepSelection = true;
+      let event = new CustomEvent(
+        'pickobject',
+        {
+          detail: { srcEvent: srcEvent, first: this.input.startPointer, last: this.input.pointer },
+          bubbles: true
+        });
+      target.dispatchEvent(event);
+    }
   }
 
   private pickRegion(srcEvent: Event) {
@@ -323,10 +327,6 @@ export class TablePickGesture {
       clearTimeout(this.tappedTimer);
       this.tappedTimer = null;
     }
-  }
-
-  private calcMagnitude(a: PointerCoordinate, b: PointerCoordinate) {
-    return (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2;
   }
 }
 

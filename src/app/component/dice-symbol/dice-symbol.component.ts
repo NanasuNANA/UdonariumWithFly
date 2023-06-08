@@ -9,12 +9,13 @@ import {
   Input,
   NgZone,
   OnChanges,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
+import { MathUtil } from '@udonarium/core/system/util/math-util';
 import { DiceSymbol } from '@udonarium/dice-symbol';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
@@ -123,7 +124,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
 
   get name(): string { return this.diceSymbol.name; }
   set name(name: string) { this.diceSymbol.name = name; }
-  get size(): number { return this.adjustMinBounds(this.diceSymbol.size); }
+  get size(): number { return MathUtil.clampMin(this.diceSymbol.size); }
 
   get faces(): string[] { return this.diceSymbol.faces; }
   get nothingFaces(): string[] { return this.diceSymbol.nothingFaces; }
@@ -557,9 +558,5 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       this.changeDetector.markForCheck();
     }, 300);
     this.changeDetector.markForCheck();
-  }
-
-  private adjustMinBounds(value: number, min: number = 0): number {
-    return value < min ? min : value;
   }
 }

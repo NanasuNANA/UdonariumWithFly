@@ -8,11 +8,12 @@ import {
   Input,
   NgZone,
   OnChanges,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
+import { MathUtil } from '@udonarium/core/system/util/math-util';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { SlopeDirection, Terrain, TerrainViewState } from '@udonarium/terrain';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
@@ -51,9 +52,9 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   get wallImage(): ImageFile { return this.imageService.getSkeletonOr(this.terrain.wallImage); }
   get floorImage(): ImageFile { return this.imageService.getSkeletonOr(this.terrain.floorImage); }
 
-  get height(): number { return this.adjustMinBounds(this.terrain.height); }
-  get width(): number { return this.adjustMinBounds(this.terrain.width); }
-  get depth(): number { return this.adjustMinBounds(this.terrain.depth); }
+  get height(): number { return MathUtil.clampMin(this.terrain.height); }
+  get width(): number { return MathUtil.clampMin(this.terrain.width); }
+  get depth(): number { return MathUtil.clampMin(this.terrain.depth); }
   get altitude(): number { return this.terrain.altitude; }
   set altitude(altitude: number) { this.terrain.altitude = altitude; }
 
@@ -83,6 +84,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   
   get isAltitudeIndicate(): boolean { return this.terrain.isAltitudeIndicate; }
   set isAltitudeIndicate(isAltitudeIndicate: boolean) { this.terrain.isAltitudeIndicate = isAltitudeIndicate; }
+
 
   get isVisibleFloor(): boolean { return 0 < this.width * this.depth; }
   get isVisibleWallTopBottom(): boolean { return 0 < this.width * this.height; }
@@ -462,10 +464,6 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
     ];
 
     return actions;
-  }
-
-  private adjustMinBounds(value: number, min: number = 0): number {
-    return value < min ? min : value;
   }
 
   private showDetail(gameObject: Terrain) {

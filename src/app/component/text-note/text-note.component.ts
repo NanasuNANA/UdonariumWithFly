@@ -8,11 +8,12 @@ import {
   NgZone,
   OnChanges,
   OnDestroy,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
+import { MathUtil } from '@udonarium/core/system/util/math-util';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { TextNote } from '@udonarium/text-note';
 import { GameCharacterSheetComponent } from 'component/game-character-sheet/game-character-sheet.component';
@@ -61,8 +62,8 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   get imageFile(): ImageFile { return this.textNote.imageFile; }
   get rotate(): number { return this.textNote.rotate; }
   set rotate(rotate: number) { this.textNote.rotate = rotate; }
-  get height(): number { return this.adjustMinBounds(this.textNote.height); }
-  get width(): number { return this.adjustMinBounds(this.textNote.width); }
+  get height(): number { return MathUtil.clampMin(this.textNote.height); }
+  get width(): number { return MathUtil.clampMin(this.textNote.width); }
 
   get altitude(): number { return this.textNote.altitude; }
   set altitude(altitude: number) { this.textNote.altitude = altitude; }
@@ -409,10 +410,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   lastNewLineAdjust(str: string): string {
     if (str == null) return '';
     return (!this.isSelected && str.lastIndexOf("\n") == str.length - 1) ? str + "\n" : str;
-  }
-
-  private adjustMinBounds(value: number, min: number = 0): number {
-    return value < min ? min : value;
   }
 
   private addMouseEventListeners() {
