@@ -453,24 +453,26 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
       },
       materialIcon: 'turn_left',
       hotkey: 'Shift+R'
-    },
-    ContextMenuSeparator,
-    {
-      name: '正位置(0°)にする', action: () => {
-        this.vertical();
-      },
-      hotkey: 'U',
-      disabled: this.card.rotate == 0
-    }, 
-    {
-      name: '横向き(90°)にする', action: () => {
-        this.horizontal();
-      },
-      hotkey: 'T',
-      disabled: this.card.rotate == 90
     });
+    if (this.card.isVisible) {
+      actions.push(ContextMenuSeparator,
+      {
+        name: '正位置(0°)にする', action: () => {
+          this.vertical();
+        },
+        hotkey: 'U',
+        disabled: !this.card.isVisible || this.card.rotate == 0 
+      }, 
+      {
+        name: '横向き(90°)にする', action: () => {
+          this.horizontal();
+        },
+        hotkey: 'T',
+        disabled: !this.card.isVisible || this.card.rotate == 90
+      });
+    }
     actions.push(ContextMenuSeparator);
-    actions.push(      {
+    actions.push({
       name: '重なったカードで山札を作る', action: () => {
         this.createStack();
         SoundEffect.play(PresetSound.cardPut);
@@ -533,13 +535,13 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   }
 
   vertical() {
-    if (this.card.rotate == 0) return; 
+    if (!this.card.isVisible || this.card.rotate == 0) return; 
     this.card.rotate = 0; 
     SoundEffect.play(PresetSound.cardPut);
   }
 
   horizontal() {
-    if (this.card.rotate == 90) return; 
+    if (!this.card.isVisible || this.card.rotate == 90) return; 
     this.card.rotate = 90; 
     SoundEffect.play(PresetSound.cardPut);
   }
