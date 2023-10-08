@@ -85,6 +85,16 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.character.standList.overviewIndex = overviewIndex;
   }
 
+  set isSortNameList(isSortNameList: boolean) {
+    if (!this.character || !this.character.standList) return;
+    this.character.standList.isSortNameList = isSortNameList;
+  }
+
+  get isSortNameList(): boolean {
+    if (!this.character || !this.character.standList) return true;
+    return this.character.standList.isSortNameList;
+  }
+
   ngOnInit() {
     Promise.resolve().then(() => this.updatePanelTitle());
     EventSystem.register(this)

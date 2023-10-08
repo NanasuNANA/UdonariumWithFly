@@ -1,5 +1,5 @@
 <div class="table" [ngClass]="{ 'direct-message': isDirect }">
-  <div class="table-cell imagebox" (contextmenu)="onContextMenu($event)" style="cursor: context-menu; padding-left: 4px">
+  <div class="table-cell imagebox" (contextmenu)="onContextMenu($event)" style="cursor: context-menu; padding-left: 4px; padding-right: 2px">
     <div *ngIf="!character; else isCharacter" class="imagebox">
       <img *ngIf="0 < imageFile.url.length" class="image face-icon" [src]="imageFile.url | safe: 'resourceUrl'" />
     </div>
@@ -18,7 +18,7 @@
   </div>
   <div class="table-cell">
     <div>
-      <label style="margin-right: 5px">
+      <label style="margin-right: 3px">
         <input *ngIf="character" type="checkbox" [(ngModel)]="isUseFaceIcon" checked="{{isUseFaceIcon ? 'checked' : ''}}" (change)="isUseFaceIcon = (isUseFaceIcon ? true : false)" />
         <b *ngIf="character" style="font-size: smaller;">顔IC</b>
       </label>

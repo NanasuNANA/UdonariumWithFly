@@ -4,6 +4,10 @@
     <b>Pos: </b>
     <input style="width: 350px" type="range" min="0" max="100" [(ngModel)]="position">
     <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" [(ngModel)]="position"><b sytle="margin-left: 3px; margin-right: 1em ">％　</b>
+    <label style="margin-left: 1em; white-space: nowrap">
+      <input type="checkbox" [(ngModel)]="isSortNameList" checked="{{isSortNameList ? 'checked' : ''}}" (change)="isSortNameList = (isSortNameList ? true : false)" />
+      <b style="font-size: smaller">チャット入力で名前をソート</b>
+    </label>
   </div>
   <div class="position-indicate">
     <b>Height (0=元画像のまま): </b> 

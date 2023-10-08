@@ -110,11 +110,11 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     let ret: string[] = [];
     for (let standElement of this.character.standList.standElements) {
       let nameElement = standElement.getFirstElementByName('name');
-      if (nameElement && nameElement.value && ret.indexOf(nameElement.value.toString()) < 0) {
+      if (nameElement && nameElement.value != null && nameElement.value.toString().trim() != '' && ret.indexOf(nameElement.value.toString()) < 0) {
         ret.push(nameElement.value.toString());
       }
     }
-    return ret.sort();
+    return this.character.standList.isSortNameList ? ret.sort() : ret;
   }
   standName: string = '';
 
