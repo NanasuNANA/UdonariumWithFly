@@ -16,6 +16,7 @@ export class TextViewComponent implements OnInit {
   
   @Input() text: string|string[] = '';
   @Input() title: string = '';
+  @Input() shadowing: string = '';
   
   constructor(
     private panelService: PanelService,
@@ -57,6 +58,13 @@ export class TextViewComponent implements OnInit {
         return false;
       }
     });
+  }
+
+  textShadwing(str) {
+    if (str == null) return '';
+    if (this.shadowing == null || this.shadowing === '') return str;
+    const regExp = new RegExp(`[${this.shadowing}]`, 'g');
+    return str.replace(regExp, '<span style="text-shadow: #111 0 0 1px">$&</span>')
   }
 
   isObj(val) { return typeof val == 'object'; }

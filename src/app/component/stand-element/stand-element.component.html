@@ -63,7 +63,7 @@
         <ng-container *ngIf="applyDialogElement">
           <label style="margin-right: 0.2em">
             <input type="checkbox" [(ngModel)]="applyDialogElement.value" checked="{{applyDialogElement.value ? 'checked' : ''}}" (change)="applyDialogElement.value = (applyDialogElement.value ? 'applyDialog' : '')">
-            <b style="font-size: smaller">💭</b>
+            <b style="font-size: smaller; text-shadow: #111 0 0 1px">💭</b>
           </label>
         </ng-container>
         <button (click)="openSpeakingModal()" style="font-size: 9px" [style.font-weight]="isSpeakable ? 'bolder' : 'normal'">口パク画像 (APNGなど)</button>

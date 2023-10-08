@@ -3,6 +3,7 @@ import { ContextMenuAction, ContextMenuService } from 'service/context-menu.serv
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { TabletopObject } from '@udonarium/tabletop-object';
 import { PeerCursor } from '@udonarium/peer-cursor';
+import { StringUtil } from '@udonarium/core/system/util/string-util';
 
 @Component({
   selector: 'context-menu',
@@ -179,5 +180,10 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
 
   close() {
     if (this.contextMenuService) this.contextMenuService.close();
+  }
+
+  actionNameHtmlEscape(str) {
+    if (str == null) return '';
+    return StringUtil.escapeHtml(str.replace('☑', '').replace('☐', '').replace('◉', '').replace('○', '')).replace(/💭/g, '<span style="text-shadow: #111 0 0 1px">💭</span>');
   }
 }

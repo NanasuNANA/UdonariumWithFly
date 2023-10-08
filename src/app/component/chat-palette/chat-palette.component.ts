@@ -174,7 +174,8 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 560, height: 620 };
     let textView = this.panelService.open(TextViewComponent, option);
     textView.title = 'チャット記法とチャットパレットの使い方';
-    textView.text = 
+    textView.shadowing = '💭';
+    textView.text = [
 `　パラメータ操作コマンド、ダイスボットコマンドは全角と半角を区別しません、また、ダイスボットコマンドやパラメータの名前はアルファベットの大文字と小文字を区別しません。下記を併用する場合、スペースで区切ってパラメータ操作コマンド、ダイスボットコマンド、チャットメッセージの順に記述します、それぞれ省略が可能です。
 
 　チャット内容をチャットパレットに準備することができます。各行に一つの内容を記述し、行をシングルクリックでチャット欄に呼び出し、ダブルクリックで送信します。
@@ -220,6 +221,6 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 　受けるが良い！｜約束された勝利の剣《エクスカリバー》！
 
 ・💭
-　キャラクターからのチャット送信時、 「 と 」 で囲んだ内容を💭で表示します。`;
+　キャラクターからのチャット送信時、 「 と 」 で囲んだ内容を💭で表示します。`];
   }
 }
