@@ -309,7 +309,12 @@ export class DiceBot extends GameObject {
         //if (choiceMatch[2] && choiceMatch[2] !== '' && !DiceRollTableList.instance.diceRollTables.map(diceRollTable => diceRollTable.command).some(command => command != null && command.trim().toUpperCase() === choiceMatch[1].toUpperCase())) {
           rollText = StringUtil.toHalfWidth(choiceMatch[1] + StringUtil.cr(choiceMatch[2])) ;
           if (choiceMatch[2] != null) {
-            rollText += (StringUtil.toHalfWidth(choiceMatch[3]).trim() === '' ? choiceMatch[3] : StringUtil.cr(choiceMatch[3])).trim().replace(/[　\s]+/g, ' ');
+            const choiceText = choiceMatch[3] != null ? choiceMatch[3] : '';
+            if (/^\d+\-\d+|[a-z]\-[a-z]$/i.test(StringUtil.toHalfWidth(choiceText.replace(/[―ー—‐]/g, '-')).trim())) {
+              rollText += StringUtil.toHalfWidth(choiceText.replace(/[―ー—‐]/g, '-')).trim();
+            } else {
+              rollText += (StringUtil.toHalfWidth(choiceText).trim() === '' ? choiceText : StringUtil.cr(choiceText)).trim().replace(/[　\s]+/g, ' ');
+            }
           }
           isChoice = true;
         //}
@@ -318,8 +323,13 @@ export class DiceBot extends GameObject {
         if ((choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[\[［])([^\]］]+)([\]］])/ig.exec(rollText.trim())) 
           || (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[\(（])([^\)）]+)([\)）])/ig.exec(rollText.trim()))) {
           //if (!DiceRollTableList.instance.diceRollTables.map(diceRollTable => StringUtil.toHalfWidth(diceRollTable.command).trim().toUpperCase()).some(command => command === StringUtil.toHalfWidth(choiceMatch[1]).trim().toUpperCase())) {
-            console.log(choiceMatch);
-            rollText = StringUtil.toHalfWidth(choiceMatch[1]) + (choiceMatch[2] != null ? choiceMatch[2].replace(/，/g, ','): '') + StringUtil.toHalfWidth(choiceMatch[3]);
+            //console.log(choiceMatch);
+            const choiceText = choiceMatch[2] != null ? choiceMatch[2] : '';
+            if (/^\d+\-\d+|[a-z]\-[a-z]$/i.test(StringUtil.toHalfWidth(choiceText.replace(/[―ー—‐]/g, '-')).trim())) {
+              rollText = StringUtil.toHalfWidth(choiceMatch[1]) + StringUtil.toHalfWidth(choiceText.replace(/[―ー—‐]/g, '-')).trim() + StringUtil.toHalfWidth(choiceMatch[3]);
+            } else {
+              rollText = StringUtil.toHalfWidth(choiceMatch[1]) + choiceText.replace(/，/g, ',') + StringUtil.toHalfWidth(choiceMatch[3]);
+            }
             isChoice = true;
           //}
         }
