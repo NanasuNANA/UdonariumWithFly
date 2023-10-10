@@ -1,3 +1,10 @@
+/* 
+Porting from Udonarium Lily
+Copyright (c) 2020 entyu
+
+MIT License
+https://opensource.org/licenses/mit-license.php
+*/
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RengeComponent } from './renge.component';

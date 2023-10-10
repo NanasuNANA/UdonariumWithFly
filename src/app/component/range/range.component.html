@@ -1,4 +1,10 @@
-<div class="component is-3d" [ngClass]="{'is-grab': !isLocked}" appMovable style="pointer-events: none"
+<!-- 
+Porting from Udonarium Lily
+Copyright (c) 2020 entyu
+
+MIT License
+https://opensource.org/licenses/mit-license.php
+--><div class="component is-3d" [ngClass]="{'is-grab': !isLocked}" appMovable style="pointer-events: none"
   [movable.option]="movableOption" [movable.disable]="isLocked" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
   <div class="is-3d" [style.transform]="'translateZ(' + (altitude * gridSize) + 'px)'" [ngClass]="{fall: altitude == 0}">
     <div class="is-3d" [style.clip-path]="gripPathText" style="position: absolute">

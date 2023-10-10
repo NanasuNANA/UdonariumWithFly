@@ -1,3 +1,10 @@
+/* 
+Porting from Udonarium Lily
+Copyright (c) 2020 entyu
+
+MIT License
+https://opensource.org/licenses/mit-license.php
+*/
 import { GridType } from '@udonarium/game-table';
 
 type StrokeGridFunc = (w: number, h: number, gridSize: number) => GridPosition;
