@@ -135,7 +135,7 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
             return true;
           } else {
             const tag = m.buildTag();
-            tag.setAttr('rel', 'nofollow');
+            tag.setAttr('rel', 'noreferrer');
             tag.addClass('outer-link');
             return tag;
           }

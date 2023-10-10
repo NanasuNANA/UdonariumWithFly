@@ -52,7 +52,7 @@ export class OpenUrlComponent implements OnInit, OnDestroy {
   }
 
   openUrl() {
-    window.open(this.url.trim(), '_blank', 'noopener');
+    window.open(this.url.trim(), '_blank', 'noreferrer');
     this.modalService.resolve(true);
   }
 
