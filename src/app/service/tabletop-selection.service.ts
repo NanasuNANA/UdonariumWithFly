@@ -66,6 +66,7 @@ export class TabletopSelectionService {
       for (let target of targets) {
         EventSystem.trigger(`UPDATE_SELECTION/identifier/${target.identifier}`, { changed: targets });
       }
+      EventSystem.trigger('UPDATE_INVENTORY', null);
     });
     this.isUdpateCssBatching = true;
   }

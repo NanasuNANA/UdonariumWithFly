@@ -528,3 +528,13 @@ button.link {
 .url-link {
   cursor: inherit;
 }
+
+.muluti-selected {
+  border-top: 2px dotted #666;
+  border-bottom: 2px dotted #666;
+  border-right: 5px solid hsla(200, 100%, 75%, 0.6);
+}
+.muluti-selected:not(.selected) {
+  padding-left: 6px;
+  border-left: 2px dotted #666;
+}

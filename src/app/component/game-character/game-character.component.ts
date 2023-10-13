@@ -815,6 +815,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           name: '共有インベントリ', action: () => {
             EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
             this.gameCharacter.setLocation('common');
+            this.selectionService.remove(this.gameCharacter);
             SoundEffect.play(PresetSound.piecePut);
           }
         },
@@ -822,6 +823,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           name: '個人インベントリ', action: () => {
             EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
             this.gameCharacter.setLocation(Network.peerId);
+            this.selectionService.remove(this.gameCharacter);
             SoundEffect.play(PresetSound.piecePut);
           }
         },
@@ -829,6 +831,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           name: '墓場', action: () => {
             EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
             this.gameCharacter.setLocation('graveyard');
+            this.selectionService.remove(this.gameCharacter);
             SoundEffect.play(PresetSound.sweep);
           }
         },
@@ -871,6 +874,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
         name: '削除する（墓場へ移動）', action: () => {
           EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
           this.gameCharacter.setLocation('graveyard');
+          this.selectionService.remove(this.gameCharacter);
           SoundEffect.play(PresetSound.sweep);
         }
       }

@@ -21,6 +21,7 @@ import { GameObjectInventoryService } from 'service/game-object-inventory.servic
 import { ModalService } from 'service/modal.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
+import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
   selector: 'game-object-inventory',
@@ -56,13 +57,18 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
 
   get isGMMode(): boolean{ return PeerCursor.myCursor ? PeerCursor.myCursor.isGMMode : false; }
 
+  selectionState(tabletopObject: TabletopObject): SelectionState { return this.selectionService.state(tabletopObject); }
+  checkSelected(tabletopObject: TabletopObject): boolean { return this.selectionState(tabletopObject) !== SelectionState.NONE; }
+  checkMagnetic(tabletopObject: TabletopObject): boolean { return this.selectionState(tabletopObject) === SelectionState.MAGNETIC; }
+
   constructor(
     private changeDetector: ChangeDetectorRef,
     private panelService: PanelService,
     private inventoryService: GameObjectInventoryService,
     private contextMenuService: ContextMenuService,
     private pointerDeviceService: PointerDeviceService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private selectionService: TabletopSelectionService
   ) { }
 
   ngOnInit() {
@@ -142,14 +148,84 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     if (target && target.tagName === 'BUTTON') {
       const clientRect = target.getBoundingClientRect();
       position = { 
-        x: window.pageXOffset + clientRect.left + target.clientWidth,
-        y: window.pageYOffset + clientRect.top
+        x: window.scrollX + clientRect.left + target.clientWidth,
+        y: window.scrollY + clientRect.top
       };
     } else {
       position = this.pointerDeviceService.pointers[0];
     }
     
     let actions: ContextMenuAction[] = [];
+    if (this.checkSelected(gameObject)) {
+      let selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === gameObject.aliasName) as GameCharacter[];
+      let subActions: ContextMenuAction[] = [];
+      if (this.selectTab != 'table') {
+        subActions.push({
+          name: 'すべてテーブルに移動', action: () => {
+            selectedCharacter().forEach(gameCharacter => {
+              EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameCharacter.identifier });
+              let isStealthMode = GameCharacter.isStealthMode;
+              gameCharacter.setLocation('table');
+              this.selectionService.remove(gameCharacter);
+              if (gameCharacter.isHideIn && gameCharacter.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
+                this.modalService.open(ConfirmationComponent, {
+                  title: 'ステルスモード', 
+                  text: 'ステルスモードになります。',
+                  help: '位置を自分だけ見ているキャラクターが1つ以上テーブル上にある間、あなたのカーソル位置は他の参加者に伝わりません。',
+                  type: ConfirmationType.OK,
+                  materialIcon: 'disabled_visible'
+                });
+              }
+            });
+            SoundEffect.play(PresetSound.piecePut);
+            EventSystem.call('UPDATE_INVENTORY', true);
+          }
+        });
+      }
+      if (this.selectTab != 'common') {
+        subActions.push({
+          name: 'すべて共有イベントリに移動', action: () => {
+            selectedCharacter().forEach(gameCharacter => {
+              gameCharacter.setLocation('common');
+              this.selectionService.remove(gameCharacter);
+            });
+            SoundEffect.play(PresetSound.piecePut);
+            EventSystem.call('UPDATE_INVENTORY', true);
+          }
+        });
+      }
+      if (this.selectTab === 'table' || this.selectTab === 'common' || this.selectTab === 'graveyard') {
+        subActions.push({
+          name: 'すべて個人イベントリに移動', action: () => {
+            selectedCharacter().forEach(gameCharacter => {
+              gameCharacter.setLocation(Network.peerId);
+              this.selectionService.remove(gameCharacter);
+            });
+            SoundEffect.play(PresetSound.piecePut);
+            EventSystem.call('UPDATE_INVENTORY', true);
+          }
+        });
+      }
+      if (this.selectTab != 'graveyard') {
+        subActions.push({
+          name: 'すべて墓場に移動', action: () => {
+            selectedCharacter().forEach(gameCharacter => {
+              gameCharacter.setLocation('graveyard');
+              this.selectionService.remove(gameCharacter);
+            });
+            SoundEffect.play(PresetSound.sweep);
+            EventSystem.call('UPDATE_INVENTORY', true);
+          }
+        });
+      }
+      actions.push({
+        name: '選択したキャラクター',
+        action: null,
+        subActions: subActions
+      });
+      actions.push(ContextMenuSeparator);
+    }
+
     if (gameObject.location.name === 'table' && (this.isGMMode || gameObject.isVisible)) {
       actions.push({
         name: 'テーブル上から探す',
@@ -161,6 +237,29 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         selfOnly: true
       });
     }
+    if (gameObject.location.name != 'table' && (this.isGMMode || gameObject.isVisible)) {
+      actions.push({
+        name: 'テーブルへ移動',
+        action: () => {
+          let isStealthMode = GameCharacter.isStealthMode;
+          EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
+          gameObject.setLocation('table');
+          this.selectionService.remove(gameObject);
+          if (gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
+            this.modalService.open(ConfirmationComponent, {
+              title: 'ステルスモード', 
+              text: 'ステルスモードになります。',
+              help: '位置を自分だけ見ているキャラクターが1つ以上テーブル上にある間、あなたのカーソル位置は他の参加者に伝わりません。',
+              type: ConfirmationType.OK,
+              materialIcon: 'disabled_visible'
+            });
+          }
+          SoundEffect.play(PresetSound.piecePut);
+          EventSystem.call('UPDATE_INVENTORY', true);
+        }
+      });
+    }
+
     if (gameObject.isHideIn) {
       actions.push({ 
         name: '位置を公開する',
@@ -397,6 +496,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               let isStealthMode = GameCharacter.isStealthMode;
               EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
               gameObject.setLocation(location.name);
+              this.selectionService.remove(gameObject);
               if (location.name === 'table' && gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
                 this.modalService.open(ConfirmationComponent, {
                   title: 'ステルスモード', 
@@ -462,6 +562,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       actions.push(ContextMenuSeparator);
       actions.push({
         name: '削除する（完全に削除）', action: () => {
+          this.selectionService.remove(gameObject);
           this.deleteGameObject(gameObject);
           SoundEffect.play(PresetSound.sweep);
         }
@@ -471,6 +572,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       actions.push({
         name: '削除する（墓場へ移動）', action: () => {
           EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
+          this.selectionService.remove(gameObject);
           gameObject.setLocation('graveyard');
           SoundEffect.play(PresetSound.sweep);
         }
@@ -522,11 +624,25 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     component.character = gameObject;
   }
 
-  selectGameObject(gameObject: GameObject) {
-    EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName, highlighting: true });
+  selectGameObject(gameObject: GameObject, e: Event=null) {
+    if (!(gameObject instanceof TabletopObject)) return;
+    if (e && e instanceof PointerEvent && e.ctrlKey) {
+      SoundEffect.playLocal(PresetSound.selectionStart);
+      if (this.checkSelected(gameObject)) {
+        this.selectionService.remove(gameObject);
+      } else {
+        EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName, highlighting: true });
+        this.selectionService.add(gameObject);
+      }
+    } else {
+      EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName, highlighting: true });
+      if (!this.checkSelected(gameObject)) {
+        this.selectionService.clear();
+      }
+    }
   }
 
-  focusGameObject(gameObject: GameCharacter, e: Event, ) {
+  focusGameObject(gameObject: GameCharacter, e: Event) {
     if (!(e.target instanceof HTMLElement)) return;
     if (new Set(['input', 'button']).has(e.target.tagName.toLowerCase())) return;
     if (gameObject.location.name !== 'table' || (!gameObject.isVisible && !this.isGMMode)) return;
