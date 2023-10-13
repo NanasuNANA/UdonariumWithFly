@@ -1,7 +1,7 @@
 <div class="component" (input)="onInput()">
   <ng-container *ngTemplateOutlet="inventoryTab"></ng-container>
   <ng-container *ngTemplateOutlet="inventoryViewSetting"></ng-container>
-  <div *ngIf="getGameObjects(selectTab).length < 1">{{getTabTitle(selectTab)}}インベントリは空です</div>
+  <div *ngIf="getGameObjects(selectTab).length < 1"><small><b>{{getTabTitle(selectTab)}}</b>インベントリは空です</small></div>
   <div (contextmenu)="onContextMenu($event, $any(gameObject))" *ngFor="let gameObject of getGameObjects(selectTab); trackBy: trackByGameObject" class="object-container"
     (click)="selectGameObject(gameObject, $event)" (dblclick)="focusGameObject($any(gameObject), $event)"
     [ngClass]="{'box': true, 'selected': (selectedIdentifier === gameObject.identifier), 'muluti-selected': checkSelected(gameObject), 'is-hide-in': $any(gameObject).isHideIn, 'is-inventory-no-indicate': !gameObject.isInventoryIndicate}">
@@ -41,14 +41,15 @@
   <ng-container *ngIf="!isEdit">
     <table style="font-size: 0.8em;">
       <tr>
-        <th style=" vertical-align:middle;" nowrap>並び順:</th>
-        <td style=" vertical-align:middle;" nowrap>
+        <th style="vertical-align:middle" nowrap>並び順:</th>
+        <td style="vertical-align:middle" nowrap>
           <ng-container *ngIf="0 < sortTag.length"><span>{{sortTag}} ({{sortOrderName}})</span></ng-container>
           <ng-container *ngIf="sortTag.length < 1">-</ng-container>
         </td>
-        <td width="100%" nowrap>
+        <td style="vertical-align:middle" width="100%" nowrap>
           <button class="tab-setting small-font" (click)="toggleEdit()"><i class="material-icons small-font">settings</i>設定</button>
           <label *ngIf="selectTab === 'table'" style="float: right; font-size: smaller"><input type="checkbox" [(ngModel)]="indicateAll" /><b>すべて表示<sup class="self_only">*</sup></b></label>
+          <span style="float: right; margin: 2px"><small><kbd style="border-radius: 3px; border: 1px outset #ccc; padding: 1px; background-color: #eee">Ctrl</kbd>+クリックで複数選択</small></span>
         </td>
       </tr>
     </table>
