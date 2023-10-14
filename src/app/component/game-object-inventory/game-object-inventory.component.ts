@@ -32,7 +32,12 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
 export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   inventoryTypes: string[] = ['table', 'common', 'graveyard'];
 
-  selectTab: string = 'table';
+  _selectTab: string = 'table'; 
+  get selectTab(): string { return this._selectTab; };
+  set selectTab(selectTab: string) {
+    this._selectTab = selectTab;
+    this.selectionService.clear();
+  };
   selectedIdentifier: string = '';
 
   isEdit: boolean = false;
