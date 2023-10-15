@@ -134,11 +134,18 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
       })
       .on('FOCUS_TABLETOP_OBJECT', event => {
         setTimeout(() => {
-          console.log(`move table to focus (${event.data.x}, ${event.data.y})`);
+          //console.log(`move table to focus (${event.data.x}, ${event.data.y})`);
           this.gameTable.nativeElement.style.transition = '0.1s ease-out';
           setTimeout(() => {
             this.gameTable.nativeElement.style.transition = null;
           }, 100);
+          /* 
+          Porting from Udonarium Lily
+          Copyright (c) 2020 entyu
+
+          MIT License
+          https://opensource.org/licenses/mit-license.php
+          */
           // 座標変換
           let centerX = this.gridCanvas.nativeElement.clientWidth / 2;
           let centerY = this.gridCanvas.nativeElement.clientHeight / 2;
