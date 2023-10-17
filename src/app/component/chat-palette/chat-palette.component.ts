@@ -193,7 +193,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   filter(value: string): boolean {
     if (this.filterText == null || this.filterText.trim() == '') return true;
-    return StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').trim().indexOf(StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').trim()) >= 0;
+    return StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').toUpperCase().trim().indexOf(StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').toUpperCase().trim()) >= 0;
   }
 
   helpChatPallet() {
