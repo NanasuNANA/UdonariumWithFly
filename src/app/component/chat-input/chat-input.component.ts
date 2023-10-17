@@ -66,7 +66,17 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   @Input('text') _text: string = '';
   @Output() textChange = new EventEmitter<string>();
   get text(): string { return this._text };
-  set text(text: string) { this._text = text; this.textChange.emit(text); }
+  set text(text: string) {
+    this._text = text;
+    this.textChange.emit(text);
+    if (text != null && this.isFilterTextUpdate) this.filterText = text;
+  }
+
+  isFilterTextUpdate = false;
+  @Input('filterText') _filterText: string = '';
+  @Output() filterTextChange = new EventEmitter<string>();
+  get filterText(): string { return this._filterText };
+  set filterText(filterText: string) { this._filterText = filterText; this.filterTextChange.emit(filterText); }
 
   @Output() chat = new EventEmitter<{ 
     text: string, gameType: string, sendFrom: string, sendTo: string,
