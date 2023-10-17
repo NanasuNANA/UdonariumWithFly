@@ -39,7 +39,7 @@ interface StandGroup {
   styleUrls: ['./chat-input.component.css']
 })
 export class ChatInputComponent implements OnInit, OnDestroy {
-  @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef;
+  @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef<HTMLTextAreaElement>;
 
   @Input() onlyCharacters: boolean = false;
   @Input() chatTabidentifier: string = '';
@@ -77,6 +77,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   @Output() filterTextChange = new EventEmitter<string>();
   get filterText(): string { return this._filterText };
   set filterText(filterText: string) { this._filterText = filterText; this.filterTextChange.emit(filterText); }
+
+  @Output() moveToPalette = new EventEmitter();
 
   @Output() chat = new EventEmitter<{ 
     text: string, gameType: string, sendFrom: string, sendTo: string,
@@ -350,6 +352,15 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
     textArea.value = histText;
     this.calcFitHeight();
+  }
+
+  moveTo(e: Event) {
+    if (!this.textAreaElementRef) return;
+    if (this.textAreaElementRef.nativeElement.selectionStart != this.textAreaElementRef.nativeElement.selectionEnd) return;
+    if (this.textAreaElementRef.nativeElement.selectionStart === this.textAreaElementRef.nativeElement.value.length) {
+      this.moveToPalette.emit();
+      e.preventDefault();
+    }
   }
 
    sendChat(event: Partial<KeyboardEvent>) {

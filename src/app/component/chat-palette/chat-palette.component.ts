@@ -117,6 +117,38 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     }
   }
 
+  moveToInput(e: Event) {
+    if (!this.chatPletteElementRef.nativeElement) return;
+    const selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
+    if (selectedPaletteIndex <= 0) {
+      this.chatInputComponent.textAreaElementRef.nativeElement.focus();
+      e.preventDefault();
+    }
+  }
+
+  arrowPalette() {
+    if (!this.chatPletteElementRef.nativeElement) return;
+    this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
+    if (this.selectedPaletteIndex >= 0 && this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex]) {
+      this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character.rootDataElement);
+      let textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
+      textArea.value = this.text;
+    }
+  }
+
+  enterPalette(line: string) {
+    if (!this.chatPletteElementRef.nativeElement) return;
+    this.text = this.palette.evaluate(line, this.character.rootDataElement);
+    this.chatInputComponent.sendChat(null);
+  }
+
+  moveToPalette() {
+    if (!this.chatPletteElementRef.nativeElement) return;
+    if (this.chatPletteElementRef.nativeElement.options.length <= 0) return;
+    this.chatPletteElementRef.nativeElement.options[0].selected = true;
+    this.chatPletteElementRef.nativeElement.focus();
+  }
+
   sendChat(value: { text: string, gameType: string, sendFrom: string, sendTo: string,
     color?: string, isInverse?:boolean, isHollow?: boolean, isBlackPaint?: boolean, aura?: number, isUseFaceIcon?: boolean, characterIdentifier?: string, standIdentifier?: string, standName?: string, isUseStandImage?: boolean }) {
     if (this.chatTab) {

@@ -8,7 +8,7 @@
         </label>
       </div>
     </form>
-    <chat-input [onlyCharacters]="true" [chatTabidentifier]="chatTabidentifier" 
+    <chat-input [onlyCharacters]="true" [chatTabidentifier]="chatTabidentifier" (moveToPalette)="moveToPalette()"
     [(gameType)]="gameType" [(sendFrom)]="sendFrom" [(text)]="text" [(filterText)]="filterText" (chat)="sendChat($event)" #chatInput></chat-input>
     <div *ngIf="isEdit" class="edit-info" style="display: flex">
       <div style="width: calc(100% - 1.6em); text-align: center"><i class="material-icons" style="vertical-align: middle; font-size: 1.05rem">info_outline</i> チャットパレット編集中</div>
@@ -16,7 +16,7 @@
     </div>
   </div>
   <div *ngIf="!isEdit" style="flex-grow: 1; height: 0; min-height: 100px;">
-    <select #chatPlette class="palette" style="overflow-y: auto;" size="5" (keydown.enter)="chatInputComponent.sendChat(null)" (click)="clickPalette(chatPlette.value)">
+    <select #chatPlette class="palette" style="overflow-y: auto;" size="5" (focus)="arrowPalette()" (keydown.arrowUp)="moveToInput($event)" (keyup.arrowUp)="arrowPalette()" (keyup.arrowDown)="arrowPalette()" (keydown.enter)="enterPalette(chatPlette.value)" (click)="clickPalette(chatPlette.value)">
       <ng-container *ngIf="palette">
         <ng-container *ngFor="let palette of palette.getPalette()">
           <option *ngIf="filter(palette)" value="{{palette}}" [style.color]="color">{{palette}}</option>
