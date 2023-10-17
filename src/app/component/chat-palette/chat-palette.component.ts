@@ -101,15 +101,6 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     this.updatePanelTitle();
   }
 
-  selectPalette(line: string) {
-    this.text = line;
-    /* 作りかけ、とりあえず封印
-    setTimeout(() => {
-      this.filterText = line;
-    }, 300);
-    */
-  }
-
   clickPalette(line: string) {
     if (!this.chatPletteElementRef.nativeElement) return;
     const evaluatedLine = this.palette.evaluate(line, this.character.rootDataElement);
@@ -166,7 +157,6 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   filter(value: string): boolean {
-    console.log(this.filterText)
     if (this.filterText == null || this.filterText.trim() == '') return true;
     return StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').trim().indexOf(StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').trim()) >= 0;
   }
