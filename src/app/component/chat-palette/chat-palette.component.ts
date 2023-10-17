@@ -136,10 +136,13 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     }
   }
 
-  enterPalette(line: string) {
+  enterPalette(line: string, e: Event=null) {
     if (!this.chatPletteElementRef.nativeElement) return;
     this.text = this.palette.evaluate(line, this.character.rootDataElement);
     this.chatInputComponent.sendChat(null);
+    this.chatInputComponent.focusInput();
+    this.chatPletteElementRef.nativeElement.selectedIndex = -1;
+    if (e) e.preventDefault();
   }
 
   moveToPalette() {

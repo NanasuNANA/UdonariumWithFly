@@ -363,7 +363,12 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     }
   }
 
-   sendChat(event: Partial<KeyboardEvent>) {
+  focusInput() {
+    if (!this.textAreaElementRef) return;
+    this.textAreaElementRef.nativeElement.focus();
+  } 
+
+  sendChat(event: Partial<KeyboardEvent>) {
     if (event) event.preventDefault();
     //if (!this.text.length) return;
     if (event && event.keyCode !== 13) return;
