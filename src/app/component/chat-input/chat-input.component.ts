@@ -78,7 +78,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   get filterText(): string { return this._filterText };
   set filterText(filterText: string) { this._filterText = filterText; this.filterTextChange.emit(filterText); }
 
-  @Output() moveToPalette = new EventEmitter();
+  @Output() moveToPalette = new EventEmitter<string>();
 
   @Output() chat = new EventEmitter<{ 
     text: string, gameType: string, sendFrom: string, sendTo: string,
@@ -358,7 +358,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     if (!this.textAreaElementRef) return;
     if (this.textAreaElementRef.nativeElement.selectionStart != this.textAreaElementRef.nativeElement.selectionEnd) return;
     if (this.textAreaElementRef.nativeElement.selectionStart === this.textAreaElementRef.nativeElement.value.length) {
-      this.moveToPalette.emit();
+      this.moveToPalette.emit(this.text);
       e.preventDefault();
     }
   }

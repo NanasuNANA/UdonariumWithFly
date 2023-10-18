@@ -121,6 +121,8 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     if (!this.chatPletteElementRef.nativeElement) return;
     const selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
     if (selectedPaletteIndex <= 0) {
+      this.text = this._tempText;
+      this.chatInputComponent.textAreaElementRef.nativeElement.value = this._tempText;
       this.chatInputComponent.textAreaElementRef.nativeElement.focus();
       e.preventDefault();
     }
@@ -145,7 +147,9 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     if (e) e.preventDefault();
   }
 
-  moveToPalette() {
+  private _tempText: string;
+  moveToPalette(tempText: string) {
+    this._tempText = tempText;
     if (!this.chatPletteElementRef.nativeElement) return;
     if (this.chatPletteElementRef.nativeElement.options.length <= 0) return;
     this.chatPletteElementRef.nativeElement.options[0].selected = true;
