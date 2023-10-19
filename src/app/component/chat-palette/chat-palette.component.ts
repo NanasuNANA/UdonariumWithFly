@@ -141,9 +141,10 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   enterPalette(line: string, e: Event=null) {
     if (!this.chatPletteElementRef.nativeElement) return;
     this.text = this.palette.evaluate(line, this.character.rootDataElement);
-    this.chatInputComponent.sendChat(null);
+    //this.chatInputComponent.sendChat(null);
     this.chatInputComponent.focusInput();
-    this.chatPletteElementRef.nativeElement.selectedIndex = -1;
+    //this.chatPletteElementRef.nativeElement.selectedIndex = -1;
+    //this.filterText = '';
     if (e) e.preventDefault();
   }
 
@@ -152,7 +153,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     this._tempText = tempText;
     if (!this.chatPletteElementRef.nativeElement) return;
     if (this.chatPletteElementRef.nativeElement.options.length <= 0) return;
-    this.chatPletteElementRef.nativeElement.options[0].selected = true;
+    if (this.chatPletteElementRef.nativeElement.selectedIndex <= 0) this.chatPletteElementRef.nativeElement.options[0].selected = true;
     this.chatPletteElementRef.nativeElement.focus();
   }
 
