@@ -197,10 +197,10 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   filter(value: string): boolean {
     if (this.filterText == null || this.filterText.trim() == '') return true;
-    const nomarizeFilterText = StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
-    const nomarizeValue = StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
+    const nomarizeFilterText = StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
+    const nomarizeValue = StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     if (nomarizeValue.indexOf(nomarizeFilterText) >= 0) return true;
-    const nomarizeEvaluateValue = StringUtil.toHalfWidth(this.palette.evaluate(value, this.character.rootDataElement).replace(/[―ー—‐]/g, '-')).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
+    const nomarizeEvaluateValue = StringUtil.toHalfWidth(this.palette.evaluate(value, this.character.rootDataElement).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     return nomarizeEvaluateValue.indexOf(nomarizeFilterText) >= 0;
   }
 
