@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatPalette } from '@udonarium/chat-palette';
 import { ChatTab } from '@udonarium/chat-tab';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
@@ -9,6 +9,7 @@ import { GameCharacter } from '@udonarium/game-character';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { ChatInputComponent } from 'component/chat-input/chat-input.component';
 import { TextViewComponent } from 'component/text-view/text-view.component';
+import { interval } from 'rxjs';
 import { ChatMessageService } from 'service/chat-message.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
@@ -24,6 +25,21 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   @Input() character: GameCharacter = null;
 
   get palette(): ChatPalette { return this.character.chatPalette; }
+  
+  paletteCache: string[] = [];
+  paletteRenewInterval: boolean = true;
+  paletteRenewIntervalId = setInterval(() => {
+    this.paletteRenewInterval = true;
+  }, 200);
+  get filteredPaletteStrings(): string[] {
+    this.ngZone.run(() => {
+      if (this.paletteRenewInterval) {
+        this.paletteRenewInterval = false;
+        this.paletteCache = this.character.chatPalette.getPalette().filter(text => this.filter(text));
+      }
+    });
+    return this.paletteCache;
+  }
 
   get color(): string {
     return this.chatInputComponent.color;
@@ -63,7 +79,8 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   constructor(
     public chatMessageService: ChatMessageService,
     private panelService: PanelService,
-    private pointerDeviceService: PointerDeviceService
+    private pointerDeviceService: PointerDeviceService,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit() {
@@ -83,6 +100,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     EventSystem.unregister(this);
+    clearInterval(this.paletteRenewIntervalId);
     if (this.isEdit) this.toggleEditMode();
   }
 
@@ -132,9 +150,11 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     if (!this.chatPletteElementRef.nativeElement) return;
     this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
     if (this.selectedPaletteIndex >= 0 && this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex]) {
-      this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character.rootDataElement);
-      let textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
-      textArea.value = this.text;
+      this.ngZone.run(() => {
+        this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character.rootDataElement);
+        let textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
+        textArea.value = this.text;
+      });
     }
   }
 
@@ -201,7 +221,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     const nomarizeFilterText = StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     const nomarizeValue = StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     if (nomarizeValue.indexOf(nomarizeFilterText) >= 0) return true;
-    const nomarizeEvaluateValue = StringUtil.toHalfWidth(this.palette.evaluate(value, this.character.rootDataElement).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
+    const nomarizeEvaluateValue = StringUtil.toHalfWidth(!/[{｛]/.test(value) ? value : this.palette.evaluate(value, this.character.rootDataElement).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     return nomarizeEvaluateValue.indexOf(nomarizeFilterText) >= 0;
   }
 
