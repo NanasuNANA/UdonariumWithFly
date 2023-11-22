@@ -305,26 +305,16 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           name: '☑ 固定', action: () => {
             this.isLocked = false;
             SoundEffect.play(PresetSound.unlock);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 固定', action: () => {
             this.isLocked = true;
             SoundEffect.play(PresetSound.lock);
-          }
+          },
+          checkBox: 'check'
         }),
       ContextMenuSeparator,
-      /*
-      (this.isSlope
-        ? {
-          name: '☑ 傾斜', action: () => {
-            this.isSlope = false;
-          }
-        } : {
-          name: '☐ 傾斜', action: () => {
-            this.isSlope = true;
-          }
-        }),
-      */
       { name: '傾斜', action: null, subActions: [
         {
           name: `${ this.slopeDirection == SlopeDirection.NONE ? '◉' : '○' } なし`, action: () => {
@@ -383,12 +373,14 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           name: '☑ 他の地形に乗る', action: () => {
             this.isInteract = false;
             SoundEffect.play(PresetSound.unlock);
-          }
+          },
+                checkBox: 'check'
         } : {
           name: '☐ 他の地形に乗る', action: () => {
             this.isInteract = true;
             SoundEffect.play(PresetSound.lock);
-          }
+          },
+                checkBox: 'check'
         }),
       ContextMenuSeparator,
       */
@@ -396,21 +388,25 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
         ? {
           name: '☑ 影を落とす', action: () => {
             this.isDropShadow = false;
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 影を落とす', action: () => {
             this.isDropShadow = true;
-          }
+          },
+          checkBox: 'check'
         }),
       (this.isAltitudeIndicate
         ? {
           name: '☑ 高度の表示', action: () => {
             this.isAltitudeIndicate = false;
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 高度の表示', action: () => {
             this.isAltitudeIndicate = true;
-          }
+          },
+          checkBox: 'check'
         }),
       {
         name: '高度を0にする', action: () => {

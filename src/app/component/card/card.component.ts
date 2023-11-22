@@ -402,12 +402,14 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
         name: '☑ 固定', action: () => {
           this.isLocked = false;
           SoundEffect.play(PresetSound.unlock);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 固定', action: () => {
           this.isLocked = true;
           SoundEffect.play(PresetSound.lock);
-        }
+        },
+        checkBox: 'check'
       });
     actions.push(ContextMenuSeparator);
     actions.push(!this.isVisible || this.isHand

@@ -319,24 +319,28 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         name: '☑ オーバービューに顔ICを使用', action: () => {
           gameObject.isUseIconToOverviewImage = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ オーバービューに顔ICを使用', action: () => {
           gameObject.isUseIconToOverviewImage = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       }));
     actions.push((gameObject.isShowChatBubble
       ? {
         name: '☑ 💭の表示', action: () => {
           gameObject.isShowChatBubble = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 💭の表示', action: () => {
           gameObject.isShowChatBubble = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       }));
     actions.push(
       (gameObject.isDropShadow
@@ -344,12 +348,14 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         name: '☑ 影の表示', action: () => {
           gameObject.isDropShadow = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 影の表示', action: () => {
           gameObject.isDropShadow = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       })
     );
     actions.push({ name: '画像効果', action: null,  
@@ -359,36 +365,42 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           name: '☑ 反転', action: () => {
             gameObject.isInverse = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 反転', action: () => {
             gameObject.isInverse = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       (gameObject.isHollow
         ? {
           name: '☑ ぼかし', action: () => {
             gameObject.isHollow = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ ぼかし', action: () => {
             gameObject.isHollow = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       (gameObject.isBlackPaint
         ? {
           name: '☑ 黒塗り', action: () => {
             gameObject.isBlackPaint = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 黒塗り', action: () => {
             gameObject.isBlackPaint = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
         { name: 'オーラ', action: null, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} なし`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) } }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
           return { name: `${gameObject.aura == i ? '◉' : '○'} ${color}`, action: () => { gameObject.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) } };
@@ -412,12 +424,14 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         name: '☑ 他のキャラクターに乗る', action: () => {
           gameObject.isNotRide = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 他のキャラクターに乗る', action: () => {
           gameObject.isNotRide = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       }));
     actions.push(
       (gameObject.isAltitudeIndicate
@@ -425,12 +439,14 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         name: '☑ 高度の表示', action: () => {
           gameObject.isAltitudeIndicate = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 高度の表示', action: () => {
           gameObject.isAltitudeIndicate = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       })
     );
     actions.push(
@@ -476,12 +492,14 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         name: '☑ テーブルインベントリに表示', action: () => {
           gameObject.isInventoryIndicate = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ テーブルインベントリに表示', action: () => {
           gameObject.isInventoryIndicate = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
-        }
+        },
+        checkBox: 'check'
       });
     let locations = [
       { name: 'table', alias: 'テーブル' },

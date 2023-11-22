@@ -24,8 +24,8 @@
       (mouseenter)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : showSubMenu(action)">
     <div class="menu-title" [ngClass]="{'icon-menu': action.icon, default: action.default}" style="width: 100%">
       <span *ngIf="action.error" title="{{action.error}}">⚠️</span>
-      <input *ngIf="action.name && action.name.indexOf('☑') == 0" type="checkbox" [disabled]="action.disabled" checked/>
-      <input *ngIf="action.name && action.name.indexOf('☐') == 0" type="checkbox" [disabled]="action.disabled" />
+      <input *ngIf="action.name && action.checkBox == 'check' && action.name.indexOf('☑') == 0" type="checkbox" [disabled]="action.disabled" checked/>
+      <input *ngIf="action.name && action.checkBox == 'check' && action.name.indexOf('☐') == 0" type="checkbox" [disabled]="action.disabled" />
       <input *ngIf="action.name && action.name.indexOf('◉') == 0" type="radio" [disabled]="action.disabled" checked />
       <input *ngIf="action.name && action.name.indexOf('○') == 0" type="radio" [disabled]="action.disabled" />
       <span *ngIf="action.name && action.colorSample && action.name.indexOf('ブラック') == 2" class="color-indicator" style="color: #000">■</span>
@@ -37,7 +37,7 @@
       <span *ngIf="action.name && action.colorSample && action.name.indexOf('イエロー') == 2" class="color-indicator" style="color: #ff0">■</span>
       <span *ngIf="action.name && action.colorSample && action.name.indexOf('ホワイト') == 2" class="color-indicator" style="color: #fff">■</span>
       <span *ngIf="action.materialIcon" style="vertical-align: top"><i style="font-size: 150%; padding-left: 2px;" class="material-icons">{{action.materialIcon}}</i></span>
-      <span [innerHTML]="actionNameHtmlEscape(action.name) | safe: 'html'"></span><sup *ngIf="action.selfOnly" class="self-only">*</sup>
+      <span [innerHTML]="actionNameHtmlEscape(action.name, action.checkBox) | safe: 'html'"></span><sup *ngIf="action.selfOnly" class="self-only">*</sup>
       <span *ngIf="action.hotkey != ''" class="hotkey" [innerHtml]="action.hotkey"></span>
       <span *ngIf="action.icon && 0 < action.icon?.url.length" class="imagebox"><img class="image" [src]="action.icon.url | safe: 'resourceUrl'"></span>
       <i *ngIf="action.isOuterLink" class="material-icons" style="font-size: 1rem">open_in_new</i>

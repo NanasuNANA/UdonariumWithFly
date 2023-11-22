@@ -654,36 +654,42 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           name: '☑ オーバービューに顔ICを使用', action: () => {
             this.isUseIconToOverviewImage = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ オーバービューに顔ICを使用', action: () => {
             this.isUseIconToOverviewImage = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       (this.gameCharacter.isShowChatBubble
         ? {
           name: '☑ 💭の表示', action: () => {
             this.gameCharacter.isShowChatBubble = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 💭の表示', action: () => {
             this.gameCharacter.isShowChatBubble = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       (this.isDropShadow
         ? {
           name: '☑ 影の表示', action: () => {
             this.isDropShadow = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 影の表示', action: () => {
             this.isDropShadow = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       { name: '画像効果', action: null, subActions: [
         (this.isInverse
@@ -691,36 +697,42 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             name: '☑ 反転', action: () => {
               this.isInverse = false;
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }
+            },
+            checkBox: 'check'
           } : {
             name: '☐ 反転', action: () => {
               this.isInverse = true;
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }
+            },
+            checkBox: 'check'
           }),
         (this.isHollow
           ? {
             name: '☑ ぼかし', action: () => {
               this.isHollow = false;
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }
+            },
+            checkBox: 'check'
           } : {
             name: '☐ ぼかし', action: () => {
               this.isHollow = true;
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }
+            },
+            checkBox: 'check'
           }),
         (this.isBlackPaint
           ? {
             name: '☑ 黒塗り', action: () => {
               this.isBlackPaint = false;
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }
+            },
+            checkBox: 'check'
           } : {
             name: '☐ 黒塗り', action: () => {
               this.isBlackPaint = true;
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }
+            },
+            checkBox: 'check'
           }),
           { name: 'オーラ', action: null, subActions: [{ name: `${this.aura == -1 ? '◉' : '○'} なし`, action: () => { this.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) } }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
             return { name: `${this.aura == i ? '◉' : '○'} ${color}`, colorSample: true, action: () => { this.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) } };
@@ -744,24 +756,28 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           name: '☑ 他のキャラクターに乗る', action: () => {
             this.isNotRide = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 他のキャラクターに乗る', action: () => {
             this.isNotRide = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       (this.isAltitudeIndicate
         ? {
           name: '☑ 高度の表示', action: () => {
             this.isAltitudeIndicate = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 高度の表示', action: () => {
             this.isAltitudeIndicate = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       {
         name: '高度を0にする', action: () => {
@@ -803,12 +819,14 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           name: '☑ テーブルインベントリに表示', action: () => {
             this.gameCharacter.isInventoryIndicate = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ テーブルインベントリに表示', action: () => {
             this.gameCharacter.isInventoryIndicate = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
-          }
+          },
+          checkBox: 'check'
         }),
       { name: 'テーブルから移動', action: null, subActions: [
         {

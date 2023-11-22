@@ -291,12 +291,14 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
           name: '☑ 固定', action: () => {
             this.isLocked = false;
             SoundEffect.play(PresetSound.unlock);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 固定', action: () => {
             this.isLocked = true;
             SoundEffect.play(PresetSound.lock);
-          }
+          },
+          checkBox: 'check'
         }),
       ContextMenuSeparator,
       (this.isUpright
@@ -304,33 +306,39 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
           name: '☑ 直立', action: () => {
             this.transition = true;
             this.isUpright = false;
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 直立', action: () => {
             this.transition = true;
             this.isUpright = true;
-          }
+          },
+          checkBox: 'check'
         }),
         (this.isWhiteOut
           ? {
             name: '☑ 画像の色抜き', action: () => {
               this.isWhiteOut = false;
-            }
+            },
+            checkBox: 'check'
           } : {
             name: '☐ 画像の色抜き', action: () => {
               this.isWhiteOut = true;
-            }
+            },
+            checkBox: 'check'
           }),
       ContextMenuSeparator,
       (this.isAltitudeIndicate
         ? {
           name: '☑ 高度の表示', action: () => {
             this.isAltitudeIndicate = false;
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 高度の表示', action: () => {
             this.isAltitudeIndicate = true;
-          }
+          },
+          checkBox: 'check'
         }),
       {
         name: '高度を0にする', action: () => {

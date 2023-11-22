@@ -475,12 +475,14 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
           name: '☑ 固定', action: () => {
             this.isLocked = false;
             SoundEffect.play(PresetSound.unlock);
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 固定', action: () => {
             this.isLocked = true;
             SoundEffect.play(PresetSound.lock);
-          }
+          },
+          checkBox: 'check'
         }),
       ContextMenuSeparator,
       {

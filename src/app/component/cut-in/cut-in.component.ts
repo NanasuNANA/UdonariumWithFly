@@ -529,17 +529,20 @@ export class CutInComponent implements OnInit, OnDestroy {
       {
         name: `${this.isIndicateSender ? '☑' : '☐'}送信者を表示`,
         action: () => { this.isIndicateSender = !this.isIndicateSender; },
-        selfOnly: true
+        selfOnly: true,
+        checkBox: 'check'
       },
       {
         name: `${this.isBackyard ? '☑' : '☐'}ウィンドウの背後に表示`,
         action: () => { this.isBackyard = !this.isBackyard; },
-        selfOnly: true
+        selfOnly: true,
+        checkBox: 'check'
       },
       {
         name: `${this.isMinimize ? '☑' : '☐'}最小化`,
         action: () => { this.isMinimize = !this.isMinimize; },
-        selfOnly: true
+        selfOnly: true,
+        checkBox: 'check'
       },
             /*
       (!this.videoId ? null : ContextMenuSeparator),

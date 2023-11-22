@@ -751,38 +751,44 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         action: () => {
           TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;
           EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelecter.instance.toContext()); 
-        }
+        },
+        checkBox: 'check'
       },
       { name: `${ TableSelecter.instance.gridSnap ? '☑' : '☐' }オブジェクト移動時にスナップ`, 
         action: () => {
           TableSelecter.instance.gridSnap = !TableSelecter.instance.gridSnap;
-        }
+        },
+        checkBox: 'check'
       },
       ContextMenuSeparator,
       { name: `${ ChatWindowComponent.isNoticeOn ? '☑' : '☐' }チャット受信時に音で通知`, 
         action: () => {
           ChatWindowComponent.isNoticeOn = !ChatWindowComponent.isNoticeOn;
-        }
+        },
+        checkBox: 'check'
       },
       ContextMenuSeparator,
       { name: `${ isShowStand ? '☑' : '☐' }スタンド表示`, 
         action: () => {
           StandImageComponent.isShowStand = !isShowStand;
-        }
+        },
+        checkBox: 'check'
       },
       { name: `${ isShowNameTag ? '☑' : '☐' }ネームタグ表示`, 
         action: () => {
           StandImageComponent.isShowNameTag = !isShowNameTag;
         },
         level: 1,
-        disabled: !StandImageComponent.isShowStand
+        disabled: !StandImageComponent.isShowStand,
+        checkBox: 'check'
       },
       { name: `${ isCanBeGone ? '☑' : '☐' }透明化、自動退去`, 
         action: () => {
           StandImageComponent.isCanBeGone = !isCanBeGone;
         },
         level: 1,
-        disabled: !StandImageComponent.isShowStand
+        disabled: !StandImageComponent.isShowStand,
+        checkBox: 'check'
       },
       ContextMenuSeparator,
       { name: '表示スタンド全消去', action: () => EventSystem.trigger('DESTORY_STAND_IMAGE_ALL', null) }

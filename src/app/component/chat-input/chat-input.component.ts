@@ -864,36 +864,42 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 name: '☑ 反転', action: () => {
                   this.character.isInverse = false;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }
+                },
+                checkBox: 'check'
               } : {
                 name: '☐ 反転', action: () => {
                   this.character.isInverse = true;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }
+                },
+                checkBox: 'check'
               }),
             (this.character.isHollow
               ? {
                 name: '☑ ぼかし', action: () => {
                   this.character.isHollow = false;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }
+                },
+                checkBox: 'check'
               } : {
                 name: '☐ ぼかし', action: () => {
                   this.character.isHollow = true;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }
+                },
+                checkBox: 'check'
               }),
             (this.character.isBlackPaint
               ? {
                 name: '☑ 黒塗り', action: () => {
                   this.character.isBlackPaint = false;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }
+                },
+                checkBox: 'check'
               } : {
                 name: '☐ 黒塗り', action: () => {
                   this.character.isBlackPaint = true;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }
+                },
+                checkBox: 'check'
               }),
               { name: 'オーラ', action: null, subActions: [{ name: `${this.character.aura == -1 ? '◉' : '○'} なし`, action: () => { this.character.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) } }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
                 return { name: `${this.character.aura == i ? '◉' : '○'} ${color}`, action: () => { this.character.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) } };

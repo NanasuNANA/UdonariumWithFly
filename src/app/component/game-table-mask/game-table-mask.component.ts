@@ -488,24 +488,28 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
         this.gameTableMask.isTransparentOnGMMode ? {
           name: '☑ GM時透過表示', action: () => {
             this.gameTableMask.isTransparentOnGMMode = false;
-          }
+          },
+          checkBox: 'check'
         }
         : {
           name: '☐ GM時透過表示', action: () => {
             this.gameTableMask.isTransparentOnGMMode = true;
-          }
+          },
+          checkBox: 'check'
         }
       : null),
       (this.isGMMode ?
         this.gameTableMask.isScratchPreviewOnGMMode ? {
           name: '☑ GM時スクラッチプレビュー', action: () => {
             this.gameTableMask.isScratchPreviewOnGMMode = false;
-          }
+          },
+          checkBox: 'check'
         }
         : {
           name: '☐ GM時スクラッチプレビュー', action: () => {
             this.gameTableMask.isScratchPreviewOnGMMode = true;
-          }
+          },
+          checkBox: 'check'
         }
       : null),
       (this.isGMMode ? ContextMenuSeparator : null),
@@ -516,14 +520,16 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
             //this.chatMessageService.sendOperationLog(`${this.gameTableMask.name} の固定を解除した`);
             SoundEffect.play(PresetSound.unlock);
           },
-          disabled: this.isScratching
+          disabled: this.isScratching,
+          checkBox: 'check'
         }
         : {
           name: '☐ 固定', action: () => {
             this.isLock = true;
             SoundEffect.play(PresetSound.lock);
           },
-          disabled: this.isScratching
+          disabled: this.isScratching,
+          checkBox: 'check'
         }
       ),
       ContextMenuSeparator,
@@ -666,11 +672,13 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
         ? {
           name: '☑ 高度の表示', action: () => {
             this.isAltitudeIndicate = false;
-          }
+          },
+          checkBox: 'check'
         } : {
           name: '☐ 高度の表示', action: () => {
             this.isAltitudeIndicate = true;
-          }
+          },
+          checkBox: 'check'
         }),
       {
         name: '高度を0にする', action: () => {

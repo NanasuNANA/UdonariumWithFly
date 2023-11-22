@@ -427,13 +427,15 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
           this.isLock = false;
           SoundEffect.play(PresetSound.unlock);
         },
-        disabled: this.hasOwner && !this.isVisible
+        disabled: this.hasOwner && !this.isVisible,
+        checkBox: 'check'
       } : {
         name: '☐ 一斉公開しない', action: () => {
           this.isLock = true;
           SoundEffect.play(PresetSound.lock);
         },
-        disabled: this.hasOwner && !this.isVisible
+        disabled: this.hasOwner && !this.isVisible,
+        checkBox: 'check'
       }));
     if (this.isVisible) {
       let subActions: ContextMenuAction[] = [];
@@ -467,11 +469,13 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       ? {
         name: '☑ 影の表示', action: () => {
           this.isDropShadow = false;
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 影の表示', action: () => {
           this.isDropShadow = true;
-        }
+        },
+        checkBox: 'check'
       }));
 
     actions.push(ContextMenuSeparator);

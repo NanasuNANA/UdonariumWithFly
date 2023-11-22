@@ -526,13 +526,15 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
           name: '☑ 固定', action: () => {
             this.isLocked = false;
             SoundEffect.play(PresetSound.unlock);
-          }
+          },
+          checkBox: 'check'
         }
         : {
           name: '☐ 固定', action: () => {
             this.isLocked = true;
             SoundEffect.play(PresetSound.lock);
-          }
+          },
+          checkBox: 'check'
         }
     )
     menuArray.push(
@@ -585,25 +587,29 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
         ? {
           name: '☑ 追従時サイズに合わせて拡大', action: () => {
             this.range.isExpandByFollowing = false;
-          }
+          },
+          checkBox: 'check'
         }
         : {
           name: '☐ 追従時サイズに合わせて拡大', action: () => {
             this.range.isExpandByFollowing = true;
-          }
+          },
+          checkBox: 'check'
         });
         menuArray.push(
           this.range.isFollowAltitude
           ? {
             name: '☑ 高さ・高度にも追従', action: () => {
               this.range.isFollowAltitude = false;
-            }
+            },
+            checkBox: 'check'
           }
           : {
             name: '☐ 高さ・高度にも追従', action: () => {
               this.range.isFollowAltitude = true;
               if (this.followingCharactor) this.range.following();
-            }
+            },
+            checkBox: 'check'
           });
     } else {
       menuArray.push(
@@ -611,12 +617,14 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
         ? {
           name: '☑ 細かい角度で回転', action: () => {
             this.range.subDivisionSnapPolygonal = false;
-          }
+          },
+          checkBox: 'check'
         } :
         {
           name: '☐ 細かい角度で回転', action: () => {
             this.range.subDivisionSnapPolygonal = true;
-          }
+          },
+          checkBox: 'check'
         }
       );
     }
@@ -627,11 +635,15 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
         name: 'グリッド表示をずらす', action: null, 
         subActions: [
           this.range.offSetX 
-          ? { name: '☑ 横(左右) 方向', action: () => { this.range.offSetX = false; } }
-          : { name: '☐ 横(左右) 方向', action: () => { this.range.offSetX = true; }},
+          ? { name: '☑ 横(左右) 方向', action: () => { this.range.offSetX = false; },
+                checkBox: 'check' }
+          : { name: '☐ 横(左右) 方向', action: () => { this.range.offSetX = true; },
+                checkBox: 'check' },
           this.range.offSetY 
-          ? { name: `☑ 縦(上下) 方向`, action: () => { this.range.offSetY = false; } }
-          : { name: `☐ 縦(上下) 方向`, action: () => { this.range.offSetY = true; } },
+          ? { name: `☑ 縦(上下) 方向`, action: () => { this.range.offSetY = false; },
+                checkBox: 'check' }
+          : { name: `☐ 縦(上下) 方向`, action: () => { this.range.offSetY = true; },
+                checkBox: 'check' },
         ],
         disabled: this.range.fillType == 0
       }
@@ -641,11 +653,13 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
       ? {
         name: '☑ 高度の表示', action: () => {
           this.isAltitudeIndicate = false;
-        }
+        },
+        checkBox: 'check'
       } : {
         name: '☐ 高度の表示', action: () => {
           this.isAltitudeIndicate = true;
-        }
+        },
+        checkBox: 'check'
       });
     menuArray.push({
       name: '高度を0にする', action: () => {
