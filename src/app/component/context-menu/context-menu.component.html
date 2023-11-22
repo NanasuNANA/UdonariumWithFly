@@ -26,8 +26,8 @@
       <span *ngIf="action.error" title="{{action.error}}">⚠️</span>
       <input *ngIf="action.name && action.checkBox == 'check' && action.name.indexOf('☑') == 0" type="checkbox" [disabled]="action.disabled" checked/>
       <input *ngIf="action.name && action.checkBox == 'check' && action.name.indexOf('☐') == 0" type="checkbox" [disabled]="action.disabled" />
-      <input *ngIf="action.name && action.name.indexOf('◉') == 0" type="radio" [disabled]="action.disabled" checked />
-      <input *ngIf="action.name && action.name.indexOf('○') == 0" type="radio" [disabled]="action.disabled" />
+      <input *ngIf="action.name && action.checkBox == 'radio' && action.name.indexOf('◉') == 0" type="radio" [disabled]="action.disabled" checked />
+      <input *ngIf="action.name && action.checkBox == 'radio' && action.name.indexOf('○') == 0" type="radio" [disabled]="action.disabled" />
       <span *ngIf="action.name && action.colorSample && action.name.indexOf('ブラック') == 2" class="color-indicator" style="color: #000">■</span>
       <span *ngIf="action.name && action.colorSample && action.name.indexOf('ブルー') == 2" class="color-indicator" style="color: #00f">■</span>
       <span *ngIf="action.name && action.colorSample && action.name.indexOf('グリーン') == 2" class="color-indicator" style="color: #0f0">■</span>

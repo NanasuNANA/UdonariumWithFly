@@ -186,6 +186,6 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
     if (str == null) return '';
     if (checkBox == 'check') str = str.replace(/^[☑☐]/, '');
     if (checkBox == 'radio') str = str.replace(/^[◉○]/, '');
-    return StringUtil.escapeHtml(str.replace('◉', '').replace('○', '')).replace(/💭/g, '<span style="text-shadow: #111 0 0 1px">💭</span>');
+    return StringUtil.escapeHtml(str).replace(/💭/g, '<span style="text-shadow: #111 0 0 1px">💭</span>');
   }
 }

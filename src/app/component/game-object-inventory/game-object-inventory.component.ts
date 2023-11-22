@@ -308,7 +308,8 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               EventSystem.trigger('UPDATE_INVENTORY', null);
             }, 
             default: gameObject.currntImageIndex == i,
-            icon: image
+            icon: image,
+            checkBox: 'radio'
           };
         }),
       });
@@ -402,8 +403,8 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           },
           checkBox: 'check'
         }),
-        { name: 'オーラ', action: null, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} なし`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) } }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
-          return { name: `${gameObject.aura == i ? '◉' : '○'} ${color}`, action: () => { gameObject.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) } };
+        { name: 'オーラ', action: null, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} なし`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
+          return { name: `${gameObject.aura == i ? '◉' : '○'} ${color}`, action: () => { gameObject.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' };
         })) },
         ContextMenuSeparator,
         {

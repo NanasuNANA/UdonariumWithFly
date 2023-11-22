@@ -446,7 +446,8 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
             name: `${this.face == face ? '◉' : '○'} ${face}　`, action: () => {
               SoundEffect.play(PresetSound.dicePut);
               this.face = face;
-            }
+            },
+            checkBox: 'radio'
           });
         });
         subActions.push(ContextMenuSeparator);
@@ -457,7 +458,8 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
             if (this.owner === '') SoundEffect.play(PresetSound.dicePut);
             if (this.owner === '' && this.face != face) this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名の' + (this.isCoin ? 'コイン' : 'ダイス') + ')' : this.diceSymbol.name} の${this.isCoin ? '表／裏' : '目'}を変更 → ${face}`);
             this.face = face;
-          }
+          },
+          checkBox: 'radio'
         });
       });
       actions.push({ name: this.isCoin ? '表／裏' : 'ダイス目', action: null, subActions: subActions });

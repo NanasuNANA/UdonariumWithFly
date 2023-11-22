@@ -644,7 +644,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             name: `${this.gameCharacter.currntImageIndex == i ? '◉' : '○'}`, 
             action: () => { this.changeImage(i); }, 
             default: this.gameCharacter.currntImageIndex == i,
-            icon: image
+            icon: image,
+            checkBox: 'radio'
           };
         })
       }),
@@ -734,8 +735,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             },
             checkBox: 'check'
           }),
-          { name: 'オーラ', action: null, subActions: [{ name: `${this.aura == -1 ? '◉' : '○'} なし`, action: () => { this.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) } }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
-            return { name: `${this.aura == i ? '◉' : '○'} ${color}`, colorSample: true, action: () => { this.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) } };
+          { name: 'オーラ', action: null, subActions: [{ name: `${this.aura == -1 ? '◉' : '○'} なし`, action: () => { this.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
+            return { name: `${this.aura == i ? '◉' : '○'} ${color}`, colorSample: true, action: () => { this.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' };
           })) },
           ContextMenuSeparator,
           {

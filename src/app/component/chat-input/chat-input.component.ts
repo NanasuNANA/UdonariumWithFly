@@ -851,7 +851,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 }, 
                 default: this.character.currntImageIndex == i,
-                icon: image
+                icon: image,
+                checkBox: 'radio'
               };
             })
           });
@@ -901,8 +902,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 },
                 checkBox: 'check'
               }),
-              { name: 'オーラ', action: null, subActions: [{ name: `${this.character.aura == -1 ? '◉' : '○'} なし`, action: () => { this.character.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) } }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
-                return { name: `${this.character.aura == i ? '◉' : '○'} ${color}`, action: () => { this.character.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) } };
+              { name: 'オーラ', action: null, subActions: [{ name: `${this.character.aura == -1 ? '◉' : '○'} なし`, action: () => { this.character.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
+                return { name: `${this.character.aura == i ? '◉' : '○'} ${color}`, action: () => { this.character.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, colorSample: true, checkBox: 'radio' };
               })) },
             ContextMenuSeparator,
             {
@@ -933,6 +934,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 }, 
                 default: this.character.currntIconIndex == i,
                 icon: faceIconImage,
+                checkBox: 'radio'
               };
             }),
             disabled: this.character.faceIcons.length <= 1

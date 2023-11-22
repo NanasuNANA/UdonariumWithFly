@@ -541,12 +541,12 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
       {
         name: '影響グリッドの判定方法', action: null, 
         subActions: [
-          { name: `${this.range.fillType == 0 ? '◉' : '○'} 判定なし (輪郭内を塗りつぶす)`, action: () => { this.range.fillType = 0; } },
+          { name: `${this.range.fillType == 0 ? '◉' : '○'} 判定なし (輪郭内を塗りつぶす)`, action: () => { this.range.fillType = 0; }, checkBox: 'radio' },
           ContextMenuSeparator,
-          { name: `${this.range.fillType == 1 ? '◉' : '○'} グリッドの中心を覆う`, action: () => { this.range.fillType = 1; } },
-          { name: `${this.range.fillType == 2 ? '◉' : '○'} グリッドの一部でも覆う`, action: () => { this.range.fillType = 2; } },
-          { name: `${this.range.fillType == 3 ? '◉' : '○'} グリッドの半分以上を覆う`, action: () => { this.range.fillType = 3; } },
-          { name: `${this.range.fillType == 4 ? '◉' : '○'} グリッド全体を覆う`, action: () => { this.range.fillType = 4; } },
+          { name: `${this.range.fillType == 1 ? '◉' : '○'} グリッドの中心を覆う`, action: () => { this.range.fillType = 1; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 2 ? '◉' : '○'} グリッドの一部でも覆う`, action: () => { this.range.fillType = 2; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 3 ? '◉' : '○'} グリッドの半分以上を覆う`, action: () => { this.range.fillType = 3; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 4 ? '◉' : '○'} グリッド全体を覆う`, action: () => { this.range.fillType = 4; }, checkBox: 'radio' },
         ]
       }
     );
@@ -565,7 +565,8 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
                 //this.setRange();
               });
               SoundEffect.play(PresetSound.lock);
-            }
+            },
+            checkBox: 'radio'
           };
         });
       //if (this.followingCharactor) {

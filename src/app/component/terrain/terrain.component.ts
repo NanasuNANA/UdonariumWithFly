@@ -319,28 +319,33 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
         {
           name: `${ this.slopeDirection == SlopeDirection.NONE ? '◉' : '○' } なし`, action: () => {
             this.slopeDirection = SlopeDirection.NONE;
-          }
+          },
+          checkBox: 'radio'
         },
         ContextMenuSeparator,
         {
           name: `${ this.slopeDirection == SlopeDirection.TOP ? '◉' : '○' } 上（北）`, action: () => {
             this.slopeDirection = SlopeDirection.TOP;
-          }
+          },
+          checkBox: 'radio'
         },
         {
           name: `${ this.slopeDirection == SlopeDirection.BOTTOM ? '◉' : '○' } 下（南）`, action: () => {
             this.slopeDirection = SlopeDirection.BOTTOM;
-          }
+          },
+          checkBox: 'radio'
         },
         {
           name: `${ this.slopeDirection == SlopeDirection.LEFT ? '◉' : '○' } 左（西）`, action: () => {
             this.slopeDirection = SlopeDirection.LEFT;
-          }
+          },
+          checkBox: 'radio'
         },
         {
           name: `${ this.slopeDirection == SlopeDirection.RIGHT ? '◉' : '○' } 右（東）`, action: () => {
             this.slopeDirection = SlopeDirection.RIGHT;
-          }
+          },
+          checkBox: 'radio'
         }
       ]},
       { name: '壁の表示', action: null, subActions: [
@@ -348,13 +353,15 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           name: `${ this.hasWall && this.isSurfaceShading ? '◉' : '○' } 通常`, action: () => {
             this.mode = TerrainViewState.ALL;
             this.isSurfaceShading = true;
-          }
+          },
+          checkBox: 'radio'
         },
         {
           name: `${ this.hasWall && !this.isSurfaceShading ? '◉' : '○' } 陰影なし`, action: () => {
             this.mode = TerrainViewState.ALL;
             this.isSurfaceShading = false;
-          }
+          },
+          checkBox: 'radio'
         },
         {
           name: `${ !this.hasWall ? '◉' : '○' } 非表示`, action: () => {
@@ -363,7 +370,8 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
               this.terrain.width = this.width <= 0 ? 1 : this.width;
               this.terrain.depth = this.depth <= 0 ? 1 : this.depth;
             }
-          }
+          },
+          checkBox: 'radio'
         },
       ]},
       ContextMenuSeparator,
