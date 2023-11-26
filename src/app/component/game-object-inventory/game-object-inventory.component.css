@@ -374,6 +374,7 @@ input[type='range']::-ms-tooltip {
 
 .aura {
   transition: filter 0.3s ease-in-out;
+  pointer-events: none;
 }
 
 .aura.black {

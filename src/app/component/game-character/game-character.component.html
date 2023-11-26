@@ -19,7 +19,7 @@
           <div class="aura is-3d" style="pointer-events: none;" [ngClass]="{black: aura == 0, blue: aura == 1, green: aura == 2, cyan: aura == 3, red: aura == 4, magenta: aura == 5, yellow: aura == 6, white: aura == 7}">
             <div class="is-3d" style="pointer-events: none; transition: transform 132ms 0s ease;"
               [ngStyle]="{'transform': 'scaleX(' + (isInverse ? '-1' : '1') + ')'}">
-                <img *ngIf="isDropShadow && (0 < imageFile.url.length || 0 < shadowImageFile.url.length)" [style.height.px]="characterShadowImageHeight" class="image drop-shadow is-3d  chrome-smooth-image-trick" style="pointer-events: none" [src]="((0 < shadowImageFile.url.length) ? shadowImageFile.url : imageFile.url) | safe: 'resourceUrl'"
+                <img *ngIf="isDropShadow && (0 < imageFile.url.length || 0 < shadowImageFile.url.length)" [style.height.px]="characterShadowImageHeight" class="image drop-shadow is-3d chrome-smooth-image-trick" style="pointer-events: none" [src]="((0 < shadowImageFile.url.length) ? shadowImageFile.url : imageFile.url) | safe: 'resourceUrl'"
                   [style.filter]="'brightness(0) blur(1px)' + (isHideIn ? ' invert(85%)' : '')"
                   [ngStyle]="{'opacity': (isHollow ? 0.5 : 0.7) * (isHideIn ? 0.85 : 1)}" [@switchImageShadow]="gameCharacter.currntImageIndex">
             </div>
