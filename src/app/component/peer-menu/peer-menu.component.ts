@@ -215,7 +215,19 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
       navigator.clipboard.writeText(this.networkService.peer.password);
       this.isPasswordCopied = true;
       clearTimeout(this._timeOutId3);
-      this._timeOutId2 = setTimeout(() => {
+      this._timeOutId3 = setTimeout(() => {
+        this.isPasswordCopied = false;
+      }, 1000);
+      this.isPasswordOpen = false;
+    }
+  }
+
+  copyRoomInfo() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText('ルーム名：' + this.networkService.peer.roomName + '/' + this.networkService.peer.roomId + '　パスワード：' + this.networkService.peer.password);
+      this.isPasswordCopied = true;
+      clearTimeout(this._timeOutId3);
+      this._timeOutId3 = setTimeout(() => {
         this.isPasswordCopied = false;
       }, 1000);
       this.isPasswordOpen = false;
