@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { PeerContext } from '@udonarium/core/system/network/peer-context';
+import { PeerSessionGrade } from '@udonarium/core/system/network/peer-session-state';
 import { PeerCursor } from '@udonarium/peer-cursor';
 
 import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
@@ -43,12 +44,12 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   isPasswordOpen = false;
 
   help: string = '';
-  //isPasswordVisible = false;
 
-  private _timeOutId;
-  private _timeOutId2;
-  private _timeOutId3;
+  private _timeOutId: NodeJS.Timeout;
+  private _timeOutId2: NodeJS.Timeout;
+  private _timeOutId3: NodeJS.Timeout;
 
+  private interval: NodeJS.Timeout;
   get myPeer(): PeerCursor { return PeerCursor.myCursor; }
 
   get myPeerName(): string {
@@ -92,6 +93,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   get maskedPassword(): string { return '●●●●●●●●' }
 
   constructor(
+    private ngZone: NgZone,
     private modalService: ModalService,
     private panelService: PanelService,
     private chatMessageService: ChatMessageService,
@@ -102,11 +104,20 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     Promise.resolve().then(() => { this.panelService.title = '接続情報'; this.panelService.isAbleFullScreenButton = false });
   }
 
+  ngAfterViewInit() {
+    EventSystem.register(this)
+      .on('OPEN_NETWORK', event => {
+        this.ngZone.run(() => { });
+      });
+    this.interval = setInterval(() => { }, 1000);
+  }
+
   ngOnDestroy() {
     clearTimeout(this._timeOutId);
     clearTimeout(this._timeOutId2);
     clearTimeout(this._timeOutId3);
     EventSystem.unregister(this);
+    clearInterval(this.interval);
   }
 
   changeIcon() {
@@ -158,11 +169,11 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     }
     this.modalService.open(LobbyComponent, { width: 700, height: 400, left: 0, top: 400 });
   }
-/*
-  togglePasswordVisibility() {
-    this.isPasswordVisible = !this.isPasswordVisible;
+
+  stringFromSessionGrade(grade: PeerSessionGrade): string {
+    return PeerSessionGrade[grade] ?? PeerSessionGrade[PeerSessionGrade.UNSPECIFIED];
   }
-*/
+
   findUserId(peerId: string) {
     const peerCursor = PeerCursor.findByPeerId(peerId);
     return peerCursor ? peerCursor.userId : '';

@@ -94,7 +94,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
     return this.gameDataElement.identifier;
   }
 
-  private updateTimer: NodeJS.Timer = null;
+  private updateTimer: NodeJS.Timeout = null;
 
   constructor(
     private changeDetector: ChangeDetectorRef,

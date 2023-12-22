@@ -39,7 +39,7 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     return this._children.concat();
   }
 
-  private needsSort: boolean = true;
+  private needsSort: boolean = false;
 
   // override
   destroy() {
@@ -146,6 +146,10 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     this.updateChildren(child);
 
     return child;
+  }
+
+  prependChild<T extends ObjectNode>(child: T): T {
+    return this._children.length < 1 ? this.appendChild(child) : this.insertBefore(child, this.children[0]);
   }
 
   insertBefore<T extends ObjectNode>(child: T, reference: ObjectNode): T {

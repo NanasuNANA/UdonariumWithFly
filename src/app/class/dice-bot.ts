@@ -82,7 +82,7 @@ export class DiceBot extends GameObject {
     ['YearZeroEngine', 'イヤアセロエンシン', 'Year Zero Engine'],
     ['Year Zero Engine', 'イヤアセロエンシン', 'Year Zero Engine'],
     ['ADVANCED FIGHTING FANTASY 2nd Edition', 'アトハンストファイテインクファンタシイタイ2ハン', 'アドバンスト・ファイティング・ファンタジー 第2版'],
-    ['Vampire: The Masquerade 5th Edition', 'ウアンハイアサマスカレエトタイ5ハン', 'ヴァンパイア：ザ・マスカレード 第5版'],
+    //['Vampire: The Masquerade 5th Edition', 'ウアンハイアサマスカレエトタイ5ハン', 'ヴァンパイア：ザ・マスカレード 第5版'],
     ['ワールドオブダークネス', 'ワアルトオフタアクネス', 'ワールド・オブ・ダークネス'],
     ['モノトーン・ミュージアム', 'モノトオンミユウシアム', 'モノトーンミュージアム'],
     ['剣の街の異邦人TRPG', 'ツルキノマチノイホウシンTRPG'],
@@ -92,17 +92,17 @@ export class DiceBot extends GameObject {
     ['Standard RPG System', 'スタンタアトRPGシステム', 'スタンダードRPGシステム（SRS）'],
     ['スタンダードRPGシステム', 'スタンタアトRPGシステム', 'スタンダードRPGシステム（SRS）'],
     ['NJSLYRBATTLE', 'ニンシヤスレイヤアハトル'],
-    ['Record of Steam', 'レコオトオフスチイム'],
+    ['Record of Steam', 'レコオトオフスチイム', 'レコード・オブ・スチーム'],
     ['詩片のアルセット', 'ウタカタノアルセツト'],
     ['Shared†Fantasia', 'シエアアトフアンタシア'],
     ['真・女神転生', 'シンメカミテンセイ'],
     ['女神転生', 'メカミテンセイ'],
     ['覚醒篇', 'カクセイヘン'],
     ['Chill', 'チル'],
-    ['BBNTRPG', 'ヒイヒイエヌTRPG', 'BBNTRPG (Black Black Network TRPG)'],
+    ['BBNTRPG', 'ヒイヒイエヌTRPG', 'BBNTRPG (ブラック・ブラック・ネットワークTRPG)'],
     ['TORG Eternity', 'トオクエタアニテイ'],
-    ['ガープス', 'カアフス', 'GURPS'],
-    ['ガープスフィルトウィズ', 'カアフスフイルトウイス', 'GURPSフィルトウィズ'],
+    ['ガープス', 'カアフス', 'ガープス（GURPS）'],
+    ['ガープスフィルトウィズ', 'カアフスフイルトウイス', 'ガープス（GURPS） フィルトウィズ'],
     ['絶対隷奴', 'セツタイレイト'],
     ['セラフィザイン', 'セイシユンシツカンTRPGセラフイサイン', '青春疾患TRPG セラフィザイン'],
     ['艦これ', 'カンコレ'],
@@ -821,7 +821,7 @@ function initializeDiceBotQueue(): PromiseQueue {
     loader = new (await import(
       /* webpackChunkName: "lib/bcdice/bcdice-loader" */
       './bcdice/bcdice-loader')
-    ).default();
+    ).default;
     DiceBot.diceBotInfos = loader.listAvailableGameSystems()
     .filter(gameSystemInfo => gameSystemInfo.id != 'DiceBot')
     .sort((a ,b) => {

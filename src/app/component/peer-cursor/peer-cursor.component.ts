@@ -28,8 +28,8 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   private opacityElements: HTMLElement[] = [];
   private rotateElement: HTMLElement = null;
   private fadeOutTimer: ResettableTimeout = null;
-  
-  private updateInterval: NodeJS.Timer = null;
+
+  private updateInterval: NodeJS.Timeout = null;
   private callcack: any = (e) => this.onMouseMove(e);
 
   private _x: number = 0;

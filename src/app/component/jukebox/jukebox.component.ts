@@ -124,7 +124,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   set percentNoticeVolume(percentNoticeVolume: number) { this.noticeVolume = percentNoticeVolume / 100; }
 
   readonly auditionPlayer: AudioPlayer = new AudioPlayer();
-  private lazyUpdateTimer: NodeJS.Timer = null;
+  private lazyUpdateTimer: NodeJS.Timeout = null;
 
   private readonly soundTestPlayer: AudioPlayer = new AudioPlayer();
   private readonly noticeTestPlayer: AudioPlayer = new AudioPlayer();

@@ -64,11 +64,24 @@
   </ng-container>
 </ng-container>
 <hr/>
-<div *ngFor="let context of networkService.peers; index as i">
+<div *ngFor="let peer of networkService.peers; index as i">
   <div *ngIf="i == 0" style="font-weight: bold">他の参加者と接続状態<span class="health">（良好 </span><i class="material-icons health health-blue">sentiment_very_satisfied</i><span class="health"> ＞ </span><i class="material-icons health health-green">sentiment_dissatisfied</i><span class="health"> ＞ </span><i class="material-icons health health-yellow">mood_bad</i><span class="health"> ＞ </span><i class="material-icons health health-red">sentiment_very_dissatisfied</i><span class="health"> 不良）</span>：</div>
-  <div>
-    <div *ngIf="!context.isOpen">[接続中]</div>
-    <div [ngClass]="{'is-gm-mode': findPeerIsGMMode(context.peerId)}"><i class="{{'material-icons health ' + healthClass(context.session.health)}}" style="margin-right: 2px">{{ healthIcon(context.session.health) }}</i><span style="margin-right: 3px">{{ findUserId(context.peerId) }}</span>[<div *ngIf="findPeerImageUrl(context.peerId)" class="cover mini-icon" [style.background-image]="'url(' + findPeerImageUrl(context.peerId) + ')' | safe: 'style' "></div><span><b [style.color]="findPeerColor(context.peerId)">{{ findPeerName(context.peerId) }}</b></span>]</div>
+  <div class="peer-info">
+    <span *ngIf="!peer.isOpen">[接続中]</span>
+    <span>
+      <span [ngClass]="{'is-gm-mode': findPeerIsGMMode(peer.peerId)}">
+        <i class="{{'material-icons health ' + healthClass(peer.session.health)}}" style="margin-right: 2px">{{ healthIcon(peer.session.health) }}</i>
+        <span style="margin-right: 3px">{{findUserId(peer.peerId)}}</span>
+        [<span *ngIf="findPeerImageUrl(peer.peerId)" class="cover mini-icon" [style.background-image]="'url(' + findPeerImageUrl(peer.peerId) + ')' | safe: 'style'"></span><span><b [style.color]="findPeerColor(peer.peerId)">{{findPeerName(peer.peerId)}}</b></span>]
+      </span>
+    </span>
+    <div class="session-info">
+      <span>接続状態
+        Grade:{{stringFromSessionGrade(peer.session.grade)}} ({{peer.session.description}})
+        Health:{{(peer.session.health * 100).toFixed(0)}}%
+        Speed:{{(peer.session.speed * 100).toFixed(0)}}%
+        Ping:{{peer.session.ping.toFixed(1)}}ms</span>
+    </div>
   </div>
 </div>
 <div *ngIf="!isGMMode && !isGMHold">

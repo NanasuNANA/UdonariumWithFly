@@ -532,6 +532,24 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           checkBox: 'check'
         }
       ),
+      {
+        name: '重なり順を一番上に', action: () => {
+          if (!this.isLock) {
+            const parent = this.gameTableMask.parent;
+            if (parent) parent.appendChild(this.gameTableMask);
+          }
+        },
+        disabled: this.isLock
+      },
+      {
+        name: '重なり順を一番下に', action: () => {
+          if (!this.isLock) {
+            const parent = this.gameTableMask.parent;
+            if (parent) parent.prependChild(this.gameTableMask);
+          }
+        },
+        disabled: this.isLock
+      },
       ContextMenuSeparator,
       (!this.gameTableMask.isMine ?
         {

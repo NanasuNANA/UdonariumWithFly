@@ -212,7 +212,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     return this._gameCharacters;
   }
 
-  private writingEventInterval: NodeJS.Timer = null;
+  private writingEventInterval: NodeJS.Timeout = null;
   private previousWritingLength: number = 0;
 
   //writingPeers: Map<string, NodeJS.Timer> = new Map();

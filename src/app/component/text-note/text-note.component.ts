@@ -134,7 +134,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
     }
   }
 
-  private calcFitHeightTimer: NodeJS.Timer = null;
+  private calcFitHeightTimer: NodeJS.Timeout = null;
 
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};

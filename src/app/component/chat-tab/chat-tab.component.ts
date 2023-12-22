@@ -39,12 +39,43 @@ export class ChatTabComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
   @Input() compact: boolean = false;
   
   sampleMessages: ChatMessage[] = [
-    this.makeSampleMessage('System', null, 'チュートリアル', null, 'サーバーを使用しないTRPGオンセツールです。参加者同士で接続し、コマや画像ファイルなどを同期します。'),
-    this.makeSampleMessage('System', null, 'チュートリアル', null,'全てのデータが各参加者のブラウザ内にあるため、ルームの状態を次回に持ち越したい場合は、必ず「保存」を実行してセーブデータ（zip）を生成してください。保存したzipの読み込みはブラウザ画面へのファイルドロップで行えます。'),
-    this.makeSampleMessage('System', '???', 'チュートリアル', 'プレイヤー', 'ダイレクトメッセージ（秘密会話）はセーブデータに記録されません。', 'mine direct'),
-    this.makeSampleMessage('System', '???', 'チュートリアル', 'プレイヤー', 'また、過去のダイレクトメッセージはあなたのIDが更新されると同じルーム内であっても見えなくなります。注意してください。', 'mine direct'),
-    this.makeSampleMessage('System', null, 'チュートリアル', null, '動作推奨環境はデスクトップChromeです。今のところ、スマホからだと上手く操作できません。'),
-    this.makeSampleMessage('System', null, 'チュートリアル', null, 'チュートリアルは以上です。このチュートリアルは最初のチャットを入力すると非表示になります。')
+    this.makeSampleMessage('System', null, 'チュートリアル：はじめに', null, 'ユドナリウムはサーバーを使用しないTRPGオンセツールです。参加者同士で接続し、コマや画像ファイルなどを同期します。'),
+    this.makeSampleMessage('System', null, 'テーブルとコマの基本操作', null, `＜テーブルの操作＞
+テーブルを左ドラッグ : 視点変更
+テーブルを右ドラッグ : 視点回転
+テーブルを右クリック : コンテキストメニューを表示
+
+＜オブジェクトの操作＞
+オブジェクトをドラッグ操作 : オブジェクトの移動や回転
+オブジェクトを右クリック : 個別のコンテキストメニューを表示
+オブジェクトを左ダブルクリック : オブジェクト固有の動作`),
+    this.makeSampleMessage('System', null, '範囲選択', null, `<用語>
+範囲選択モード : 選択領域の内側に見えているオブジェクトを選択状態にする
+磁石モード : 同じ種類のオブジェクトを巻き込みながら移動させる
+
+<オブジェクトの選択>
+テーブルをマウス左ボタン長押し+ドラッグ操作 : 長押しで範囲選択モードを開始し、ドラッグで範囲領域を指定
+オブジェクトを左ダブルクリック長押し+ドラッグ操作 : 長押しで磁石モードを開始し、ドラッグでオブジェクトを移動
+Shift+マウス左ボタン+ドラッグ操作 : 即時に範囲選択モードを開始し、ドラッグで範囲領域を指定
+Ctrl+マウス左ボタン : クリックしたオブジェクトの選択状態を切り替える
+Ctrl+マウス左ボタン+ドラッグ操作 : マウスカーソルの触れた対象を選択状態にする
+
+<選択オブジェクトの操作>
+選択オブジェクトを移動 : 選択状態の全てのオブジェクトが同期して移動
+選択オブジェクトを回転 : 選択状態の同じ種類のオブジェクトが同期して回転
+
+<選択解除>
+任意の場所をクリック : 全ての選択状態を解除`),
+    this.makeSampleMessage('System', null, '画像と音楽', null, 'ファイルをブラウザ画面にドラッグ&ドロップすることでユドナリウムに取り込めます。'),
+    this.makeSampleMessage('System', null, 'データの保存', null, '全てのデータが各参加者のブラウザ内にのみ存在するため、全員がルームから離脱するとデータが消失します。ルームの状態を次回セッションに持ち越したい場合は、必ず「保存」を実行してセーブデータ（zip）を生成してください。保存したzipの読み込みはブラウザ画面へのファイルドロップで行えます。'),
+    this.makeSampleMessage('System', '???', 'ダイレクトメッセージ', 'プレイヤー', 'ダイレクトメッセージ（秘密会話）はセーブデータに記録されません。'),
+    this.makeSampleMessage('System', '???', 'ダイレクトメッセージ', 'プレイヤー', 'また、過去のダイレクトメッセージはあなたのIDが更新されると同じルーム内であっても見えなくなります。注意してください。'),
+    this.makeSampleMessage('System', null, '動作環境', null, '動作推奨環境はデスクトップChrome、またはデスクトップFirefoxです。今のところ、スマホからだと操作性に難があります。'),
+    this.makeSampleMessage('System', null, '動作が不安定な時は', null, `利用環境の設定変更で改善できるかもしれません。次の事を試してみて下さい。
+・ハードウェア アクセラレーションをオンにする
+・ブラウザ拡張機能（アドオン／プラグイン）を全てオフにする
+・Chrome ⇔ Firefoxなど違うブラウザを使用する`),
+    this.makeSampleMessage('System', null, 'チュートリアル：おわりに', null, 'チュートリアルは以上です。このチュートリアルは最初のチャットを入力すると非表示になります。'),
   ];
 
   private topTimestamp = 0;
@@ -91,8 +122,8 @@ export class ChatTabComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
 
   get minScrollHeight(): number {
     return this.chatTab.chatMessages.reduce((height, chatMessage) => { height += chatMessage.isDisplayable ? (this.compact || chatMessage.isOperationLog ? 26 : 61) : 0; return height }, 0);
-    let length = this.chatTab ? this.chatTab.chatMessages.length : this.sampleMessages.length;
-    return (length < 10000 ? length : 10000) * this.minMessageHeight;
+    //let length = this.chatTab ? this.chatTab.chatMessages.length : this.sampleMessages.length;
+    //return (length < 10000 ? length : 10000) * this.minMessageHeight;
   }
 
   get topSpace(): number { return this.minScrollHeight - this.bottomSpace; }
@@ -107,7 +138,7 @@ export class ChatTabComponent implements OnInit, AfterViewInit, OnDestroy, OnCha
 
   private scrollEventShortTimer: ResettableTimeout = null;
   private scrollEventLongTimer: ResettableTimeout = null;
-  private addMessageEventTimer: NodeJS.Timer = null;
+  private addMessageEventTimer: NodeJS.Timeout = null;
 
   private callbackOnScroll: any = () => this.onScroll();
   private callbackOnScrollToBottom: any = () => this.resetMessages();
