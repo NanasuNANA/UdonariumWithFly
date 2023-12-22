@@ -597,8 +597,8 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       }, disabled: this.cards.length == 0 },
       ContextMenuSeparator,
       (this.isShowTotal
-        ? { name: '☑ 枚数を表示', action: () => { this.cardStack.isShowTotal = false; } }
-        : { name: '☐ 枚数を表示', action: () => { this.cardStack.isShowTotal = true; } }
+        ? { name: '☑ 枚数を表示', action: () => { this.cardStack.isShowTotal = false; }, checkBox: 'check' }
+        : { name: '☐ 枚数を表示', action: () => { this.cardStack.isShowTotal = true; }, checkBox: 'check' }
       ),
       { name: 'カードサイズを揃える', action: () => { if (this.cardStack.topCard) this.cardStack.unifyCardsSize(this.cardStack.topCard.size); }, disabled: this.cards.length == 0 },
       ContextMenuSeparator,
