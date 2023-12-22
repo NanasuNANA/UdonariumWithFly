@@ -41,7 +41,7 @@
     "lodash": ">=4.17.21",
     "lzbase62": "^2.0.0",
     "msgpack-lite": "^0.1.26",
-    "ngx-linky": "^3.0.0",
+    "ngx-linky": "^4.0.0",
     "pako": "^2.1.0",
     "postcss": ">=8.4.31",
     "rxjs": "~7.8.0",
