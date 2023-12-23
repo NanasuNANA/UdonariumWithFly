@@ -315,7 +315,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           checkBox: 'check'
         }
       ),
-      { name: `重なり順 ${this.height === 0 ? '' : ' (平面地形のみ)' }`, action: null, subActions: [
+      (this.isLocked ? null : { name: `重なり順 ${this.height === 0 ? '' : ' (平面地形のみ)' }`, action: null, subActions: [
         {
           name: '平面地形の一番上に', action: () => {
             if (!this.isLocked) {
@@ -335,7 +335,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           disabled: this.isLocked
         }],
         disabled: this.isLocked || this.height != 0
-      },
+      }),
       ContextMenuSeparator,
       { name: '傾斜', action: null, subActions: [
         {

@@ -532,7 +532,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           checkBox: 'check'
         }
       ),
-      { name: '重なり順', action: null, subActions: [
+      (this.isLock ? null : { name: '重なり順', action: null, subActions: [
         {
           name: 'マップマスクの一番上に', action: () => {
             if (!this.isLock) {
@@ -552,7 +552,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           disabled: this.isLock
         }],
         disabled: this.isLock
-      },
+      }),
       ContextMenuSeparator,
       (!this.gameTableMask.isMine ?
         {
