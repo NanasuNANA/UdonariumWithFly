@@ -313,24 +313,28 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
             SoundEffect.play(PresetSound.lock);
           },
           checkBox: 'check'
-        }),
-      {
-        name: '重なり順を一番上に', action: () => {
-          if (!this.isLocked) {
-            const parent = this.terrain.parent;
-            if (parent) parent.appendChild(this.terrain);
-          }
+        }
+      ),
+      { name: `重なり順 ${this.height === 0 ? '' : ' (平面地形のみ)' }`, action: null, subActions: [
+        {
+          name: '平面地形の一番上に', action: () => {
+            if (!this.isLocked) {
+              const parent = this.terrain.parent;
+              if (parent) parent.appendChild(this.terrain);
+            }
+          },
+          disabled: this.isLocked
         },
-        disabled: this.isLocked
-      },
-      {
-        name: '重なり順を一番下に', action: () => {
-          if (!this.isLocked) {
-            const parent = this.terrain.parent;
-            if (parent) parent.prependChild(this.terrain);
-          }
-        },
-        disabled: this.isLocked
+        {
+          name: '平面地形の一番下に', action: () => {
+            if (!this.isLocked) {
+              const parent = this.terrain.parent;
+              if (parent) parent.prependChild(this.terrain);
+            }
+          },
+          disabled: this.isLocked
+        }],
+        disabled: this.isLocked || this.height != 0
       },
       ContextMenuSeparator,
       { name: '傾斜', action: null, subActions: [
