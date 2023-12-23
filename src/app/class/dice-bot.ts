@@ -105,6 +105,7 @@ export class DiceBot extends GameObject {
     ['ガープスフィルトウィズ', 'カアフスフイルトウイス', 'ガープス（GURPS） フィルトウィズ'],
     ['絶対隷奴', 'セツタイレイト'],
     ['セラフィザイン', 'セイシユンシツカンTRPGセラフイサイン', '青春疾患TRPG セラフィザイン'],
+    ['RuneQuest：Roleplaying in Glorantha', 'ルウンクエスト4', 'RuneQuest: Roleplaying in Glorantha'],
     ['艦これ', 'カンコレ'],
     ['神我狩', 'カミカカリ'],
     ['鵺鏡', 'ヌエカカミ'],
