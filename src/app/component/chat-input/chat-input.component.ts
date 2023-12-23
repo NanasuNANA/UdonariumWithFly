@@ -684,12 +684,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       // 💭
       if (isUseStandImageOnChatTab && targetCharacter && StringUtil.cr(text).trim()) {
         // CHOICEコマンドの引数は💭としない
-        const regArray = /^((srepeat|repeat|srep|rep|sx|x)?(\d+)?[ 　]+)?([^\n]*)?/ig.exec(text);
+        const regArray = /^(([sＳｓ][rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[sＳｓ][rＲｒ][eＥｅ][pＰｐ]|[rＲｒ][eＥｅ][pＰｐ]|[sＳｓ][xＸｘ]|[xＸｘ])?([\d０-９]+)?[ 　]+)?([\s\S]*)?/igm.exec(text);
         let dialogText = (regArray[4] != null) ? regArray[4].trim() : text.trim();
         let choiceMatch;
-        if (/^(S?CHOICE\d*)[ 　]+([^ 　]*)/ig.test(dialogText)) {
+        if (/^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*)[ 　]+([^ 　]*)/ig.test(dialogText)) {
           dialogText = '';
-        } else if ((choiceMatch = /^(S?CHOICE\d*\[[^\[\]]+\])/ig.exec(dialogText)) || (choiceMatch = /^(S?CHOICE\d*\([^\(\)]+\))/ig.exec(dialogText))) {
+        } else if ((choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[\[［][^\]］]+[\]］])/ig.exec(dialogText)) 
+                || (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*[\(（][^\)）]+[\)）])/ig.exec(dialogText))) {
           dialogText = dialogText.slice(choiceMatch[1].length)
         }
         //console.log(dialogText)
@@ -699,7 +700,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         //ToDO ちゃんとパースする
         let match;
         let dialog = [];
-        while ((match = dialogRegExp.exec(dialogText)) !== null) {
+        if ((match = dialogRegExp.exec(dialogText)) !== null) {
+          console.log(match[1])
           dialog.push(match[1]);
         }
         if (dialog.length === 0) {
