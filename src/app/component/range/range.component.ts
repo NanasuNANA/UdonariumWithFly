@@ -497,7 +497,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   onInputStart(e: any) {
     this.input.cancel();
-
+    this.range.toTopmost();
     // TODO:もっと良い方法考える
     if (this.isLocked) {
       EventSystem.trigger('DRAG_LOCKED_OBJECT', {});
@@ -703,9 +703,10 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
       {
         name: 'コピーを作る', action: () => {
           let cloneObject = this.range.clone();
-          console.log('コピー', cloneObject);
+          //console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
+          cloneObject.toTopmost();
           cloneObject.isLocked = false;
           cloneObject.followingCharctorIdentifier = null;
           if (this.range.parent) this.range.parent.appendChild(cloneObject);

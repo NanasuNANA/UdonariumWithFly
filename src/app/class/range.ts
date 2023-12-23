@@ -3,6 +3,7 @@ import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { GameCharacter } from '@udonarium/game-character';
 import { DataElement } from './data-element';
 import { TabletopObject } from './tabletop-object';
+import { moveToTopmost } from './tabletop-object-util';
 import { UUID } from './core/system/util/uuid';
 
 @SyncObject('range')
@@ -15,6 +16,7 @@ export class RangeArea extends TabletopObject {
   
   @SyncVar() isLocked: boolean = false;
   @SyncVar() rotate: number = 0;
+  @SyncVar() zindex: number = 0;
   @SyncVar() followingCharctorIdentifier: string = null;
   @SyncVar() followingCounterDummy: number = 0; // 追従時再描画用ダミー
 
@@ -104,6 +106,10 @@ export class RangeArea extends TabletopObject {
       this.posZ = this.followingCharactor.posZ;
     }
     this.followingCounterDummyCount();
+  }
+
+  toTopmost() {
+    moveToTopmost(this);
   }
 
   static create(name: string, width: number, length: number, opacity: number, identifier?: string): RangeArea {
