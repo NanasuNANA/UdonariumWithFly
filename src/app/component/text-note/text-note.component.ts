@@ -108,21 +108,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   gridSize: number = 50;
   math = Math;
 
-  private _fallTimeout = null;
-  private _fall: boolean = false;
-  get fall(): boolean { return this._fall; }
-  set fall(fall: boolean) {
-    this._fall = fall;
-    if (this._fallTimeout) clearTimeout(this._fallTimeout);
-    if (fall) {
-      this._fallTimeout = setTimeout(() => {
-        this._fall = false;
-      }, 132);
-    } else {
-      this._fallTimeout = null;
-    }
-  }
-
   private calcFitHeightTimer: NodeJS.Timeout = null;
 
   movableOption: MovableOption = {};
@@ -184,7 +169,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this._fallTimeout) clearTimeout(this._fallTimeout)
     EventSystem.unregister(this);
     this.input.destroy();
   }
