@@ -75,7 +75,7 @@
         [<span *ngIf="findPeerImageUrl(peer.peerId)" class="cover mini-icon" [style.background-image]="'url(' + findPeerImageUrl(peer.peerId) + ')' | safe: 'style'"></span><span><b [style.color]="findPeerColor(peer.peerId)">{{findPeerName(peer.peerId)}}</b></span>]
       </span>
     </span>
-    <div class="session-info">
+    <div class="session-info" [style.border-left-color]="findPeerColor(peer.peerId)">
       <span>接続状態
         Grade:{{stringFromSessionGrade(peer.session.grade)}} ({{peer.session.description}})
         Health:{{(peer.session.health * 100).toFixed(0)}}%
