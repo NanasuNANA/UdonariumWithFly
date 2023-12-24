@@ -80,7 +80,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "loader-utils": ">=3.2.1",
-    "patch-package": "^6.5.0",
+    "patch-package": "^8.0.0",
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.3",
