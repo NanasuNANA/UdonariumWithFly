@@ -682,9 +682,9 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
       {
         name: 'ボーダーラインの表示',
         subActions: [
-          { name: `${this.borderType == 0 ? '◉' : '○'} 操作時のみ`,  action: () => { this.borderType = 0 }, checkBox: 'radio' },
-          { name: `${this.borderType == 1 ? '◉' : '○'} 操作、非固定時`,  action: () => { this.borderType = 1 }, checkBox: 'radio' },
-          { name: `${this.borderType == 2 ? '◉' : '○'} 固定時も表示`,  action: () => { this.borderType = 2 }, checkBox: 'radio' },
+          { name: `${this.borderType == 0 ? '◉' : '○'} 操作時のみ表示`,  action: () => { this.borderType = 0 }, checkBox: 'radio' },
+          { name: `${this.borderType == 1 ? '◉' : '○'} 操作時、非固定`,  action: () => { this.borderType = 1 }, checkBox: 'radio' },
+          { name: `${this.borderType == 2 ? '◉' : '○'} 常に表示`,  action: () => { this.borderType = 2 }, checkBox: 'radio' },
         ],
         disabled: this.isScratching
       },
