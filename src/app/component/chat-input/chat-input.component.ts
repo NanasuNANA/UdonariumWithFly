@@ -701,7 +701,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         let match;
         let dialog = [];
         if ((match = dialogRegExp.exec(dialogText)) !== null) {
-          console.log(match[1])
           dialog.push(match[1]);
         }
         if (dialog.length === 0) {
