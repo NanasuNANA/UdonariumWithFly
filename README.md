@@ -1,9 +1,9 @@
 
 [ユドナリウム（Udonarium）](https://github.com/TK11235/udonarium)の私家改造版、高度とかチャットテキストの色とか立ち絵（ユドナリウムだとキャラクターの画像と紛らわしいのでスタンドと呼称）とか。
 
-配布用ファイルは（まだ）用意していないので、自分で配置したい場合はcloneしてbuildしてください。~~また、config.yamlも同梱していないので本家ユドナを設置したことのない方は本家等からコピーしてください~~config.template.yamlを同梱しました。
+配布用ファイルは用意していないので、自分で配置したい場合はcloneしてbuildする必要があります。
 
-Node.js 17系でのビルドの際には、環境変数```NODE_OPTIONS```に```--openssl-legacy-provider```の設定が必要です。
+本家ユドナリウムはバージョン1.16.0より推奨ブラウザにデスクトップ版Mozilla Firefoxが追加されましたが、Udonarium with Flyの推奨ブラウザは現状デスクトップ版Google Chromeのみです。
 
 [お試しページ](https://nanasunana.github.io/)
 
