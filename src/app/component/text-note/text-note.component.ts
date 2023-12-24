@@ -86,6 +86,9 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   get isLocked(): boolean { return this.textNote.isLocked; }
   set isLocked(isLocked: boolean) { this.textNote.isLocked = isLocked; }
 
+  get isShowTitle(): boolean { return this.textNote.isShowTitle; }
+  set isShowTitle(isShowTitle: boolean) { this.textNote.isShowTitle = isShowTitle; }
+
   get isWhiteOut(): boolean { return this.textNote.isWhiteOut; }
   set isWhiteOut(isWhiteOut: boolean) { this.textNote.isWhiteOut = isWhiteOut; }
 
@@ -105,20 +108,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   gridSize: number = 50;
   math = Math;
 
-  private _transitionTimeout = null;
-  private _transition: boolean = false;
-  get transition(): boolean { return this._transition; }
-  set transition(transition: boolean) {
-    this._transition = transition;
-    if (this._transitionTimeout) clearTimeout(this._transitionTimeout);
-    if (transition) {
-      this._transitionTimeout = setTimeout(() => {
-        this._transition = false;
-      }, 132);
-    } else {
-      this._transitionTimeout = null;
-    }
-  }
   private _fallTimeout = null;
   private _fall: boolean = false;
   get fall(): boolean { return this._fall; }
@@ -195,7 +184,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this._transitionTimeout) clearTimeout(this._transitionTimeout);
     if (this._fallTimeout) clearTimeout(this._fallTimeout)
     EventSystem.unregister(this);
     this.input.destroy();
@@ -304,29 +292,41 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
       (this.isUpright
         ? {
           name: '☑ 直立', action: () => {
-            this.transition = true;
+            //this.transition = true;
             this.isUpright = false;
           },
           checkBox: 'check'
         } : {
           name: '☐ 直立', action: () => {
-            this.transition = true;
+            //this.transition = true;
             this.isUpright = true;
           },
           checkBox: 'check'
         }),
-        (this.isWhiteOut
-          ? {
-            name: '☑ 画像の色抜き', action: () => {
-              this.isWhiteOut = false;
-            },
-            checkBox: 'check'
-          } : {
-            name: '☐ 画像の色抜き', action: () => {
-              this.isWhiteOut = true;
-            },
-            checkBox: 'check'
-          }),
+      (this.isShowTitle
+        ? {
+          name: '☑ タイトルバーの表示', action: () => {
+            this.isShowTitle = false;
+          },
+          checkBox: 'check'
+        } : {
+          name: '☐ タイトルバーの表示', action: () => {
+            this.isShowTitle = true;
+          },
+          checkBox: 'check'
+        }),
+      (this.isWhiteOut
+        ? {
+          name: '☑ 画像の色抜き', action: () => {
+            this.isWhiteOut = false;
+          },
+          checkBox: 'check'
+        } : {
+          name: '☐ 画像の色抜き', action: () => {
+            this.isWhiteOut = true;
+          },
+          checkBox: 'check'
+        }),
       ContextMenuSeparator,
       (this.isAltitudeIndicate
         ? {
@@ -343,11 +343,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
       {
         name: '高度を0にする', action: () => {
           if (this.altitude != 0) {
-            if (this.isUpright) {
-              this.fall = true;
-            } else {
-              this.transition = true;
-            }
             this.altitude = 0;
             SoundEffect.play(PresetSound.sweep);
           }

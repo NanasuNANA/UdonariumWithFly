@@ -244,6 +244,10 @@
   -webkit-transition: -webkit-transform 132ms cubic-bezier(.21,.97,.75,1.25);
   transition: transform 132ms cubic-bezier(.21,.97,.75,1.25);
 }
+.fall.softy {
+  -webkit-transition: -webkit-transform 132ms ease-in-out;
+  transition: transform 132ms ease-in-out;
+}
 
 .hide-area {
   overflow: hidden !important;

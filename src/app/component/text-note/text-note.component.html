@@ -1,27 +1,29 @@
-<div class="component is-3d is-pointer-events-none"
+<div class="component is-3d is-pointer-events-none" [ngClass]="{'is-grab': !isLocked}"
   appMovable [movable.option]="movableOption" [movable.disable]="isEditorSelected || isLocked" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
   <div class="is-3d" appRotable [rotable.option]="rotableOption" [rotable.disable]="isLocked" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()">
     <div class="component-content is-3d is-pointer-events-auto"
       [style.width.px]="width * gridSize">
-      <div class="is-3d" [ngClass]="{'is-transition': transition, 'fall': fall}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px) rotateY(90deg) rotateZ(' + (isUpright ? 0 : 90) + 'deg) rotateY(-90deg)'}">
-        <div class="upright-transform is-3d is-bg-color is-front is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut && imageFile?.url.length > 0}"
-          [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
-          <div *ngIf="title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
-          <textarea #textArea (input)="calcFitHeight();" class="textarea is-3d" [ngClass]="{'is-pointer-events-none': !isEditorSelected, 'is-pointer-events-auto': isEditorSelected, 'hide-area': !isEditorSelected}"
-            [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false"></textarea>
-          <div class="is-3d is-outline-text note-text" style="margin-top:-18px" [ngClass]="{'hide-area': isEditorSelected}" (click)="activate()"
-            [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
+      <div class="is-3d" [ngClass]="{'fall': altitude == 0, 'softy': !isUpright}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px) rotateY(90deg)'}">
+        <div class="is-3d is-transition" [ngStyle]="{'transform': 'rotateZ(' + (isUpright ? 0 : 90) + 'deg) rotateY(-90deg)'}">
+          <div class="upright-transform is-3d is-bg-color is-front is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut && imageFile?.url.length > 0}"
+            [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
+            <div *ngIf="isShowTitle && title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
+            <textarea #textArea (input)="calcFitHeight();" class="textarea is-3d" [ngClass]="{'is-pointer-events-none': !isEditorSelected, 'is-pointer-events-auto': isEditorSelected, 'hide-area': !isEditorSelected}"
+              [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false"></textarea>
+            <div class="is-3d is-outline-text note-text" style="margin-top:-18px" [ngClass]="{'hide-area': isEditorSelected}" (click)="activate()"
+              [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
+              <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+          </div>
+          <div class="upright-transform is-3d is-back is-bg-color is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut && imageFile?.url.length > 0}"
+            [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
             <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-        </div>
-        <div class="upright-transform is-3d is-back is-bg-color is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut && imageFile?.url.length > 0}"
-          [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
-          <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-          <div class="is-3d is-pointer-events-none" style="visibility: hidden">
-            <div *ngIf="title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
-            <textarea class="textarea is-3d hide-area is-pointer-events-none"
-              [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false" readonly></textarea>
-            <div class="is-3d is-outline-text note-text is-pointer-events-none" style="margin-top:-18px"
-              [style.font-size.px]="fontSize + 9" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
+            <div class="is-3d is-pointer-events-none" style="visibility: hidden">
+              <div *ngIf="isShowTitle && title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
+              <textarea class="textarea is-3d hide-area is-pointer-events-none"
+                [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false" readonly></textarea>
+              <div class="is-3d is-outline-text note-text is-pointer-events-none" style="margin-top:-18px"
+                [style.font-size.px]="fontSize + 9" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
+            </div>
           </div>
         </div>
       </div>
