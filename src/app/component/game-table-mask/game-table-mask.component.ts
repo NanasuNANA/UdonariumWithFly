@@ -78,6 +78,8 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   set isLock(isLock: boolean) { this.gameTableMask.isLock = isLock; }
   get blendType(): number { return this.gameTableMask.blendType; }
   set blendType(blendType: number) { this.gameTableMask.blendType = blendType; }
+  get borderType(): number { return this.gameTableMask.borderType; }
+  set borderType(borderType: number) { this.gameTableMask.borderType = borderType; }
 
   get fontSize(): number { return this.gameTableMask.fontsize; }
   set fontSize(fontSize: number) { this.gameTableMask.fontsize = fontSize; }
@@ -677,6 +679,15 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
         disabled: !this.gameTableMask.isMine
       },
       ContextMenuSeparator,
+      {
+        name: 'ボーダーの表示',
+        subActions: [
+          { name: `${this.borderType == 0 ? '◉' : '○'} 操作時のみ`,  action: () => { this.borderType = 0 }, checkBox: 'radio' },
+          { name: `${this.borderType == 1 ? '◉' : '○'} 操作、非固定時`,  action: () => { this.borderType = 1 }, checkBox: 'radio' },
+          { name: `${this.borderType == 2 ? '◉' : '○'} 常に表示`,  action: () => { this.borderType = 2 }, checkBox: 'radio' },
+        ],
+        disabled: this.isScratching
+      },
       {
         name: '画像と色の表示',
         subActions: [
