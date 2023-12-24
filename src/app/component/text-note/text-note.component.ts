@@ -301,12 +301,12 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
         }),
       (this.isWhiteOut
         ? {
-          name: '☑ 画像の色抜き', action: () => {
+          name: '☑ 背景の色抜き', action: () => {
             this.isWhiteOut = false;
           },
           checkBox: 'check'
         } : {
-          name: '☐ 画像の色抜き', action: () => {
+          name: '☐ 背景の色抜き', action: () => {
             this.isWhiteOut = true;
           },
           checkBox: 'check'

@@ -5,7 +5,7 @@
       [style.width.px]="width * gridSize">
       <div class="is-3d" [ngClass]="{'fall': altitude == 0, 'softy': !isUpright}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px) rotateY(90deg)'}">
         <div class="is-3d is-transition" [ngStyle]="{'transform': 'rotateZ(' + (isUpright ? 0 : 90) + 'deg) rotateY(-90deg)'}">
-          <div class="upright-transform is-3d is-bg-color is-front is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut && imageFile?.url.length > 0}"
+          <div class="upright-transform is-3d is-bg-color is-front is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut}"
             [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
             <div *ngIf="isShowTitle && title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
             <textarea #textArea (input)="calcFitHeight();" class="textarea is-3d" [ngClass]="{'is-pointer-events-none': !isEditorSelected, 'is-pointer-events-auto': isEditorSelected, 'hide-area': !isEditorSelected}"
@@ -14,7 +14,7 @@
               [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
               <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
           </div>
-          <div class="upright-transform is-3d is-back is-bg-color is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut && imageFile?.url.length > 0}"
+          <div class="upright-transform is-3d is-back is-bg-color is-bg-texture chrome-smooth-image-trick"
             [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
             <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
             <div class="is-3d is-pointer-events-none" style="visibility: hidden">
