@@ -135,10 +135,17 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   get isLocked(): boolean { return this.card ? this.card.isLocked : false; }
   set isLocked(isLocked: boolean) { if (this.card) this.card.isLocked = isLocked; }
 
+  get isInverse(): boolean {
+    const rotate = Math.abs(this.viewRotateZ + this.rotate) % 360;
+    return 90 < rotate && rotate < 270
+  }
+
   gridSize: number = 50;
 
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};
+  
+  viewRotateZ = 10;
 
   private interactGesture: ObjectInteractGesture = null;
 
@@ -170,6 +177,12 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
       })
       .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.card?.identifier}`, event => {
         this.changeDetector.markForCheck();
+      })
+      .on<object>('TABLE_VIEW_ROTATE', -1000, event => {
+        this.ngZone.run(() => {
+          this.viewRotateZ = event.data['z'];
+          this.changeDetector.markForCheck();
+        });
       })
       .on('SYNCHRONIZE_FILE_LIST', event => {
         this.changeDetector.markForCheck();
