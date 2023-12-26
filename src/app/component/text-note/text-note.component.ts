@@ -126,6 +126,11 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
 
   viewRotateZ = 10;
   private input: InputHandler = null;
+  
+  get isInverse(): boolean {
+    const rotate = Math.abs(this.viewRotateZ + this.rotate) % 360;
+    return 90 < rotate && rotate < 270
+  }
 
   ngOnChanges(): void {
     EventSystem.unregister(this);

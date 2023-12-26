@@ -226,3 +226,7 @@ https://opensource.org/licenses/mit-license.php
 .selected-highlight.is-magnetic {
   background-color: hsla(60, 100%, 75%, 0.6);
 }
+
+.is-inverse {
+  transform: rotateZ(180deg);
+}

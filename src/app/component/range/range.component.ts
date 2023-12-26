@@ -399,6 +399,11 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   private input: InputHandler = null;
 
+  get isInverse(): boolean {
+    const rotate = Math.abs(this.viewRotateZ + this.rotateDeg) % 360;
+    return 90 < rotate && rotate < 270
+  }
+  
   constructor(
     private ngZone: NgZone,
     private tabletopActionService: TabletopActionService,

@@ -33,18 +33,18 @@
         [style.min-height.px]="gridSize / 2"></div>
       <div [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px)'}">
         <div class="rotate-grab of-left-top">
-          <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
         </div>
         <div class="rotate-grab of-right-top">
-          <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
         </div>
       </div>
       <div *ngIf="!isLocked">
         <div class="rotate-grab of-left-top">
-          <i class="material-icons">autorenew</i>
+          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">autorenew</i>
         </div>
         <div class="rotate-grab of-right-top">
-          <i class="material-icons">autorenew</i>
+          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">autorenew</i>
         </div>
       </div>
     </div>

@@ -34,14 +34,14 @@ https://opensource.org/licenses/mit-license.php
             <ng-container *ngFor="let pos of rotateHandlesLeftPos">
               <div class="rotate-grab of-corn-tip rotate-grab-icon is-3d will-change" style="position:absolute"
                 [style.left.px]="math.ceil((pos - 0.3) * gridSize)">
-                <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+                <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
               </div>
             </ng-container>
             <div class="rotate-grab of-corn-bottom rotate-grab-icon is-3d will-change">
-              <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+              <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
             </div>
             <div class="rotate-grab of-corn-top rotate-grab-icon is-3d will-change">
-              <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+              <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
             </div>
           </div>
         </ng-container>

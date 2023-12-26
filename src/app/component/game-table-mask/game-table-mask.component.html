@@ -42,10 +42,10 @@
       <div *ngIf="isSelected" class="selected-highlight border" [ngClass]="{'is-magnetic': isMagnetic}"></div>
     </div>
     <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
-      <i class="material-icons" style="pointer-events: none; backface-visibility: hidden">{{ isLock ? 'lock' : 'open_with' }}</i>
+      <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLock ? 'lock' : 'open_with' }}</i>
     </div>
     <div *ngIf="isScratching" class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
-      <i class="material-icons" style="pointer-events: none; backface-visibility: hidden">{{ isPreviewMode ? 'visibility' : 'draw' }}</i>
+      <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isPreviewMode ? 'visibility' : 'draw' }}</i>
     </div>
     <div *ngIf="isScratching && ownerIsOnline" class="scratching is-center is-3d" style="pointer-events: none; z-index: 10; top: -10px; left: 1px; backface-visibility: hidden">
       <div class="name-tag has-length-limit is-nowrap is-black-background" style="color: whitesmoke" [ngStyle]="{'background-color': ownerColor + 'E6'}">

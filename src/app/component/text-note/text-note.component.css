@@ -268,3 +268,7 @@
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+.is-inverse {
+  transform: rotateZ(180deg);
+}
