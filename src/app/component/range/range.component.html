@@ -27,7 +27,7 @@ https://opensource.org/licenses/mit-license.php
         (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()" [rotable.disable]="isLocked || (range.type == 'CIRCLE') || (range.type == 'SQUARE') || (range.type == 'DIAMOND')" 
         style="transform: rotateZ(0deg);" #rotate>
         <div class="is-3d" *ngIf="(range.type == 'CIRCLE') || (range.type == 'SQUARE') || (range.type == 'DIAMOND')" class="lock-icon is-center">
-          <i class="material-icons">{{ isLocked ? 'lock' : 'open_with' }}</i>
+          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'open_with' }}</i>
         </div>
         <ng-container *ngIf="(range.type != 'CIRCLE') && (range.type != 'SQUARE') && (range.type != 'DIAMOND')"> 
           <div class="is-3d" style="position: absolute; width: 28px; pointer-events: auto">
