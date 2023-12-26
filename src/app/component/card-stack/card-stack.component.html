@@ -13,16 +13,16 @@
     </div>
     <ng-container *ngIf="!isIconHidden">
       <div class="rotate-grab of-left-top is-3d">
-        <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+        <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
       </div>
       <div class="rotate-grab of-left-bottom is-3d">
-        <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+        <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
       </div>
       <div class="rotate-grab of-right-bottom is-3d">
-        <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+        <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
       </div>
       <div class="rotate-grab of-right-top is-3d">
-        <i class="material-icons">{{ isLocked ? 'lock' : 'autorenew' }}</i>
+        <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
       </div>
     </ng-container>
     <div *ngIf="isShowTotal" class="name-tag is-nowrap is-black-background is-3d number-of-cards" style="z-index: 10" [ngStyle]="{'transform': 'translateY(-50%) translateX(-50%) translateX(' + size * gridSize / 2 +'px) rotateZ(' + (isInverse ? 180 : 0) + 'deg)'}">
