@@ -458,7 +458,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         */
         // UIコンポーネントに設定持たせるべきか
         if (ChatWindowComponent.isNoticeOn) {
-          if (!this.noticeIntervalTimer) {
+          if (event.data?.isDirect || !this.noticeIntervalTimer) {
+            clearTimeout(this.noticeIntervalTimer);
             this.noticeIntervalTimer = setTimeout(() => {
               clearTimeout(this.noticeIntervalTimer);
               this.noticeIntervalTimer = null;
