@@ -64,6 +64,10 @@ export class ChatMessageComponent implements OnInit, AfterViewInit {
   isEditing = false;
   editingText = '';
 
+  get isGMMode(): boolean {
+    return this.chatMessage.isGMMode;
+  }
+
   constructor(
     private chatMessageService: ChatMessageService,
     private modalService: ModalService,

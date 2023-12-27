@@ -106,7 +106,8 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
   get index(): number { return this.minorIndex + this.timestamp; }
   get isDirect(): boolean { return 0 < this.sendTo.length || -1 < this.tags.indexOf('direct') ? true : false; }
   get isSendFromSelf(): boolean { return this.from === Network.peer.userId || this.originFrom === Network.peer.userId || -1 < this.tags.indexOf('mine'); }
-  get isRelatedToMe(): boolean { return (-1 < this.sendTo.indexOf(Network.peer.userId)) || this.isSendFromSelf || this.isGMMode; }
+  get isSendToMe(): boolean { return (-1 < this.sendTo.indexOf(Network.peer.userId)); }
+  get isRelatedToMe(): boolean { return (this.isSendToMe || this.isSendFromSelf || this.isGMMode); }
   get isDisplayable(): boolean { return this.isDirect ? this.isRelatedToMe : true; }
   get isSystem(): boolean { return -1 < this.tags.indexOf('system') ? true : false; }
   get isDicebot(): boolean { return this.isSystem && this.from.indexOf('Dice') >= 0 && !/^C\(.+\) →/i.test(this.text); }

@@ -12,7 +12,7 @@
         <ng-container *ngTemplateOutlet="title"></ng-container>
       </ng-container>
       <div class="text msg-text" [style.flex-grow]="isCompact && !isEditing ? 0 : 1" [ngClass]="{ 'is-success': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isSuccess, 'is-failure': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isFailure, 'is-critical': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isCritical, 'is-fumble': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isFumble }">
-        <ng-container *ngIf="!chatMessage.isSecret || chatMessage.isSendFromSelf || chatMessage.isGMMode; then visible; else secret"></ng-container>
+        <ng-container *ngIf="!chatMessage.isSecret || chatMessage.isSendFromSelf || isGMMode; then visible; else secret"></ng-container>
       </div>
       <div *ngIf="isEditable && isCompact">
         <ng-container *ngTemplateOutlet="editor"></ng-container>
@@ -39,16 +39,16 @@
       <span class='tip msg-timestamp'>{{chatMessage.timestamp | date:'H:mm'}}</span>
     </ng-container>
     <span class="msg-name">
-      <ng-container *ngIf="!isMine && chatMessage.toColor"> 
+      <ng-container *ngIf="!isMine && chatMessage.toColor && isGMMode"> 
         <img draggable="false" class="mini-icon" *ngIf="0 < toImageFile?.url?.length" [src]="toImageFile?.url | safe: 'resourceUrl'" 
-        /><span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}</span>
+        /><span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}<ng-container *ngIf="chatMessage.isSendToMe">（あなた）</ng-container></span>
         <span style="display: inline-block; margin: 0px 6px; user-select: none; transform: rotateY(180deg)">➡</span>
       </ng-container>
       <span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.color && chatMessage.color != '#ffffff' ? chatMessage.color : ''">{{chatMessage.name}}</span>
       <ng-container *ngIf="isMine && chatMessage.toColor">
         <span style="display: inline-block; margin: 0px 6px; user-select: none">➡</span>
         <img draggable="false" class="mini-icon" *ngIf="0 < toImageFile?.url?.length" [src]="toImageFile?.url | safe: 'resourceUrl'" 
-        /><span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}</span>
+        /><span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}<ng-container *ngIf="chatMessage.isSendToMe">（あなた）</ng-container></span>
       </ng-container>
     </span>
     <ng-container *ngIf="!isCompact || isMine">
