@@ -734,7 +734,47 @@ export class DiceBot extends GameObject {
           } catch(e) {
             console.error(e);
           }
-        } else if (i == 1 && id == 'DungeonsAndDragons5' && (a[0].startsWith('(AT') || a[0].startsWith('(AR'))) {
+        } else if (id == 'BladeOfArcana' && (i == 1 || i == 2)) {
+          const match = a[0].match(/^\(\d+A(?<deficult>\d+)C(?<critical>\d+)F(?<fumble>\d+)\)$/i);
+          if (match) {
+            const {deficult, critical, fumble} = match.groups;
+            resultFragment = resultFragment.split(',').map(diceStr => {
+              let diceNum = parseInt(diceStr.trim());
+              if (diceNum === 1) {
+                return `###${diceNum}###`;
+              } else if (diceNum >= parseInt(fumble)) {
+                return `~~~###${diceNum}###~~~`;
+              } else if (diceNum <= parseInt(critical)) {
+                return `###${diceNum}###`;
+              } else if (diceNum > parseInt(deficult)) {
+                return `~~~${diceNum}~~~`;
+              }
+              return diceStr;
+            }).join(',');
+          }
+        } else if (id == 'DoubleCross' && i == 1) {
+          resultFragment = resultFragment.split('+').map((flagment) => {
+            const match1 = flagment.match(/(?<result>\d{1,2})\[(?<diceArrayString>\d{1,2}(?:,\d{1,2})*)\]/);
+            if (match1) {
+              const match2 = a[0].match(/\(\d+DX(?<critical>\d+)/i);
+              if (match2) {
+                const {result, diceArrayString} = match1.groups;
+                const {critical} = match2.groups;
+                let isCritical = false;
+                const formatedDiceArrayString = diceArrayString.split(',').map((num, i, a) => {
+                  if (parseInt(num) >= parseInt(critical)) {
+                    isCritical = true;
+                    return `###${num}###`;
+                  } else {
+                    return (i === a.length - 1) ? `${num}` : `~~~${num}~~~`;
+                  }
+                }).join(',');
+                return `${ (isCritical ? `###${result}###` : result) }[${formatedDiceArrayString}]`;
+              }
+            }
+            return flagment;
+          }).join('+');
+        } else if (id == 'DungeonsAndDragons5' && i == 1 && (a[0].startsWith('(AT') || a[0].startsWith('(AR'))) {
           const isAttackRoll = a[0].startsWith('(AT');
           const isAdvantage = a[0].endsWith('A)');
           const isDisadvantage = a[0].endsWith('D)');
@@ -761,25 +801,7 @@ export class DiceBot extends GameObject {
               if (diceString && (parseInt(diceString) === 20 || parseInt(diceString) === 1)) resultFragment = `###${diceString}###${modifier ? modifier : ''}`;
             }
           }
-        } else if ((i == 1 || i == 2) && id == 'BladeOfArcana') {
-          const match = a[0].match(/^\(\d+A(?<deficult>\d+)C(?<critical>\d+)F(?<fumble>\d+)\)$/i);
-          if (match) {
-            const {deficult, critical, fumble} = match.groups;
-            resultFragment = resultFragment.split(',').map(diceStr => {
-              let diceNum = parseInt(diceStr.trim());
-              if (diceNum === 1) {
-                return `###${diceNum}###`;
-              } else if (diceNum >= parseInt(fumble)) {
-                return `~~~###${diceNum}###~~~`;
-              } else if (diceNum <= parseInt(critical)) {
-                return `###${diceNum}###`;
-              } else if (diceNum > parseInt(deficult)) {
-                return `~~~${diceNum}~~~`;
-              }
-              return diceStr;
-            }).join(',');
-          }
-        }
+        } 
         return resultFragment;
       }).join(' → ');
     }).join("\n");
