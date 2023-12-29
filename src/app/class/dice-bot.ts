@@ -761,6 +761,24 @@ export class DiceBot extends GameObject {
               if (diceString && (parseInt(diceString) === 20 || parseInt(diceString) === 1)) resultFragment = `###${diceString}###${modifier ? modifier : ''}`;
             }
           }
+        } else if ((i == 1 || i == 2) && id == 'BladeOfArcana') {
+          const match = a[0].match(/^\(\d+A(?<deficult>\d+)C(?<critical>\d+)F(?<fumble>\d+)\)$/i);
+          if (match) {
+            const {deficult, critical, fumble} = match.groups;
+            resultFragment = resultFragment.split(',').map(diceStr => {
+              let diceNum = parseInt(diceStr.trim());
+              if (diceNum === 1) {
+                return `###${diceNum}###`;
+              } else if (diceNum >= parseInt(fumble)) {
+                return `~~~###${diceNum}###~~~`;
+              } else if (diceNum <= parseInt(critical)) {
+                return `###${diceNum}###`;
+              } else if (diceNum > parseInt(deficult)) {
+                return `~~~${diceNum}~~~`;
+              }
+              return diceStr;
+            }).join(',');
+          }
         }
         return resultFragment;
       }).join(' → ');
