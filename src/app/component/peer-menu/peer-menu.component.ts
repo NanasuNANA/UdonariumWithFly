@@ -42,12 +42,14 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   isRoomNameCopied = false;
   isPasswordCopied = false;
   isPasswordOpen = false;
+  isRoomInfoCopied = false
 
   help: string = '';
 
   private _timeOutId: NodeJS.Timeout;
   private _timeOutId2: NodeJS.Timeout;
   private _timeOutId3: NodeJS.Timeout;
+  private _timeOutId4: NodeJS.Timeout;
 
   private interval: NodeJS.Timeout;
   get myPeer(): PeerCursor { return PeerCursor.myCursor; }
@@ -116,6 +118,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     clearTimeout(this._timeOutId);
     clearTimeout(this._timeOutId2);
     clearTimeout(this._timeOutId3);
+    clearTimeout(this._timeOutId4);
     EventSystem.unregister(this);
     clearInterval(this.interval);
   }
@@ -223,24 +226,40 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
 
   copyPassword() {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(this.networkService.peer.password);
-      this.isPasswordCopied = true;
-      clearTimeout(this._timeOutId3);
-      this._timeOutId3 = setTimeout(() => {
-        this.isPasswordCopied = false;
-      }, 1000);
+      this.modalService.open(ConfirmationComponent, {
+        title: 'パスワードのコピー', 
+        text: 'パスワードをクリップボードにコピーしますか？',
+        type: ConfirmationType.OK_CANCEL,
+        materialIcon: 'password',
+        action: () => {
+          navigator.clipboard.writeText(this.networkService.peer.password);
+          this.isPasswordCopied = true;
+          clearTimeout(this._timeOutId3);
+          this._timeOutId3 = setTimeout(() => {
+            this.isPasswordCopied = false;
+          }, 1000);
+        }
+      });
       this.isPasswordOpen = false;
     }
   }
 
   copyRoomInfo() {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText('ルーム名：' + this.networkService.peer.roomName + '/' + this.networkService.peer.roomId + '　パスワード：' + this.networkService.peer.password);
-      this.isPasswordCopied = true;
-      clearTimeout(this._timeOutId3);
-      this._timeOutId3 = setTimeout(() => {
-        this.isPasswordCopied = false;
-      }, 1000);
+      this.modalService.open(ConfirmationComponent, {
+        title: 'ルーム情報のコピー', 
+        text: 'ルーム情報（ルーム名/ルームID、パスワード）をクリップボードにコピーしますか？',
+        type: ConfirmationType.OK_CANCEL,
+        materialIcon: 'key',
+        action: () => {
+          navigator.clipboard.writeText('ルーム名：' + this.networkService.peer.roomName + '/' + this.networkService.peer.roomId + '  パスワード：' + this.networkService.peer.password);
+          this.isRoomInfoCopied = true;
+          clearTimeout(this._timeOutId4);
+          this._timeOutId4 = setTimeout(() => {
+            this.isRoomInfoCopied = false;
+          }, 1000);
+        }
+      });
       this.isPasswordOpen = false;
     }
   }
