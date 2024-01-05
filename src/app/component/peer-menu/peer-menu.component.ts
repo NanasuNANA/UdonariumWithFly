@@ -229,6 +229,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
       this.modalService.open(ConfirmationComponent, {
         title: 'パスワードのコピー', 
         text: 'パスワードをクリップボードにコピーしますか？',
+        helpHtml: 'パスワードを共有する際には、SNSの公開アカウントなどで<b>不特定多数に公開することは避けて</b>ください。',
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'password',
         action: () => {
@@ -249,6 +250,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
       this.modalService.open(ConfirmationComponent, {
         title: 'ルーム情報のコピー', 
         text: 'ルーム情報（ルーム名/ルームID、パスワード）をクリップボードにコピーしますか？',
+        helpHtml: 'パスワードを共有する際には、SNSの公開アカウントなどで<b>不特定多数に公開することは避けて</b>ください。',
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'key',
         action: () => {
@@ -276,6 +278,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
       this.modalService.open(ConfirmationComponent, {
         title: 'パスワードの表示', 
         text: 'パスワードを表示しますか？',
+        helpHtml: 'プレイ配信中などに誤ってパスワードを表示しないように注意してください。<br>またパスワードを共有する際には、SNSの公開アカウントなどで<b>不特定多数に公開することは避けて</b>ください。',
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'visibility',
         action: () => {
