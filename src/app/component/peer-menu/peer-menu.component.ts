@@ -231,7 +231,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
         text: 'パスワードをクリップボードにコピーしますか？',
         helpHtml: 'パスワードを共有する際には、SNSの公開アカウントなどで<b>不特定多数に公開することは避けて</b>ください。',
         type: ConfirmationType.OK_CANCEL,
-        materialIcon: 'password',
+        materialIcon: 'content_copy',
         action: () => {
           navigator.clipboard.writeText(this.networkService.peer.password);
           this.isPasswordCopied = true;
@@ -252,7 +252,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
         text: 'ルーム情報（ルーム名/ルームID、パスワード）をクリップボードにコピーしますか？',
         helpHtml: 'パスワードを共有する際には、SNSの公開アカウントなどで<b>不特定多数に公開することは避けて</b>ください。',
         type: ConfirmationType.OK_CANCEL,
-        materialIcon: 'key',
+        materialIcon: 'content_copy',
         action: () => {
           navigator.clipboard.writeText('ルーム名：' + this.networkService.peer.roomName + '/' + this.networkService.peer.roomId + '  パスワード：' + this.networkService.peer.password);
           this.isRoomInfoCopied = true;
