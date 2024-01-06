@@ -25,7 +25,7 @@
         </div>
         <div class="border-bg is-pointer-events-none is-3d"></div>
       </ng-container>
-      <div *ngIf="!isFront && ownerIsOnline && 0 < ownerName.length" class="name-tag is-nowrap has-length-limit is-black-background is-3d" [ngStyle]="{'background-color': ownerColor, 'transform': 'translateY(-50%) translateX(-50%) translateX(' + size * gridSize / 2 +'px)'}">
+      <div *ngIf="!isFront && ownerIsOnline && 0 < ownerName.length" class="name-tag is-nowrap has-length-limit is-black-background is-3d" [ngStyle]="{'background-color': ownerColor, 'transform': 'translateY(' + (isHand ? 'calc(' + -backImageClientHeight / 2 + 'px - 75%)' : '-50%') + ') translateX(-50%) translateX(' + size * gridSize / 2 +'px)'}">
         <span class="is-3d" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}"><b>{{ownerName}}</b></span>
       </div>
       <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
