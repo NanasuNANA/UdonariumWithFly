@@ -32,7 +32,7 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
 export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   inventoryTypes: string[] = ['table', 'common', 'graveyard'];
 
-  _selectTab: string = 'table'; 
+  _selectTab: string = 'table';
   get selectTab(): string { return this._selectTab; };
   set selectTab(selectTab: string) {
     this._selectTab = selectTab;
@@ -152,14 +152,14 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     let position;
     if (target && target.tagName === 'BUTTON') {
       const clientRect = target.getBoundingClientRect();
-      position = { 
+      position = {
         x: window.pageXOffset + clientRect.left + target.clientWidth,
         y: window.pageYOffset + clientRect.top
       };
     } else {
       position = this.pointerDeviceService.pointers[0];
     }
-    
+
     let actions: ContextMenuAction[] = [];
     if (this.checkSelected(gameObject)) {
       let selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === gameObject.aliasName) as GameCharacter[];
@@ -174,7 +174,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               this.selectionService.remove(gameCharacter);
               if (gameCharacter.isHideIn && gameCharacter.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
                 this.modalService.open(ConfirmationComponent, {
-                  title: 'ステルスモード', 
+                  title: 'ステルスモード',
                   text: 'ステルスモードになります。',
                   help: '位置を自分だけ見ているキャラクターが1つ以上テーブル上にある間、あなたのカーソル位置は他の参加者に伝わりません。',
                   type: ConfirmationType.OK,
@@ -252,7 +252,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           this.selectionService.remove(gameObject);
           if (gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
             this.modalService.open(ConfirmationComponent, {
-              title: 'ステルスモード', 
+              title: 'ステルスモード',
               text: 'ステルスモードになります。',
               help: '位置を自分だけ見ているキャラクターが1つ以上テーブル上にある間、あなたのカーソル位置は他の参加者に伝わりません。',
               type: ConfirmationType.OK,
@@ -266,7 +266,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     }
 
     if (gameObject.isHideIn) {
-      actions.push({ 
+      actions.push({
         name: '位置を公開する',
         action: () => {
           gameObject.owner = '';
@@ -276,12 +276,12 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       });
     }
     if (!gameObject.isHideIn || !gameObject.isVisible) {
-      actions.push({ 
+      actions.push({
         name: '位置を自分だけ見る（ステルス）',
         action: () => {
           if (gameObject.location.name === 'table' && !GameCharacter.isStealthMode && !PeerCursor.myCursor.isGMMode) {
             this.modalService.open(ConfirmationComponent, {
-              title: 'ステルスモード', 
+              title: 'ステルスモード',
               text: 'ステルスモードになります。',
               help: '位置を自分だけ見ているキャラクターが1つ以上テーブル上にある間、あなたのカーソル位置は他の参加者に伝わりません。',
               type: ConfirmationType.OK,
@@ -300,13 +300,13 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         name: '画像切り替え',
         action: null,
         subActions: gameObject.imageFiles.map((image, i) => {
-          return { 
-            name: `${gameObject.currntImageIndex == i ? '◉' : '○'}`, 
-            action: () => { 
+          return {
+            name: `${gameObject.currntImageIndex == i ? '◉' : '○'}`,
+            action: () => {
               gameObject.currntImageIndex = i;
               SoundEffect.play(PresetSound.surprise);
               EventSystem.trigger('UPDATE_INVENTORY', null);
-            }, 
+            },
             default: gameObject.currntImageIndex == i,
             icon: image,
             checkBox: 'radio'
@@ -359,7 +359,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         checkBox: 'check'
       })
     );
-    actions.push({ name: '画像効果', action: null,  
+    actions.push({ name: '画像効果', action: null,
       subActions: [
       (gameObject.isInverse
         ? {
@@ -403,7 +403,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           },
           checkBox: 'check'
         }),
-        { name: 'オーラ', action: null, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} なし`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {  
+        { name: 'オーラ', action: null, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} なし`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['ブラック', 'ブルー', 'グリーン', 'シアン', 'レッド', 'マゼンタ', 'イエロー', 'ホワイト'].map((color, i) => {
           return { name: `${gameObject.aura == i ? '◉' : '○'} ${color}`, action: () => { gameObject.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, colorSample: true, checkBox: 'radio' };
         })) },
         ContextMenuSeparator,
@@ -478,7 +478,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               window.open(url.trim(), '_blank', 'noopener');
             } else {
               this.modalService.open(OpenUrlComponent, { url: url, title: gameObject.name, subTitle: urlElement.name });
-            } 
+            }
           },
           disabled: !StringUtil.validUrl(url),
           error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
@@ -513,9 +513,9 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       action: null,
       subActions: locations
         .filter((location, i) => { return !(gameObject.location.name == location.name || (i == 1 && !locations.map(loc => loc.name).includes(gameObject.location.name))) })
-        .map((location) => { 
+        .map((location) => {
           return {
-            name: `${location.alias}`, 
+            name: `${location.alias}`,
             action: () => {
               let isStealthMode = GameCharacter.isStealthMode;
               EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
@@ -523,7 +523,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               this.selectionService.remove(gameObject);
               if (location.name === 'table' && gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
                 this.modalService.open(ConfirmationComponent, {
-                  title: 'ステルスモード', 
+                  title: 'ステルスモード',
                   text: 'ステルスモードになります。',
                   help: '位置を自分だけ見ているキャラクターが1つ以上テーブル上にある間、あなたのカーソル位置は他の参加者に伝わりません。',
                   type: ConfirmationType.OK,
@@ -537,7 +537,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               }
               EventSystem.call('UPDATE_INVENTORY', true);
             }
-          } 
+          }
         }),
       disabled: !gameObject.isVisible && !this.isGMMode
     });
@@ -613,7 +613,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     let tabTitle = this.getTabTitle(this.selectTab);
     let gameObjects = this.getGameObjects(this.selectTab);
     this.modalService.open(ConfirmationComponent, {
-      title: '墓場を空にする', 
+      title: '墓場を空にする',
       text: 'キャラクターを完全に削除しますか？',
       helpHtml: `<b>${ StringUtil.escapeHtml(tabTitle) }</b>に存在する <b>${ gameObjects.length }</b> 体のキャラクターを完全に削除します。`,
       type: ConfirmationType.OK_CANCEL,
@@ -650,7 +650,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
 
   selectGameObject(gameObject: GameObject, e: Event=null) {
     if (!(gameObject instanceof TabletopObject)) return;
-    if (e && e instanceof PointerEvent && e.ctrlKey) {
+    if (e && e instanceof MouseEvent && e.ctrlKey) {
       SoundEffect.playLocal(PresetSound.selectionStart);
       if (this.checkSelected(gameObject)) {
         this.selectionService.remove(gameObject);
@@ -685,7 +685,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     let component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
     component.character = gameObject;
   }
-  
+
   trackByGameObject(index: number, gameObject: GameObject) {
     return gameObject ? gameObject.identifier : index;
   }
