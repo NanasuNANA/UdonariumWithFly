@@ -10,6 +10,7 @@ import {
   NgZone,
   OnChanges,
   OnDestroy,
+  ViewChild,
 } from '@angular/core';
 import { Card, CardState } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
@@ -79,6 +80,8 @@ import { ChatMessageService } from 'service/chat-message.service';
 export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   @Input() card: Card = null;
   @Input() is3D: boolean = false;
+  @ViewChild('cardImage', { static: false }) cardImageElement: ElementRef<HTMLImageElement>;
+  @ViewChild('translucentImage', { static: false }) translucentImageElement: ElementRef<HTMLImageElement>;
 
   get name(): string { return this.card.name; }
   get state(): CardState { return this.card.state; }
@@ -146,6 +149,15 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   rotableOption: RotableOption = {};
   
   viewRotateZ = 10;
+
+  frontImageClientHeight = 0;
+  backImageClientHeight = 0;
+  get textDivTopPixcel(): number {
+    return this.isFront ? 0 : ((this.backImageClientHeight - this.frontImageClientHeight) / 2);
+  }
+  get textDivHeightCss(): string {
+    return (this.isFront || !this.frontImageClientHeight) ? '100%' : this.frontImageClientHeight + 'px';
+  }
 
   private interactGesture: ObjectInteractGesture = null;
 
@@ -300,6 +312,18 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   onMoved() {
     SoundEffect.play(PresetSound.cardPut);
     this.ngZone.run(() => this.dispatchCardDropEvent());
+  }
+
+  onImageLoad() {
+    if (this.isFront) {
+      if (this.cardImageElement) this.frontImageClientHeight = this.cardImageElement.nativeElement.clientHeight;
+      if (!this.backImageClientHeight) this.backImageClientHeight = this.frontImageClientHeight;
+    } else {
+      if (this.cardImageElement) this.backImageClientHeight = this.cardImageElement.nativeElement.clientHeight;
+      if (!this.frontImageClientHeight) this.frontImageClientHeight = this.backImageClientHeight;
+      if (this.translucentImageElement) this.frontImageClientHeight = this.translucentImageElement.nativeElement.clientHeight;
+    }
+    //console.log(this.frontImageClientHeight)
   }
 
   private createStack() {
