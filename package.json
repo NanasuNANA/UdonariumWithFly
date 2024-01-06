@@ -1,6 +1,6 @@
 {
-  "name": "udonarium",
-  "version": "1.16.0",
+  "name": "udonarium with fly",
+  "version": "1.9.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
