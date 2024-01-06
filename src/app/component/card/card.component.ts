@@ -323,7 +323,6 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
       if (!this.frontImageClientHeight) this.frontImageClientHeight = this.backImageClientHeight;
       if (this.translucentImageElement) this.frontImageClientHeight = this.translucentImageElement.nativeElement.clientHeight;
     }
-    //console.log(this.frontImageClientHeight)
   }
 
   private createStack() {
