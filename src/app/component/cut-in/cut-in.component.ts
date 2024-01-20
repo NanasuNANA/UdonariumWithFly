@@ -136,6 +136,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     EventSystem.register(this)
       .on('CHANGE_JUKEBOX_VOLUME', -100, event => {
         if (this.videoPlayer) this.videoPlayer.setVolume(this.videoVolume);
+        //if (this.videoPlayer) console.log(this.videoPlayer.getVolume())
       })
       .on('PLAY_VIDEO_CUT_IN', -1000, event => {
         if (this.cutIn && this.cutIn.identifier != event.data.identifier && !!this.videoId) {
@@ -451,8 +452,9 @@ export class CutInComponent implements OnInit, OnDestroy {
   }
 
   onPlayerReady($event) {
-    $event.target.setVolume(this.videoVolume);
+    //$event.target.setVolume(this.videoVolume);
     //console.log('ready')
+    if (this.videoPlayer) this.videoPlayer.setVolume(this.videoVolume);
     $event.target.playVideo();
   }
 
@@ -460,6 +462,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     const state = $event.data;
     //console.log($event.data)
     if (state == 1) {
+      if (this.videoPlayer) this.videoPlayer.setVolume(this.videoVolume);
       this.videoStateTransition = true;
       this._timeoutIdVideo = setTimeout(() => {
         this.ngZone.run(() => {
