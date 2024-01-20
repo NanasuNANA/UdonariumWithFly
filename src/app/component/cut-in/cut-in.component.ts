@@ -155,7 +155,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     EventSystem.unregister(this, 'PLAY_VIDEO_CUT_IN');
     clearTimeout(this._timeoutId);
     clearTimeout(this._timeoutIdVideo);
-    URL.revokeObjectURL(this._cutInImgageUrl);
+    if (this._cutInImgageUrl) URL.revokeObjectURL(this._cutInImgageUrl);
   }
 
   get isPointerDragging(): boolean { return this._dragging; }
@@ -382,7 +382,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     return ret;
   }
 
-  private _cutInImgageUrl: string = null;
+  private _cutInImgageUrl: string = '';
   get cutInImgageUrl(): string {
     return this._cutInImgageUrl; 
   }
