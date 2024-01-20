@@ -10,7 +10,7 @@ import {
   OnChanges,
   OnDestroy
 } from '@angular/core';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { MathUtil } from '@udonarium/core/system/util/math-util';
@@ -216,6 +216,24 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   movableOption: MovableOption = {};
 
   private input: InputHandler = null;
+  
+  private _currentimageFile: ImageFile;
+  private _currentImageFileUrl: string = '';
+  get imageFileUrl(): string {
+    let revokeUrl = '';
+    if (this.imageFile && this.imageFile.identifier != this._currentimageFile?.identifier) {
+      this._currentimageFile = this.imageFile;
+      if (this._currentimageFile.state === ImageState.COMPLETE) {
+        if (this._currentImageFileUrl) revokeUrl = this._currentImageFileUrl;
+        this._currentImageFileUrl = URL.createObjectURL(this._currentimageFile.blob);
+      } else {
+        this._currentImageFileUrl = this._currentimageFile.url;
+      }
+    }
+    if (revokeUrl) queueMicrotask(() => URL.revokeObjectURL(revokeUrl));
+    return this._currentImageFileUrl;
+  }
+
 
   constructor(
     private ngZone: NgZone,
@@ -278,6 +296,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     this.input.destroy();
     EventSystem.unregister(this);
     clearTimeout(this._scratchingTimerId);
+    if (this._currentImageFileUrl) URL.revokeObjectURL(this._currentImageFileUrl);
   }
 
   @HostListener('dragstart', ['$event'])
