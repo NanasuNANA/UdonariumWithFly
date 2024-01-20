@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, NgZone, OnDestroy, 
 
 import { Card } from '@udonarium/card';
 import { CardStack } from '@udonarium/card-stack';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { GameObject } from '@udonarium/core/synchronize-object/game-object';
 import { EventSystem } from '@udonarium/core/system';
 import { DiceSymbol } from '@udonarium/dice-symbol';
@@ -86,6 +86,46 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     const rect = this.currentTable.gridClipRect;
     return rect ? `rect(${rect.top}px, ${rect.right}px, ${rect.bottom}px, ${rect.left}px)` : 'auto';
   }
+
+  private _currentTable: GameTable;
+  private _currentTableImage: ImageFile;
+  private _currentTableImageUrl: string = '';
+  private _currentBackgroundImage :ImageFile;
+  private _currentBackgroundImageUrl: string = '';
+  get tableImageUrls(): string[] {
+    let revokeTableImageUrl = '';
+    let revokeBackgroundImageUrl = '';
+    let isFlash = (this.currentTable?.identifier != this._currentTable?.identifier);
+    this._currentTable = this.currentTable;
+    if (isFlash || this._currentTableImage?.identifier != this.tableImage.identifier) {
+      this._currentTableImage = this.tableImage;
+      if (this.tableImage.state === ImageState.COMPLETE) {
+        if (this._currentTableImageUrl) revokeTableImageUrl = this._currentTableImageUrl;
+        this._currentTableImageUrl = URL.createObjectURL(this.tableImage.blob);
+      } else {
+        this._currentTableImageUrl = this.tableImage.url;
+      }
+    }
+    if (isFlash || this._currentBackgroundImage?.identifier != this.backgroundImage.identifier) {
+      this._currentBackgroundImage = this.backgroundImage;
+      if (this.backgroundImage.state === ImageState.COMPLETE) {
+        if (this._currentBackgroundImageUrl) revokeBackgroundImageUrl = this._currentBackgroundImageUrl;
+        this._currentBackgroundImageUrl = URL.createObjectURL(this.backgroundImage.blob);
+      } else {
+        this._currentBackgroundImageUrl = this.backgroundImage.url;
+      }
+    }
+    if (revokeTableImageUrl || revokeBackgroundImageUrl) {
+      queueMicrotask(() => { 
+        if (revokeTableImageUrl) URL.revokeObjectURL(revokeTableImageUrl);
+        if (revokeBackgroundImageUrl) URL.revokeObjectURL(revokeBackgroundImageUrl);
+      });
+    }
+    return [this._currentTableImageUrl, this._currentBackgroundImageUrl];
+  }
+  
+  get tableImageUrl(): string { return this.tableImageUrls[0]; }
+  get backgroundImageUrl(): string { return this.tableImageUrls[1]; }
 
   constructor(
     private ngZone: NgZone,
@@ -200,6 +240,8 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mouseGesture.destroy();
     this.touchGesture.destroy();
     this.pickGesture.destroy();
+    if (this._currentTableImageUrl) URL.revokeObjectURL(this._currentTableImageUrl);
+    if (this._currentBackgroundImageUrl) URL.revokeObjectURL(this._currentBackgroundImageUrl);
   }
 
   initializeTableTouchGesture() {
