@@ -10,7 +10,7 @@ import {
   OnChanges,
   OnDestroy
 } from '@angular/core';
-import { ImageFile } from '@udonarium/core/file-storage/image-file';
+import { ImageFile, ImageState } from '@udonarium/core/file-storage/image-file';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { MathUtil } from '@udonarium/core/system/util/math-util';
@@ -106,6 +106,27 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
     return ret;
   }
 
+  private _tmpImages: ImageFile[] = [];
+  private _tmpImageUrls: string[] = ['', ''];
+  private _tmpUrl(pos: number) {
+    const imageFiles = [this.floorImage, this.wallImage];
+    let revokeUrl = '';
+    if (this._tmpImages[pos]?.identifier != imageFiles[pos].identifier) {
+      this._tmpImages[pos] = imageFiles[pos];
+      if (this._tmpImages[pos].state === ImageState.COMPLETE) {
+        if (this._tmpImageUrls[pos]) revokeUrl = this._tmpImageUrls[pos];
+        this._tmpImageUrls[pos] = URL.createObjectURL(this._tmpImages[pos].blob);
+      } else {
+        this._tmpImageUrls[pos] = this._tmpImages[pos].url;
+      }
+    }
+    if (revokeUrl) queueMicrotask(() => URL.revokeObjectURL(revokeUrl));
+    return this._tmpImageUrls[pos];
+  }
+
+  get wallImageUrl(): string { return this._tmpUrl(1); }
+  get floorImageUrl(): string { return this._tmpUrl(0); }
+
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};
 
@@ -173,6 +194,9 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.input.destroy();
     EventSystem.unregister(this);
+    for (const url of this._tmpImageUrls) {
+      if (url) URL.revokeObjectURL(url);
+    }
   }
 
   @HostListener('dragstart', ['$event'])
