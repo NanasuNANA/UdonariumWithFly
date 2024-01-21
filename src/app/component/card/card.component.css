@@ -72,6 +72,7 @@
 
 .is-translucent {
   filter: opacity(0.8);
+  z-index: 2;
 }
 
 .rotate-grab {
@@ -217,7 +218,8 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  
+
+  backface-visibility: hidden;
   font-weight: bolder;
   text-align: center;
   white-space: pre-wrap;
