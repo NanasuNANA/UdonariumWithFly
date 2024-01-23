@@ -7,7 +7,7 @@
     [style.margin-bottom.px]="adjustY"
     [ngClass]="{'is-can-be-gone': isCanBeGone, 'is-ghostly': isGhostly, backyard: isBackyard, secret: isSecret}" (click)="toGhostly(); toBackyard()">
     <ng-container *ngIf="gameCharacter && imageUrl && imageUrl.length > 0">
-      <div @fadeAndScaleInOut *ngIf="!isBackyard && gameCharacter.isEmote" 
+      <div @fadeAndScaleInOut *ngIf="!isBackyard && isImageLoaded && gameCharacter.isEmote" 
         class="emote chat-bubble-buyo"
         style="position: absolute; pointer-events: none; text-align: center; margin-top: -1em"
         [style.visibility]="isShowStand && isApplyDialog ? 'visible' : 'hidden'"
