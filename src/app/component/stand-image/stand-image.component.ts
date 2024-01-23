@@ -71,6 +71,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
   isBackyard = false;
   isVisible = false;
   isSecret = false;
+  isImageLoaded = false; 
 
   private naturalWidth = 0;
   private naturalHeight = 0;
@@ -482,5 +483,6 @@ export class StandImageComponent implements OnInit, OnDestroy {
   onImageLoad() {
     this.naturalWidth = this.standImageElement.nativeElement.naturalWidth;
     this.naturalHeight = this.standImageElement.nativeElement.naturalHeight;
+    this.isImageLoaded = true;
   }
 }

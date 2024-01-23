@@ -1,4 +1,4 @@
-<div [style.visibility]="isShowStand ? 'visible' : 'hidden'" 
+<div [style.visibility]="isShowStand && isImageLoaded ? 'visible' : 'hidden'" 
   [style.pointer-events]="isShowStand ? 'auto' : 'none'">
   <div [@standInOut]="groupValue" (@standInOut.start)="refleshImageUrls(true)" *ngIf="!isFarewell && (isVisible || !isCanBeGone)" class="stand-image-container"
     [style.left]="position + '%'"
@@ -38,7 +38,7 @@
       </div>
     </ng-container>
   </div>
-  <span *ngIf="isShowStand && !isFarewell && (isVisible || !isCanBeGone) && isShowNameTag && gameCharacter && gameCharacter.name" class="name-tag"
+  <span *ngIf="isShowStand && isImageLoaded && !isFarewell && (isVisible || !isCanBeGone) && isShowNameTag && gameCharacter && gameCharacter.name" class="name-tag"
     style="pointer-events: none;" 
     [style.color]="color ? color : '#444'" 
     [ngClass]="{'is-can-be-gone': isCanBeGone, 'is-ghostly': isGhostly, backyard: isBackyard}"
@@ -47,7 +47,7 @@
     [style.border-color]="color ? color : '#444'"
     [style.margin-left.px]="nameTagCSSMarginLeft"
     ><b>{{ gameCharacter.name }}</b></span>
-  <div @fadeAndScaleInOut *ngIf="!isFarewell && isVisible && !isBackyard && gameCharacter && gameCharacter.text && !gameCharacter.isEmote" class="name-tag dialog chat-bubble-buyo"
+  <div @fadeAndScaleInOut *ngIf="!isFarewell && isImageLoaded && isVisible && !isBackyard && gameCharacter && gameCharacter.text && !gameCharacter.isEmote" class="name-tag dialog chat-bubble-buyo"
     (click)="toGhostly(); toBackyard();"
     #dialogElement
     style="margin-left: 12px; min-width: 5em; white-space: pre-wrap; font-size: 14px; pointer-events: none;"
