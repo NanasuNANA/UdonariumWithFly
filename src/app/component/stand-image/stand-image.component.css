@@ -48,7 +48,7 @@
   opacity: 0.25;
 }
 
-.secret .color-fillter {
+.secret .color-filter {
   filter: grayscale(80%);
 }
 
