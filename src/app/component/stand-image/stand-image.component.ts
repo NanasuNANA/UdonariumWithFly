@@ -266,7 +266,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
     const imageElement = this.standElement.getFirstElementByName('imageIdentifier');
     if (force || !imageElement || this._imageIdentifier !== imageElement.value) {
       force = true;
-      URL.revokeObjectURL(this._imageUrl);
+      const revokeUrl = this._imageUrl;
       if (imageElement) {
         const iamgeFile: ImageFile = ImageStorage.instance.get(<string>imageElement.value);
         if (iamgeFile) {
@@ -281,6 +281,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
       } else {
         this._imageUrl = ImageFile.Empty.url;
       }
+      URL.revokeObjectURL(revokeUrl);
       this._imageIdentifier = (imageElement && imageElement.value) ? imageElement.value.toString() : null;
     }
     this.refleshSpeakingImageUrl(force);
@@ -289,7 +290,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
   refleshSpeakingImageUrl(force: boolean=true) {
     const speakingImageElement = this.standElement.getFirstElementByName('speakingImageIdentifier');
     if (force || !speakingImageElement || this._speakingImageIdentifier !== speakingImageElement.value) {
-      URL.revokeObjectURL(this._speakingImageUrl);
+      const revokeUrl = this._speakingImageUrl;
       if (speakingImageElement) {
         const iamgeFile: ImageFile = ImageStorage.instance.get(<string>speakingImageElement.value);
         if (iamgeFile) {
@@ -304,6 +305,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
       } else {
         this._speakingImageUrl = null;
       }
+      URL.revokeObjectURL(revokeUrl);
       this._speakingImageIdentifier = (speakingImageElement && speakingImageElement.value) ? speakingImageElement.value.toString() : null;
     }
   }
