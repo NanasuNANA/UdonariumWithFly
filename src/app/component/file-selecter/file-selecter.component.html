@@ -62,7 +62,7 @@
     <div *ngIf="getCurrent(file)" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 5">
       <b class="grow" style="font-size: 13px; color: red; padding-left: 2px">設定中</b>
     </div>
-    <img *ngIf="0 < file.url.length" [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="getCurrent(file) ? false : onSelectedFile(file)">
-    <img *ngIf="file.url.length <= 0" src="assets/images/loading.gif" alt="{{file.name}}">
+    <img *ngIf="0 < file.url.length" [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="getCurrent(file) ? false : onSelectedFile(file)" draggable="false" />
+    <img *ngIf="file.url.length <= 0" src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
   </div>
 </div>
