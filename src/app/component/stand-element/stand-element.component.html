@@ -8,7 +8,7 @@
               <span class="aura" [ngClass]="{black: isApplyImageEffect && gameCharacter.aura == 0, blue: isApplyImageEffect && gameCharacter.aura == 1, 
                 green: isApplyImageEffect && gameCharacter.aura == 2, cyan: isApplyImageEffect && gameCharacter.aura == 3, red: isApplyImageEffect && gameCharacter.aura == 4,
                 magenta: isApplyImageEffect && gameCharacter.aura == 5, yellow: isApplyImageEffect && gameCharacter.aura == 6, white: isApplyImageEffect && gameCharacter.aura == 7}">
-                <img class="stand-image" (dblclick)="openModal()" [src]="standImage.url | safe: 'resourceUrl'" 
+                <img class="stand-image" (dblclick)="openModal()" [src]="standImage.url | safe: 'resourceUrl'" draggable="false"
                   [ngClass]="{'black-paint': isApplyImageEffect && gameCharacter.isBlackPaint, 'hollow': isApplyImageEffect && gameCharacter.isHollow}">
               </span>
             </div>
@@ -100,7 +100,7 @@
         <div *ngIf="imageList && imageList.length > 0" style="display: flex; flex-wrap: wrap; margin-right: -30px;">
           <ng-container *ngFor="let image of imageList">
             <div *ngIf="0 < image.url.length" class="icon-image-box" [ngClass]="{'current-icon': isSelectedImage(image.identifier)}">
-              <img [src]="image.url | safe: 'resourceUrl'" [alt]="image.name" (click)="selectImage(image.identifier)" />
+              <img [src]="image.url | safe: 'resourceUrl'" [alt]="image.name" (click)="selectImage(image.identifier)" draggable="false" />
             </div>
           </ng-container>
         </div>
