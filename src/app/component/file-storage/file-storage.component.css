@@ -17,6 +17,7 @@
 
 .drop-zone {
   display: block;
+  user-select: none;
   border: 2px dashed #555;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;

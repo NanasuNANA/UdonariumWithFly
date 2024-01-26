@@ -15,16 +15,16 @@
 </div>
 
 <label>
-  <div class="drop-zone">
-    <div>
+  <span class="drop-zone">
+    <span>
       <i class="material-icons large-font">playlist_add</i>
-    </div>
-    <div>ここに音楽をドロップ</div>
-    <div class="small-font">またはここをクリックして選択</div>
+    </span>
+    <span>ここに音楽をドロップ</span>
+    <span class="small-font">またはここをクリックして選択</span>
     <input type="file" style="display: none;" (change)="handleFileSelect($event)" multiple accept="audio/*"/>
-    <div class="small-font">
-      <br>１ファイルにつき10MBまで</div>
-  </div>
+    <span class="small-font">
+      <br>１ファイルにつき10MBまで</span>
+  </span>
 </label>
 <div style="font-size: 12px; margin-top: 3px">※ <b>試聴<sup class="self-only">*</sup></b>、<b>SEテスト<sup class="self-only">*</sup></b> は自分の環境で音楽を1回再生します。</div>
 <div style="font-size: 12px">※ <b>BGM</b> はルーム内の全員で1つの音楽をループ再生します。</div>
