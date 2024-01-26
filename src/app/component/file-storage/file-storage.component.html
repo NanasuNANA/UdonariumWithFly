@@ -1,14 +1,14 @@
 <label>
-  <div class="drop-zone">
-    <div>
+  <span class="drop-zone">
+    <span>
       <i class="material-icons large-font">add_photo_alternate</i>
-    </div>
-    <div>ここに画像をドロップ</div>
-    <div class="small-font">またはここをクリックして選択</div>
+    </span>
+    <span>ここに画像をドロップ</span>
+    <span class="small-font">またはここをクリックして選択</span>
     <input type="file" style="display: none;" (change)="handleFileSelect($event)" multiple accept="image/*"/>
-    <div class="small-font">
-      <br>１ファイルにつき2MBまで</div>
-  </div>
+    <span class="small-font">
+      <br>１ファイルにつき2MBまで</span>
+  </span>
 </label>
 <div class="sticky-top">
   <div style="float: right; margin-top: 3px; margin-right: 3px">
@@ -68,8 +68,10 @@
     <div *ngIf="getHidden(file)" style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
       <i class="material-icons red-eye" style="margin-right: 2px; font-size: 16px; display: block">visibility</i>
     </div>
-    <img *ngIf="0 < file.url.length" [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="onSelectedFile(file)" draggable="false" />
-    <img *ngIf="file.url.length <= 0" src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
+    <span style="cursor: pointer">
+      <img *ngIf="0 < file.url.length" [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="onSelectedFile(file)" draggable="false" />
+      <img *ngIf="file.url.length <= 0" src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
+    </span>
   </div>
 </div>
 <div *ngIf="isSelected" class="sticky-bottom" @fadeAndUpInOut>
@@ -82,7 +84,9 @@
     <button style="font-size: x-small; margin-right: 2em" (click)="onUnselect()">選択解除 ({{ selectedImageFiles.length }} 選択中)</button>
     <input attr.list="{{panelId}}_suggest" type="text" [(ngModel)]="addingTagWord" style="width: 14em" placeholder="スペース 区切りで 複数可能"><button style="font-size: x-small" [disabled]="addingTagWord == null || addingTagWord.trim() === ''" (click)="addTagWord()">タグ追加 ➡</button>
     <ng-container *ngIf="selectedImagesOwnWords().length > 0">
-      <label *ngFor="let word of selectedImagesOwnWords()" class="word-tag" (click)="removeTagWord(word)" style="cursor: pointer; font-size: smaller">{{ word }}<sup style="font-size: xx-small; color: red">×</sup></label>
+      <span style="user-select: none">
+        <label *ngFor="let word of selectedImagesOwnWords()" class="word-tag" (click)="removeTagWord(word)" style="cursor: pointer; font-size: smaller">{{ word }}<sup style="font-size: xx-small; color: red">×</sup></label>
+      </span>
     </ng-container>
     <ng-container *ngIf="selectedImagesOwnWords().length == 0">
       <span style="font-size: smaller; font-weight: bolder; margin-left: 3px; color: gray"><s>No Tag</s></span>

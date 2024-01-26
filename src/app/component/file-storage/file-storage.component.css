@@ -16,6 +16,7 @@
 }
 
 .drop-zone {
+  display: block;
   border: 2px dashed #555;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -24,6 +25,10 @@
   text-align: center;
   font: 24px bold 'Vollkorn';
   color: #444;
+  cursor: pointer;
+}
+.drop-zone span {
+  display: block;
   cursor: pointer;
 }
 
