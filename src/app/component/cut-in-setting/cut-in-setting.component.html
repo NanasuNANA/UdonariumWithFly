@@ -22,7 +22,7 @@
               <button *ngIf="!cutInVideoId || cutInisSoundOnly" (click)="openModal()"><b>画像変更</b></button>
             </div>
             <div *ngIf="cutInVideoId && !cutInisSoundOnly" class="grow" style="opacity: 0.8; position: absolute; bottom: 1px; right: -1px; z-index: 5"><i style="font-size: 32px" class="material-icons">{{ cutInPlayListId ? 'featured_play_list' : 'movie' }}</i></div>
-            <img style="width: 160px; height: 160px; object-fit: contain" [ngClass]="{ blackout: (!cutInVideoId || cutInisSoundOnly) && !isShowHideImages && getHidden(cutInImage) }" [src]="cutInImageUrl | safe: 'resourceUrl'">
+            <img style="width: 160px; height: 160px; object-fit: contain" [ngClass]="{ blackout: (!cutInVideoId || cutInisSoundOnly) && !isShowHideImages && getHidden(cutInImage) }" [src]="cutInImageUrl | safe: 'resourceUrl'" draggable="false">
           </div>
         </div>
         <div style="display: flex; flex-direction: column; width: 100%">

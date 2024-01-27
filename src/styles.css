@@ -54,6 +54,10 @@ body {
   position: relative;
 }
 
+img {
+  user-select: none;
+}
+
 .sk-cube-grid {
   position: absolute;
   top: 0;
