@@ -110,6 +110,7 @@
   height: 42px; 
   border-radius: 100px; 
   padding: 4px;
+  cursor: zoom-in;
 }
 
 .zoom-button > .material-icons {

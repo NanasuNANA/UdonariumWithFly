@@ -183,7 +183,7 @@ span {
   cursor: text;
 }
 
-label, input[type=checkbox], option, select {
+label, input[type=checkbox], input[type=radio], option, select {
   cursor: pointer;
 }
 select[size] {

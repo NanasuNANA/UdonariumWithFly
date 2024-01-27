@@ -46,7 +46,7 @@
           [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
           <option value="DiceBot" class="not-specified">ダイスボット読込中…</option>
         </select>
-        <button (click)="showDicebotHelp()">?</button>
+        <button style="cursor: help" (click)="showDicebotHelp()">?</button>
       </span>
     </div>
     <div *ngIf="hasStand" [ngClass]="{'disabled-stand': !isUseStandImageOnChatTab}" style="font-size: smaller">

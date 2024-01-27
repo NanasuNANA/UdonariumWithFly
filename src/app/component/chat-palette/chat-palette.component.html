@@ -12,7 +12,7 @@
     [(gameType)]="gameType" [(sendFrom)]="sendFrom" [(text)]="text" [(filterText)]="filterText" (chat)="sendChat($event)" #chatInput></chat-input>
     <div *ngIf="isEdit" class="edit-info" style="display: flex">
       <div style="width: calc(100% - 1.6em); text-align: center"><i class="material-icons" style="vertical-align: middle; font-size: 1.05rem">info_outline</i> チャットパレット編集中</div>
-      <div style="width: 1.6em; text-align: right"><button style="padding: 2px 6px; vertical-align: baseline; font-size: x-small; height: 1.24rem" (click)="helpChatPallet()">?</button></div>
+      <div style="width: 1.6em; text-align: right"><button style="padding: 2px 6px; vertical-align: baseline; font-size: x-small; height: 1.24rem; cursor: help" (click)="helpChatPallet()">?</button></div>
     </div>
   </div>
   <div *ngIf="!isEdit" style="flex-grow: 1; height: 0; min-height: 100px;">
