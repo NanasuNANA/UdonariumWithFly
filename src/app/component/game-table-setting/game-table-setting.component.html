@@ -18,24 +18,24 @@
       <div class="images-select">
         <div>
           <b>画像</b>
-          <div (click)="openBgImageModal()" style="position: relative; overflow: hidden; cursor: pointer">
-            <div *ngIf="getHidden(tableBackgroundImage)" style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
+          <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden; cursor: pointer">
+            <span *ngIf="getHidden(tableBackgroundImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
               <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-            </div>
-            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableBackgroundImage) }" [src]="tableBackgroundImage.url | safe: 'resourceUrl'">
-          </div>
+            </span>
+            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableBackgroundImage) }" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
+          </span>
         </div>
         <div>
           <b>背景</b>
           <div *ngIf="!tableDistanceviewImage.url">
             <button (click)="openDistanceViewImageModal()" style="height: 120px;" [disabled]="!isEditable">背景画像を追加</button>
           </div>
-          <div *ngIf="tableDistanceviewImage.url" style="position: relative; overflow: hidden; cursor: pointer" (click)="openDistanceViewImageModal()">
-            <div *ngIf="getHidden(tableDistanceviewImage)" style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
+          <span *ngIf="tableDistanceviewImage.url" style="display: block; position: relative; overflow: hidden; cursor: pointer" (click)="openDistanceViewImageModal()">
+            <span *ngIf="getHidden(tableDistanceviewImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
               <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-            </div>
-            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage) }" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'">
-          </div>
+            </span>
+            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage) }" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
+          </span>
         </div>
       </div>
       <div>

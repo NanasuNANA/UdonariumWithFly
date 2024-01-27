@@ -1,5 +1,5 @@
 <div style="margin-bottom: 4px;">
-  <button style="float: right;" (click)="helpStandSeteing()">?</button>
+  <button style="float: right; cursor: help" (click)="helpStandSeteing()">?</button>
   <div class="position-indicate">
     <b>Pos: </b>
     <input style="width: 350px" type="range" min="0" max="100" [(ngModel)]="position">
@@ -16,14 +16,14 @@
   </div>
 </div>
 <div class="overview-selecter" [style.border-color]="overviewIndex == -1 ? 'red' : 'transparent'" style="padding: 0px; width: 695px;">
-  <label style="font-size: smaller; font-weight: bolder;"><input type="radio" name="{{panelId}}_overviewIndex" value="-1" [checked]="overviewIndex == -1" (click)="overviewIndex = -1"> スタンド画像をオーバービューに使用しない</label>
+  <label style="font-size: smaller; font-weight: bolder;"><input type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="-1" [checked]="overviewIndex == -1" (click)="overviewIndex = -1"> スタンド画像をオーバービューに使用しない</label>
 </div>
 <hr>
 <div style="display: flex; flex-direction: row; flex-wrap: wrap">
   <div *ngFor="let standElement of standElements; let i = index" style="width: 700px">
     <div style="display: flex; flex-direction: row; justify-content: space-between;" [style.border-color]="overviewIndex == i ? 'red' : 'transparent'" class="overview-selecter">
       <div style="display: flex; align-items: center; justify-content: center;">
-        <input style="z-index: 10;" type="radio" name="{{panelId}}_overviewIndex" value="{{ i }}" [checked]="overviewIndex == i" (click)="overviewIndex = i">
+        <input style="z-index: 10;" type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="{{ i }}" [checked]="overviewIndex == i" (click)="overviewIndex = i">
       </div>
       <div style="margin-left: -1em; margin-right: -1em;">
         <stand-element #standElementComponent [standElement]="standElement" [imageList]="imageList" [gameCharacter]="character"></stand-element>

@@ -5,12 +5,12 @@
         <div>
           <div [ngStyle]="{'transform': isApplyRoll ? 'rotate(' + gameCharacter.roll + 'deg)' : ''}">
             <div class="inverser" [ngClass]="{inverse: isApplyImageEffect && gameCharacter.isInverse}">
-              <span class="aura" [ngClass]="{black: isApplyImageEffect && gameCharacter.aura == 0, blue: isApplyImageEffect && gameCharacter.aura == 1, 
+              <div class="aura" style="display: inline" [ngClass]="{black: isApplyImageEffect && gameCharacter.aura == 0, blue: isApplyImageEffect && gameCharacter.aura == 1, 
                 green: isApplyImageEffect && gameCharacter.aura == 2, cyan: isApplyImageEffect && gameCharacter.aura == 3, red: isApplyImageEffect && gameCharacter.aura == 4,
                 magenta: isApplyImageEffect && gameCharacter.aura == 5, yellow: isApplyImageEffect && gameCharacter.aura == 6, white: isApplyImageEffect && gameCharacter.aura == 7}">
                 <img class="stand-image" (dblclick)="openModal()" [src]="standImage.url | safe: 'resourceUrl'" draggable="false"
                   [ngClass]="{'black-paint': isApplyImageEffect && gameCharacter.isBlackPaint, 'hollow': isApplyImageEffect && gameCharacter.isHollow}">
-              </span>
+              </div>
             </div>
           </div>
           <button class="stand-image-button" (click)="openModal()" style="font-size: smaller; padding: 2px 3px;"><b>{{ isSpeakable ? '通常' : '' }}画像変更</b></button>
@@ -36,9 +36,9 @@
           </select>
         </ng-container>
         <ng-container *ngIf="nameElement">
-          <span style="font-size: smaller;">
+          <div style="display: inline; font-size: smaller;">
             <b style="margin-left: 1em;">Tag: </b><input type="text" style="width: 3em" [(ngModel)]="nameElement.currentValue" placeholder="Tag">
-          </span>
+          </div>
         </ng-container>
       </div>
       <div>
@@ -80,17 +80,17 @@
           </span>
         </ng-container>
         <ng-container *ngIf="heightElement">
-          <br><span style="white-space: nowrap; font-size: smaller">
+          <br><div style="display: inline; white-space: nowrap; font-size: smaller">
             <b style="display: inline-block; margin-left: 3px">Height (0=指定なし): </b>
             <input style="width: 130px" type="range" min="0" max="100" [(ngModel)]="heightElement.value">
             <input style="width: 3em; text-align: right;" type="number" min="0" max="200" [(ngModel)]="heightElement.value">
             <b style="display: inline-block; font-size: smaller; margin-left: 3px">%</b>
-          </span>
-          <span style="white-space: nowrap; margin-left: 0.8em; font-size: smaller">
+          </div>
+          <div style="display: inline; white-space: nowrap; margin-left: 0.8em; font-size: smaller">
             <b style="display: inline-block; margin-left: 3px">AdjY: </b>
             <input type="number" min="-100" max="100" style="width: 3.4em; text-align: right" [(ngModel)]="heightElement.currentValue">
             <b style="display: inline-block; font-size: smaller; margin-left: 3px">%</b>
-          </span>
+          </div>
         </ng-container>
       </div>
       <div *ngIf="postfixElement && (conditionTypeElement.value == standConditionType.Postfix || conditionTypeElement.value == standConditionType.PostfixOrImage || conditionTypeElement.value == standConditionType.PostfixAndImage)">
@@ -99,12 +99,12 @@
       <div *ngIf="conditionTypeElement.value == standConditionType.Image || conditionTypeElement.value == standConditionType.PostfixOrImage || conditionTypeElement.value == standConditionType.PostfixAndImage">
         <div *ngIf="imageList && imageList.length > 0" style="display: flex; flex-wrap: wrap; margin-right: -30px;">
           <ng-container *ngFor="let image of imageList">
-            <div *ngIf="0 < image.url.length" class="icon-image-box" [ngClass]="{'current-icon': isSelectedImage(image.identifier)}">
-              <img [src]="image.url | safe: 'resourceUrl'" [alt]="image.name" (click)="selectImage(image.identifier)" draggable="false" />
-            </div>
+            <span *ngIf="0 < image.url.length" style="display: block" class="icon-image-box" [ngClass]="{'current-icon': isSelectedImage(image.identifier)}">
+              <img [src]="image.url | safe: 'resourceUrl'" style="cursor: pointer" [alt]="image.name" (click)="selectImage(image.identifier)" draggable="false" draggable="false" />
+            </span>
           </ng-container>
         </div>
-        <div *ngIf="!imageList || imageList.length == 0">キャラクター画像、顔ICが設定されていません</div>
+        <div *ngIf="!imageList || imageList.length == 0"><b style="font-size: smaller; color: red">キャラクター画像、顔ICが設定されていません</b></div>
       </div>
     </div>
   </div>

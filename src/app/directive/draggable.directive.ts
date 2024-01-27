@@ -12,7 +12,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   @Input('draggable.disable') isDisable: boolean = false;
   @Input('draggable.bounds') boundsSelector: string = 'body';
   @Input('draggable.handle') handleSelector: string = '';
-  @Input('draggable.unhandle') unhandleSelector: string = 'input,textarea,button,select,option,span';
+  @Input('draggable.unhandle') unhandleSelector: string = 'input,textarea,button,select,option,span,label';
   @Input('draggable.stack') stackSelector: string = '';
   @Input('draggable.opacity') opacity: number = 0.7;
   @Input('draggable.allowOverHalf') allowOverHalf: boolean = false;
