@@ -182,12 +182,12 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.cutIns.length > 0) {
-      queueMicrotask(() => {
+    queueMicrotask(() => {
+      if (this.cutIns.length > 0) {
         this.onChangeCutIn(this.cutIns[0].identifier);
         this.cutInSelecter.nativeElement.selectedIndex = 0;
-      });
-    }
+      }
+    });
   }
 
   ngOnDestroy() {

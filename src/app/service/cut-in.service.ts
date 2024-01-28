@@ -16,7 +16,7 @@ export class CutInService {
   ) { }
   
   static nowShowingIdentifiers(): string[] {
-    return this.cutInComponentRefQueue
+    return CutInService.cutInComponentRefQueue
       .filter(cutInComponentRef => cutInComponentRef && cutInComponentRef.instance && cutInComponentRef.instance.cutIn && cutInComponentRef.instance.isVisible)
       .map(cutInComponentRef => cutInComponentRef.instance.cutIn.identifier);
   }
