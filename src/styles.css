@@ -190,6 +190,9 @@ span {
 label, input[type=checkbox], input[type=radio], option, select {
   cursor: pointer;
 }
+label:disabled, input[type=checkbox]:disabled, input[type=radio]:disabled, option:disabled, select:disabled {
+  cursor: default;
+}
 select[size] {
   cursor: default;
 }

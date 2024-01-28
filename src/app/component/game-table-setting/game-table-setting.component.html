@@ -18,7 +18,7 @@
       <div class="images-select">
         <div>
           <b>画像</b>
-          <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden; cursor: pointer">
+          <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">
             <span *ngIf="getHidden(tableBackgroundImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
               <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
             </span>
@@ -30,7 +30,7 @@
           <div *ngIf="!tableDistanceviewImage.url">
             <button (click)="openDistanceViewImageModal()" style="height: 120px;" [disabled]="!isEditable">背景画像を追加</button>
           </div>
-          <span *ngIf="tableDistanceviewImage.url" style="display: block; position: relative; overflow: hidden; cursor: pointer" (click)="openDistanceViewImageModal()">
+          <span *ngIf="tableDistanceviewImage.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
             <span *ngIf="getHidden(tableDistanceviewImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
               <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
             </span>
@@ -39,26 +39,42 @@
         </div>
       </div>
       <div>
-        <label class="self-setting">Name：<input [(ngModel)]="tableName" placeholder="Name" [disabled]="!isEditable" /></label>
+        <div style="display: inline" class="self-setting">Name：<input [(ngModel)]="tableName" placeholder="Name" [disabled]="!isEditable" /></div>
+      </div>
+      <div style="display: table; width: 90%">
+        <div style="display: table-row">
+          <div style="display: table-cell; width: 4em">
+            <div style="display: inline" class="self-setting">Width：</div>
+          </div>
+          <div style="display: table-cell">
+            <input [(ngModel)]="tableWidth" type="range" style="width: calc(100% - 4px)" title="{{tableWidth}}" min="{{minSize}}" max="{{maxSize}}" name="tableWidth" [disabled]="!isEditable" />
+          </div>
+          <div style="display: table-cell; width: 5em">
+            <input [(ngModel)]="tableWidth" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 5em;" [disabled]="!isEditable">
+          </div>
+        </div>
+        <div style="display: table-row">
+          <div style="display: table-cell; width: 4em">
+            <div style="display: inline" class="self-setting">Height：</div>
+          </div>
+          <div style="display: table-cell">
+            <input [(ngModel)]="tableHeight" type="range" style="width: calc(100% - 4px)" title="{{tableHeight}}" min="{{minSize}}" max="{{maxSize}}" name="tableHeight" [disabled]="!isEditable"/>
+          </div>
+          <div style="display: table-cell; width: 5em">
+            <input [(ngModel)]="tableHeight" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 5em;" [disabled]="!isEditable">
+          </div>
+        </div>
       </div>
       <div>
-        <label class="self-setting">Width：<input [(ngModel)]="tableWidth" type="range" title="{{tableWidth}}" min="{{minSize}}" max="{{maxSize}}" name="tableWidth" [disabled]="!isEditable" /></label>
-        <input [(ngModel)]="tableWidth" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 5em;" [disabled]="!isEditable">
-      </div>
-      <div>
-        <label class="self-setting">Height：<input [(ngModel)]="tableHeight" title="{{tableHeight}}" type="range" min="{{minSize}}" max="{{maxSize}}" name="tableHeight" [disabled]="!isEditable"/></label>
-        <input [(ngModel)]="tableHeight" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 5em;" [disabled]="!isEditable">
-      </div>
-      <div>
-        <label class="self-setting">グリッド：
+        <div style="display: inline" class="self-setting">グリッド：
           <select [(ngModel)]="tableGridType" name="tableGridType" [disabled]="!isEditable">
             <option value="-1">なし</option>
             <option value="0">スクエア</option>
             <option value="1">ヘクス（縦揃え）</option>
             <option value="2">ヘクス（横揃え）</option>
           </select>
-        </label>
-        <label class="self-setting" style="margin-left: 6px">色：
+        </div>
+        <div style="display: inline; margin-left: 1.2em" class="self-setting">色：
           <select [(ngModel)]="tableGridColor" name="tableGridColor" [disabled]="!isEditable || tableGridType == -1">
             <option value="#000000e6">黒</option>
             <option value="#0000dde6">青</option>
@@ -69,22 +85,22 @@
             <option value="#dddd00e6">黄</option>
             <option value="#dddddde6">白</option>
           </select>
-        </label>
+        </div>
       </div>
       <div>
         <label class="self-setting">
           <input type="checkbox" [(ngModel)]="tableGridNumberShow" name="tableGridNumberShow" [disabled]="!isEditable || tableGridType == -1" />
-          <span [ngClass]="{disabled: !isEditable || tableGridType == -1}">グリッドの座標番号を表示</span>
+          <span [ngClass]="{disabled: !isEditable || tableGridType == -1}" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">グリッドの座標番号を表示</span>
         </label>
       </div>
       <div>
-        <label class="self-setting">背景フィルタ：
+        <div style="display: inline" class="self-setting">背景フィルタ：
           <select [(ngModel)]="tableDistanceviewFilter" name="tableDistanceviewFilter" [disabled]="!isEditable">
             <option value="">なし</option>
             <option value="white">ホワイト</option>
             <option value="black">ブラック</option>
           </select>
-        </label>
+        </div>
       </div>
       <hr/>
       <div>
