@@ -50,7 +50,7 @@
               <option [value]="2" [selected]="cutInType == 2">開く（左右）</option>
               <option [value]="3" [selected]="cutInType == 3">開く（上下）</option>
             </select>
-            <label style="margin-left: 1em; font-size: smaller"><input name="borderStyle" type="checkbox" (click)="borderStyle = borderStyle == 0 ? 1 : 0" [checked]="borderStyle == 1" [attr.disabled]="!isEditable ? '' : null"><b>枠あり</b></label>
+            <label style="margin-left: 1em; font-size: smaller" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="borderStyle" type="checkbox" (click)="borderStyle = borderStyle == 0 ? 1 : 0" [checked]="borderStyle == 1" [attr.disabled]="!isEditable ? '' : null"><b>枠あり</b></label>
           </div>
           <div style="padding-left: 2px">
             <b style="font-size: smaller">チャット末尾: </b><br>
@@ -77,17 +77,33 @@
         <div class="section">
           <div>
             <b class="header">位置</b>
-            <label style="margin-left: 0.6em"><input name="cutInIsPreventOutBounds" type="checkbox" [(ngModel)]="cutInIsPreventOutBounds" [checked]="cutInIsPreventOutBounds" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>見切れ防止</b></label>
+            <label style="margin-left: 0.6em" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="cutInIsPreventOutBounds" type="checkbox" [(ngModel)]="cutInIsPreventOutBounds" [checked]="cutInIsPreventOutBounds" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>見切れ防止</b></label>
           </div>
-          <div style="padding-left: 1em">
-            <b>PosX: </b><input [(ngModel)]="cutInPosX" type="range" title="{{cutInPosX}}" min="{{minSize}}" max="{{maxSize}}" style="width: 180px" name="cutInPosX" [attr.disabled]="!isEditable ? '' : null" />
-            <input [(ngModel)]="cutInPosX" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
+          <div style="margin-left: 1em; display: table; width: 65%">
+            <div style="display: table-row">
+              <div style="display: table-cell; width: 3.5em">
+                <b>PosX: </b>
+              </div>
+              <div style="display: table-cell; width: calc(100% - 9.5em)">
+                <input [(ngModel)]="cutInPosX" type="range" style="width: 100%" title="{{cutInPosX}}" min="{{minSize}}" max="{{maxSize}}" name="cutInPosX" [attr.disabled]="!isEditable ? '' : null" />
+              </div>
+              <div style="display: table-cell; width: 6em; text-align: right">
+                <input [(ngModel)]="cutInPosX" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
+              </div>
+            </div>
+            <div style="display: table-row">
+              <div style="display: table-cell; width: 3.5em">
+                <b>PosY: </b>
+              </div>
+              <div style="display: table-cell; width: calc(100% - 9.5em)">
+                <input [(ngModel)]="cutInPosY" type="range" style="width: 100%" title="{{cutInPosY}}" min="{{minSize}}" max="{{maxSize}}" name="cutInPosY" [attr.disabled]="!isEditable ? '' : null" />
+              </div>
+              <div style="display: table-cell; width: 6em; text-align: right">
+                <input [(ngModel)]="cutInPosY" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
+              </div>
+            </div>
           </div>
-          <div style="padding-left: 1em">
-            <b>PosY: </b><input [(ngModel)]="cutInPosY" type="range" title="{{cutInPosY}}" min="{{minSize}}" max="{{maxSize}}" style="width: 180px" name="cutInPosY" [attr.disabled]="!isEditable ? '' : null" />
-            <input [(ngModel)]="cutInPosY" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
-          </div>
-          <div style="padding-left: 1em">
+          <div style="margin-left: 1em">
             <b>Z-Index (大きいものが前): </b><input [(ngModel)]="cutInZIndex" type="number" min="{{-maxSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable  || cutInVideoId ? '' : null">
             <label style="margin-left: 0.6em"><input name="cutInIsFrontOfStand" type="checkbox" [(ngModel)]="cutInIsFrontOfStand" [checked]="cutInIsFrontOfStand" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>スタンドの前面に表示</b></label>
           </div>
@@ -96,15 +112,31 @@
           <div>
             <b class="header">サイズ（幅、高さ共に0の場合は元画像のまま）</b>
           </div>
-          <div style="padding-left: 1em">
-            <b>Width (0=指定なし): </b><input [(ngModel)]="cutInWidth" type="range" title="{{cutInWidth}}" min="{{minSize}}" max="{{maxSize}}" style="width: 180px" name="cutInWidth" [attr.disabled]="!isEditable ? '' : null" />
-            <input [(ngModel)]="cutInWidth" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
+          <div style="margin-left: 1em; display: table; width: 90%">
+            <div style="display: table-row">
+              <div style="display: table-cell; width: 11.5em">
+                <b>Width (0=指定なし): </b>
+              </div>
+              <div style="display: table-cell; width: calc(100% - 15.5em)">
+                <input [(ngModel)]="cutInWidth" type="range" title="{{cutInWidth}}" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutInWidth" [attr.disabled]="!isEditable ? '' : null" />
+              </div>
+              <div style="display: table-cell; width: 6em; text-align: right">
+                <input [(ngModel)]="cutInWidth" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
+              </div>
+            </div>
+            <div style="display: table-row">
+              <div style="display: table-cell; width: 11.5em">
+                <b>Height (0=指定なし): </b>
+              </div>
+              <div style="display: table-cell; width: calc(100% - 15.5em)">
+                <input [(ngModel)]="cutInHeight" type="range" title="{{cutInHeight}}" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutIHeight" [attr.disabled]="!isEditable ? '' : null" />
+              </div>
+              <div style="display: table-cell; width: 6em; text-align: right">
+                <input [(ngModel)]="cutInHeight" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
+              </div>
+            </div>
           </div>
-          <div style="padding-left: 1em">
-            <b>Height (0=指定なし): </b><input [(ngModel)]="cutInHeight" type="range" title="{{cutInHeight}}" min="{{minSize}}" max="{{maxSize}}" style="width: 180px" name="cutIHeight" [attr.disabled]="!isEditable ? '' : null" />
-            <input [(ngModel)]="cutInHeight" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
-          </div>
-          <div style="padding-left: 1em">
+          <div style="margin-left: 1em">
             <b>元画像と縦横比が異なる場合: </b>
             <select [(ngModel)]="objectFitType" [attr.disabled]="(cutInVideoId && !cutInisSoundOnly) || !isEditable ? '' : null">
               <option [value]="0" [selected]="objectFitType == 0">伸縮する</option>
@@ -116,12 +148,12 @@
         <div class="section">
           <div>
             <b class="header">効果音・動画</b>
-            <label style="margin-left: 0.6em"><input name="cutInSEIsLoop" type="checkbox" [(ngModel)]="cutInSEIsLoop" [checked]="cutInSEIsLoop" [value]="true" [attr.disabled]="!isEditable || isPlaying ? '' : null"><b>繰り返し</b></label>
+            <label style="margin-left: 0.6em" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="cutInSEIsLoop" type="checkbox" [(ngModel)]="cutInSEIsLoop" [checked]="cutInSEIsLoop" [value]="true" [attr.disabled]="!isEditable || isPlaying ? '' : null"><b>繰り返し</b></label>
           </div>
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-sound" [(ngModel)]="cutInIsVideo" [checked]="!cutInIsVideo" [value]="false" [attr.disabled]="!isEditable || isPlaying ? '' : null">
-            <label for="{{panelId}}-media-sound"><b>音楽ファイル: </b></label>
-            <select #audioSelect
+            <label for="{{panelId}}-media-sound" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>音楽ファイル: </b></label>
+            <select #audioSelect [attr.disabled]="cutInIsVideo || !isEditable || isPlaying ? 'disabled' : null" 
               [style.min-width.em]="isValidAudio ? 10 : 5"
               [style.max-width.em]="isValidAudio ? 20 : 5"
               [(ngModel)]="cutInAudioIdentifier" 
@@ -138,7 +170,7 @@
           </div>
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-video" [(ngModel)]="cutInIsVideo" [checked]="cutInIsVideo" [value]="true" [attr.disabled]="!isEditable || isPlaying ? '' : null">
-            <label for="{{panelId}}-media-video"><b>動画URL: </b></label><input type="text" style="width: 24em" [(ngModel)]="cutInVideoURL" [attr.disabled]="!cutInIsVideo || !isEditable || isPlaying ? '' : null">
+            <label for="{{panelId}}-media-video" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>動画URL: </b></label><input type="text" style="width: 24em" [(ngModel)]="cutInVideoURL" [attr.disabled]="!cutInIsVideo || !isEditable || isPlaying ? 'disabled' : null">
           </div>
           <div style="padding-left: 2.5em">
             <a href="https://www.youtube.com/terms" target="_blank" class="outer-link" (click)="openYouTubeTerms()">YouTube 利用規約</a>
