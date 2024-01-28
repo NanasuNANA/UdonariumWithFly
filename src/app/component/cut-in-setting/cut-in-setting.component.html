@@ -85,7 +85,7 @@
                 <b>PosX: </b>
               </div>
               <div style="display: table-cell; width: calc(100% - 9.5em)">
-                <input [(ngModel)]="cutInPosX" type="range" style="width: 100%" title="{{cutInPosX}}" min="{{minSize}}" max="{{maxSize}}" name="cutInPosX" [attr.disabled]="!isEditable ? '' : null" />
+                <input [(ngModel)]="cutInPosX" type="range" style="width: 100%" [title]="cutInPosX + '%'" min="{{minSize}}" max="{{maxSize}}" name="cutInPosX" [attr.disabled]="!isEditable ? '' : null" />
               </div>
               <div style="display: table-cell; width: 6em; text-align: right">
                 <input [(ngModel)]="cutInPosX" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
@@ -96,7 +96,7 @@
                 <b>PosY: </b>
               </div>
               <div style="display: table-cell; width: calc(100% - 9.5em)">
-                <input [(ngModel)]="cutInPosY" type="range" style="width: 100%" title="{{cutInPosY}}" min="{{minSize}}" max="{{maxSize}}" name="cutInPosY" [attr.disabled]="!isEditable ? '' : null" />
+                <input [(ngModel)]="cutInPosY" type="range" style="width: 100%" [title]="cutInPosY + '%'" min="{{minSize}}" max="{{maxSize}}" name="cutInPosY" [attr.disabled]="!isEditable ? '' : null" />
               </div>
               <div style="display: table-cell; width: 6em; text-align: right">
                 <input [(ngModel)]="cutInPosY" type="number" min="{{minSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
@@ -118,7 +118,7 @@
                 <b>Width (0=指定なし): </b>
               </div>
               <div style="display: table-cell; width: calc(100% - 15.5em)">
-                <input [(ngModel)]="cutInWidth" type="range" title="{{cutInWidth}}" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutInWidth" [attr.disabled]="!isEditable ? '' : null" />
+                <input [(ngModel)]="cutInWidth" type="range" [title]="cutInWidth ? cutInWidth + '%' : '指定なし'" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutInWidth" [attr.disabled]="!isEditable ? '' : null" />
               </div>
               <div style="display: table-cell; width: 6em; text-align: right">
                 <input [(ngModel)]="cutInWidth" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
@@ -129,7 +129,7 @@
                 <b>Height (0=指定なし): </b>
               </div>
               <div style="display: table-cell; width: calc(100% - 15.5em)">
-                <input [(ngModel)]="cutInHeight" type="range" title="{{cutInHeight}}" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutIHeight" [attr.disabled]="!isEditable ? '' : null" />
+                <input [(ngModel)]="cutInHeight" type="range" [title]="cutInHeight ? cutInHeight + '%' : '指定なし'" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutIHeight" [attr.disabled]="!isEditable ? '' : null" />
               </div>
               <div style="display: table-cell; width: 6em; text-align: right">
                 <input [(ngModel)]="cutInHeight" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
