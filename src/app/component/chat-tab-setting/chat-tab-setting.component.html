@@ -9,17 +9,17 @@
   </div>
   <div class="flex-item">
     <ng-container *ngIf="!isEmpty && selectedTab">
-      <div><label><b style="font-size: smaller">タブ名: </b>
-        <input style="width: 200px" [(ngModel)]="tabName" placeholder="Name" [attr.disabled]="!isEditable ? '' : null" /></label>
+      <div><b style="font-size: smaller">タブ名: </b>
+        <input style="width: 200px" [(ngModel)]="tabName" placeholder="Name" [attr.disabled]="!isEditable ? '' : null" />
       </div>
       <div style="font-weight: bolder; font-size: smaller; padding-top: 3px">
-        <label>
+        <label [style.cursor]="isEditable ? 'pointer' : 'default'">
           <input type="checkbox" [(ngModel)]="isUseStandImage" checked="{{isUseStandImage ? 'checked' : ''}}" (change)="isUseStandImage = (isUseStandImage ? true : false)" [attr.disabled]="!isEditable ? '' : null" />
           <span style="text-shadow: #111 0 0 1px">💭</span>、カットイン、スタンド有効
         </label>
       </div>
       <div style="font-weight: bolder; font-size: smaller; padding-top: 3px">
-        <label>
+        <label [style.cursor]="isEditable ? 'pointer' : 'default'">
           <input type="checkbox" [(ngModel)]="recieveOperationLogLevel" checked="{{recieveOperationLogLevel > 0 ? 'checked' : ''}}" (change)="recieveOperationLogLevel = (recieveOperationLogLevel > 0 ? 1 : 0)" [attr.disabled]="!isEditable ? '' : null" />
           操作ログを受信する
         </label>
