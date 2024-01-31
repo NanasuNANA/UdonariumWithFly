@@ -1,4 +1,5 @@
-<img style="visibility: hidden" [src]="backgroundImageUrl | safe: 'resourceUrl'" (load)="isBackgroundImageLoaded = true">
+<img style="visibility: hidden; pointer-events: none; position: absolute" [src]="backgroundImageUrl | safe: 'resourceUrl'" (load)="isBackgroundImageLoaded = true">
+<img style="visibility: hidden; pointer-events: none; position: absolute" [src]="backgroundImageUrl2 | safe: 'resourceUrl'">
 <div class="background-image is-pointer-events-none" [ngClass]="[(backgroundFilterType ? 'is-filter' : ''), (isStealthMode && !isGMMode ? 'is-hide-in' : ''), backgroundFilterType]"
 [style.background-image]="backgroundImageCss | safe: 'style'"></div>
 <div class="component is-fill is-perspective" [ngClass]="{'is-grabbing': isPointerDragging}" #root>
