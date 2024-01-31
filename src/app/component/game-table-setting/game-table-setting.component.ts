@@ -34,6 +34,9 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   get tableDistanceviewImage(): ImageFile {
     return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier : null);
   }
+  get tableDistanceviewImage2(): ImageFile {
+    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier2 : null);
+  }
 
   get tableName(): string { return this.selectedTable.name; }
   set tableName(tableName: string) { if (this.isEditable) this.selectedTable.name = tableName; }
@@ -185,6 +188,16 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.selectedTable || !value) return;
       this.selectedTable.backgroundImageIdentifier = value;
+    });
+  }
+
+  openDistanceViewImageModal2() {
+    if (this.isDeleted) return;
+    let currentImageIdentifires: string[] = [];
+    if (this.selectedTable && this.selectedTable.backgroundImageIdentifier2) currentImageIdentifires = [this.selectedTable.backgroundImageIdentifier2];
+    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
+      if (!this.selectedTable || !value) return;
+      this.selectedTable.backgroundImageIdentifier2 = value;
     });
   }
 

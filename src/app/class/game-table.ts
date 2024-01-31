@@ -25,6 +25,7 @@ export class GameTable extends ObjectNode {
   @SyncVar() gridSize: number = 50;
   @SyncVar() imageIdentifier: string = 'imageIdentifier';
   @SyncVar() backgroundImageIdentifier: string = 'imageIdentifier';
+  @SyncVar() backgroundImageIdentifier2: string = 'imageIdentifier';
   @SyncVar() backgroundFilterType: FilterType = FilterType.NONE;
   @SyncVar() selected: boolean = false;
   @SyncVar() gridType: GridType = GridType.SQUARE;

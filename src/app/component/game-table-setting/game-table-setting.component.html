@@ -3,7 +3,7 @@
     <div>
       <button style="margin-bottom: 2px; font-size: smaller" (click)="createGameTable()">新しいテーブルを作る</button>
     </div>
-    <select #select style="width: 100%; max-width: 155px" size="10" (change)="selectGameTable(select.value)" [ngModel]="selectedTable?.identifier">
+    <select #select style="width: 100%; max-width: 155px" size="19" (change)="selectGameTable(select.value)" [ngModel]="selectedTable?.identifier">
       <option *ngFor="let gameTable of getGameTables()" value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name == '' ? 'gray' : ''">{{gameTable.name == '' ? '(無名のテーブル)' : gameTable.name}}</option>
     </select>
   </div>
@@ -25,16 +25,30 @@
             <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableBackgroundImage) }" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
           </span>
         </div>
+      </div>
+      <div class="images-select">
         <div>
-          <b>背景</b>
+          <b>背景１（前景）</b>
           <div *ngIf="!tableDistanceviewImage.url">
-            <button (click)="openDistanceViewImageModal()" style="height: 120px;" [disabled]="!isEditable">背景画像を追加</button>
+            <button (click)="openDistanceViewImageModal()" style="height: 120px;" [disabled]="!isEditable">背景１画像を追加</button>
           </div>
           <span *ngIf="tableDistanceviewImage.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
             <span *ngIf="getHidden(tableDistanceviewImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
               <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
             </span>
             <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage) }" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
+          </span>
+        </div>
+        <div>
+          <b>背景２（最背面）</b>
+          <div *ngIf="!tableDistanceviewImage2.url">
+            <button (click)="openDistanceViewImageModal2()" style="height: 120px;" [disabled]="!isEditable">背景２画像を追加</button>
+          </div>
+          <span *ngIf="tableDistanceviewImage2.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
+            <span *ngIf="getHidden(tableDistanceviewImage2)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
+              <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
+            </span>
+            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage2) }" [src]="tableDistanceviewImage2.url | safe: 'resourceUrl'" draggable="false">
           </span>
         </div>
       </div>

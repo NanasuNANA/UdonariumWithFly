@@ -1,5 +1,6 @@
+<img style="visibility: hidden" [src]="backgroundImageUrl | safe: 'resourceUrl'" (load)="isBackgroundImageLoaded = true">
 <div class="background-image is-pointer-events-none" [ngClass]="[(backgroundFilterType ? 'is-filter' : ''), (isStealthMode && !isGMMode ? 'is-hide-in' : ''), backgroundFilterType]"
-[style.background-image]="'url(' + backgroundImageUrl + ')' | safe: 'style'"></div>
+[style.background-image]="backgroundImageCss | safe: 'style'"></div>
 <div class="component is-fill is-perspective" [ngClass]="{'is-grabbing': isPointerDragging}" #root>
   <div class="component-content is-fill is-3d" #gameTable>
     <div id="app-game-table" class="game-table table-image is-3d" [style.background-image]="'url(' + tableImageUrl + ')' | safe: 'style'" #gameObjects>
