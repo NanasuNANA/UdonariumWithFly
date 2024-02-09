@@ -584,10 +584,10 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                     if (!rollResult.isEmptyDice) isDiceRoll = true;
                   }
-                  console.log(delayRef)
+                  //console.log(delayRef)
                   loggingTexts.push(loggingText);
                   delayRefs.push(delayRef != null ? delayRef : '');
-                  console.log(delayRefs)
+                  //console.log(delayRefs)
                 } catch (error) {
                   // 横着、例外設計すべき
                   if (error instanceof Error) throw error;
