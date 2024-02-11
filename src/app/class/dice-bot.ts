@@ -670,7 +670,7 @@ export class DiceBot extends GameObject {
           }
           return parentheses ? '🎲' + parentheses[1] : resultFragment;
         } else if (i == (a.length - 1)) {
-          return a.length <= 2 ?  resultFragment : `###${resultFragment}###`;
+          return resultFragment;
         } else if (i == 1 && (addDiceInfos.length || barabaraDiceInfos.length || rerollDiceInfos.length || upperDiceInfos.length)) {
           try {
             let tmpString = resultFragment;
