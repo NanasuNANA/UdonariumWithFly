@@ -193,11 +193,12 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   helpStandSeteing() {
     let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 590 };
+    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 620 };
     let textView = this.panelService.open(TextViewComponent, option);
     textView.title = 'スタンド設定ヘルプ';
     textView.text = 
 `　キャラクターのスタンドの名前、位置と画像の高さ（それぞれ画面サイズに対する相対指定）、チャット送信時にスタンドが表示される条件を設定できます。
+　なお、他のBCDiceを利用するオンラインセッションツールとの互換性のため、チャット末尾一致を判定する際、両側にスペースが入った “ ＞ ” と “ → ” を同値とみなします。
 
 　スタンドに名前を設定した場合、チャットウィンドウ、チャットパネルのリストに表示され、選択可能になります。また、タグを設定した場合、異なるタグでは同じキャラクターであっても登場、退去のアニメーションが行われます。
 

@@ -56,7 +56,7 @@ export class CutInList extends ObjectNode implements InnerXml {
 
   // マッチしたものから、タグが空のものすべて、同じタグのものはランダムに1個づつを返す
   matchCutInInfo(text: string): CutInInfo {
-    text = StringUtil.toHalfWidth(text).toUpperCase().trimRight();
+    //text = StringUtil.toHalfWidth(text).toUpperCase().trimRight();
     let textTagMatch = '';
     let tagMatch = new Map<string, CutIn>();
     const matchCutIn: CutIn[] = [];
@@ -67,7 +67,8 @@ export class CutInList extends ObjectNode implements InnerXml {
       if (!cutIn) continue;
       let isMatch = false;
       for (const postfix of cutIn.postfixes) {
-        if (text.endsWith(StringUtil.toHalfWidth(postfix).toUpperCase().trimRight())) {
+        if (StringUtil.toHalfWidth(text).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).toUpperCase().trimRight())
+          || StringUtil.toHalfWidth(text.replace(/\s＞\s/g, ' → ')).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).toUpperCase().trimRight())) {
           isMatch = true;
           if ((postfix.slice(0, 1) == '@' || postfix.slice(0, 1) == '＠') && textTagMatch.length < postfix.length) textTagMatch = postfix;
         }

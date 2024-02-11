@@ -409,7 +409,7 @@ export class DiceBot extends GameObject {
     const isFumble: boolean = rollResult.isFumble;
 
     if (result.length < 1) return;
-    if (!rollResult.isDiceRollTable) result = DiceBot.formatRollResult(result, id);
+    //if (!rollResult.isDiceRollTable) result = DiceBot.formatRollResult(result, id);
 
     let tag = 'system';
     if (isSecret) tag += ' secret';
@@ -519,6 +519,8 @@ export class DiceBot extends GameObject {
     if (matchMostLongText && diceBotMessage.text) {
       diceBotMessage.text = diceBotMessage.text.slice(0, diceBotMessage.text.length - matchMostLongText.length);
     }
+    // フォーマット
+    if (!rollResult.isDiceRollTable) diceBotMessage.text = DiceBot.formatRollResult(diceBotMessage.text, id);
 
     if (originalMessage.to != null && 0 < originalMessage.to.length) {
       diceBotMessage.to = originalMessage.to;
@@ -668,7 +670,7 @@ export class DiceBot extends GameObject {
           }
           return parentheses ? '🎲' + parentheses[1] : resultFragment;
         } else if (i == (a.length - 1)) {
-          return resultFragment;
+          return a.length <= 2 ?  resultFragment : `###${resultFragment}###`;
         } else if (i == 1 && (addDiceInfos.length || barabaraDiceInfos.length || rerollDiceInfos.length || upperDiceInfos.length)) {
           try {
             let tmpString = resultFragment;
@@ -801,7 +803,7 @@ export class DiceBot extends GameObject {
               if (diceString && (parseInt(diceString) === 20 || parseInt(diceString) === 1)) resultFragment = `###${diceString}###${modifier ? modifier : ''}`;
             }
           }
-        } 
+        }
         return resultFragment;
       }).join(' → ');
     }).join("\n");
