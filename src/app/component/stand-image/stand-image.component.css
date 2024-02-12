@@ -192,17 +192,16 @@
   display: block;
   position: relative;
   border: 0px none;
-  width: 48px;
-  height: 48px;
-  max-width: 48px;
-  max-height: 48px;
+  width: 50px;
+  height: 50px;
+  max-width: 50px;
+  max-height: 50px;
   overflow: hidden;
   left: -24px;
   top: -32px;
   margin-right: -16px;
   margin-bottom: -32px;
   float: left;
-  backface-visibility: hidden;
   /* background: linear-gradient(-30deg, rgb(240, 218, 189), rgb(255, 244, 232)); */
 }
 
@@ -212,7 +211,7 @@
   vertical-align: bottom;
   object-fit: cover;
   object-position: 50% 0%;
-  border-radius: 0.4em;
+  border-radius: 0.5rem;
 }
 
 .inverse {
