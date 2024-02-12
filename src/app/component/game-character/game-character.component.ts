@@ -155,7 +155,6 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   viewRotateX = 50;
   viewRotateZ = 10;
   heightWidthRatio = 1.5;
-  //isRubied = false;
 
   set dialog(dialog) {
     if (!this.gameCharacter || this.gameCharacter.isHideIn) return;
@@ -178,19 +177,17 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
         rubyLength += ary[2].length;
       }
     }
-    //if (rubys.length > 0) this.isRubied = true; 
 
     let speechDelay = 1000 / Array.from(text).length > 36 ? 1000 / Array.from(text).length : 36;
     if (speechDelay > 200) speechDelay = 200;
     this.dialogTimeOutId = setTimeout(() => {
-      this._dialog = null;
+      this.gameCharacter.dialog = null;
       this.gameCharacter.text = '';
       this.gameCharacter.isEmote = false; 
-      //this.isRubied = false; 
       this.changeDetector.markForCheck();
     }, Array.from(text).length * speechDelay + 6000);
 
-    this._dialog = dialog;
+    this.gameCharacter.dialog = dialog;
     this.gameCharacter.isEmote = isEmote;
     count = 0;
     let countLength = 0;
@@ -232,7 +229,6 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
         if (count >= charAry.length) {
           clearInterval(this.chatIntervalId);
         }
-        //countLength += c.length;
       }, speechDelay);
     }
   }
@@ -256,11 +252,10 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get dialog() {
-    return this._dialog;
+    return this.gameCharacter.dialog;
   }
 
   selected = false;
-  private _dialog = null;
   private dialogTimeOutId = null;
   private chatIntervalId = null;
 
@@ -474,7 +469,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       .on('FAREWELL_CHAT_BALLOON', -1000, event => {
         if (this.gameCharacter && this.gameCharacter.identifier == event.data.characterIdentifier) {
           this.ngZone.run(() => {
-            this._dialog = null;
+            this.gameCharacter.dialog = null;
             this.gameCharacter.text = '';
             this.gameCharacter.isEmote = false;
             this.changeDetector.markForCheck();

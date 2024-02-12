@@ -149,18 +149,17 @@ export class StandImageComponent implements OnInit, OnDestroy {
         rubyLength += ary[2].length;
       }
     }
-    //if (rubys.length > 0) this.isRubied = true; 
+ 
     let speechDelay = 1000 / Array.from(text).length > 36 ? 1000 / Array.from(text).length : 36;
     if (speechDelay > 200) speechDelay = 200;
     this._dialogTimeoutId = setTimeout(() => {
-      //this.dialog = null;
+      this.gameCharacter.dialog = null;
       this.gameCharacter.text = '';
       this.gameCharacter.isEmote = false; 
-      //this.isRubied = false; 
       //this.changeDetector.markForCheck();
     }, Array.from(text).length * speechDelay + 6000);
 
-    //this.dialog = dialog;
+    this.gameCharacter.dialog = dialog;
     this.gameCharacter.isEmote = isEmote;
     count = 0;
     let countLength = 0;
@@ -202,9 +201,13 @@ export class StandImageComponent implements OnInit, OnDestroy {
         if (count >= charAry.length) {
           clearInterval(this._chatIntervalId);
         }
-        //countLength += c.length;
       }, speechDelay);
     }
+  }
+
+  get dialog() {
+    if (!this.gameCharacter) return null;
+    return this.gameCharacter.dialog;
   }
 
   get dialogText(): string {
@@ -236,6 +239,20 @@ export class StandImageComponent implements OnInit, OnDestroy {
     if (!this.standElement) return false;
     let elm = this.standElement.getFirstElementByName('speakingImageIdentifier');
     return elm && elm.value && elm.value !== ImageFile.Empty.identifier;
+  }
+
+  get dialogFaceIcon(): ImageFile {
+    if (!this.dialog || !this.dialog.faceIconIdentifier) return null;
+    return ImageStorage.instance.get(<string>this.dialog.faceIconIdentifier);
+  }
+
+  get isUseFaceIcon(): ImageFile {
+    return this.dialog && this.dialog.faceIconIdentifier;
+  }
+  
+  get isRubied(): boolean {
+    if (!this.gameCharacter || !this.gameCharacter.text) return false;
+    return -1 < this.dialogText.indexOf('<ruby>');
   }
 
   ngOnInit(): void {

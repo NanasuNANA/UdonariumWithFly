@@ -23,6 +23,7 @@ export class GameCharacter extends TabletopObject {
   @SyncVar() owner: string = '';
   
   text = '';
+  dialog = null;
   isEmote = false;
   isLoaded = false;
 
