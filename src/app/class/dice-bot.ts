@@ -52,7 +52,7 @@ export class DiceBot extends GameObject {
   //public static loader = new BCDiceLoader();
 
   public static apiUrl: string = null;
-  public static apiVersion: number = 1;
+  public static apiVersion: number = 2;
   public static adminUrl: string = null;
 
   public static diceBotInfos: DiceBotInfo[] = [];

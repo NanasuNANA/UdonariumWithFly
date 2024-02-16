@@ -43,7 +43,7 @@ export class AppConfigService {
     },
     dice: {
       url: '',
-      api: 1
+      api: 2
     }
   }
 
