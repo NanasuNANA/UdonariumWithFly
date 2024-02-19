@@ -91,10 +91,13 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   private _currentTable: GameTable;
   private _currentTableImage: ImageFile;
   private _currentTableImageUrl: string = '';
+  private _currentTableImageState = 0;
   private _currentBackgroundImage :ImageFile;
   private _currentBackgroundImageUrl: string = '';
+  private _currentBackgroundImageState = 0;
   private _currentBackgroundImage2 :ImageFile;
   private _currentBackgroundImageUrl2: string = '';
+  private _currentBackgroundImageState2 = 0;
   isBackgroundImageLoaded = false;
   isBackgroundImageLoaded2 = false;
   get tableImageUrls(): string[] {
@@ -103,18 +106,20 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     let revokeBackgroundImageUrl2 = '';
     const isFlash = (this.currentTable?.identifier != this._currentTable?.identifier);
     this._currentTable = this.currentTable;
-    if (isFlash || this._currentTableImage?.identifier != this.tableImage.identifier) {
+    if (isFlash || this._currentTableImage?.identifier != this.tableImage.identifier || this._currentTableImageState != this.tableImage.state) {
       this._currentTableImage = this.tableImage;
-      if (this.tableImage.state === ImageState.COMPLETE) {
+      if (this.tableImage.state === ImageState.THUMBNAIL || this.tableImage.state === ImageState.COMPLETE) {
+        this._currentTableImageState = this.tableImage.state;
         if (this._currentTableImageUrl) revokeTableImageUrl = this._currentTableImageUrl;
         this._currentTableImageUrl = URL.createObjectURL(this.tableImage.blob);
       } else {
         this._currentTableImageUrl = this.tableImage.url;
       }
     }
-    if (isFlash || this._currentBackgroundImage?.identifier != this.backgroundImage.identifier) {
+    if (isFlash || this._currentBackgroundImage?.identifier != this.backgroundImage.identifier || this._currentBackgroundImageState != this.backgroundImage.state) {
       this._currentBackgroundImage = this.backgroundImage;
-      if (this.backgroundImage.state === ImageState.COMPLETE) {
+      if (this.backgroundImage.state === ImageState.THUMBNAIL || this.backgroundImage.state === ImageState.COMPLETE) {
+        this._currentBackgroundImageState = this.backgroundImage.state;
         if (this._currentBackgroundImageUrl) revokeBackgroundImageUrl = this._currentBackgroundImageUrl;
         this.isBackgroundImageLoaded = false;
         this._currentBackgroundImageUrl = URL.createObjectURL(this.backgroundImage.blob);
@@ -122,9 +127,10 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
         this._currentBackgroundImageUrl = this.backgroundImage.url;
       }
     }
-    if (isFlash || this._currentBackgroundImage2?.identifier != this.backgroundImage2.identifier) {
+    if (isFlash || this._currentBackgroundImage2?.identifier != this.backgroundImage2.identifier || this._currentBackgroundImageState2 != this.backgroundImage2.state) {
       this._currentBackgroundImage2 = this.backgroundImage2;
-      if (this.backgroundImage2.state === ImageState.COMPLETE) {
+      if (this.backgroundImage2.state === ImageState.THUMBNAIL || this.backgroundImage2.state === ImageState.COMPLETE) {
+        this._currentBackgroundImageState2 = this.backgroundImage2.state;
         if (this._currentBackgroundImageUrl2) revokeBackgroundImageUrl2 = this._currentBackgroundImageUrl2;
         this.isBackgroundImageLoaded2 = false;
         this._currentBackgroundImageUrl2 = URL.createObjectURL(this.backgroundImage2.blob);

@@ -108,12 +108,14 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   private _tmpImages: ImageFile[] = [];
   private _tmpImageUrls: string[] = ['', ''];
+  private _tmpImageState: number[] = [0, 0];
   private _tmpUrl(pos: number) {
     const imageFiles = [this.floorImage, this.wallImage];
     let revokeUrl = '';
-    if (this._tmpImages[pos]?.identifier != imageFiles[pos].identifier) {
+    if (this._tmpImages[pos]?.identifier != imageFiles[pos].identifier || this._tmpImageState[pos] != imageFiles[pos].state) {
       this._tmpImages[pos] = imageFiles[pos];
-      if (this._tmpImages[pos].state === ImageState.COMPLETE) {
+      if (this._tmpImages[pos].state === ImageState.THUMBNAIL || this._tmpImages[pos].state === ImageState.COMPLETE) {
+        this._tmpImageState[pos] = this._tmpImages[pos].state;
         if (this._tmpImageUrls[pos]) revokeUrl = this._tmpImageUrls[pos];
         this._tmpImageUrls[pos] = URL.createObjectURL(this._tmpImages[pos].blob);
       } else {

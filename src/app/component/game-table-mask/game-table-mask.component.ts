@@ -219,11 +219,13 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   
   private _currentimageFile: ImageFile;
   private _currentImageFileUrl: string = '';
+  private _currentImageFileState = 0;
   get imageFileUrl(): string {
     let revokeUrl = '';
-    if (this.imageFile && this.imageFile.identifier != this._currentimageFile?.identifier) {
+    if (this.imageFile && (this.imageFile.identifier != this._currentimageFile?.identifier || this.imageFile.state != this._currentImageFileState)) {
       this._currentimageFile = this.imageFile;
-      if (this._currentimageFile.state === ImageState.COMPLETE) {
+      if (this._currentimageFile.state === ImageState.THUMBNAIL || this._currentimageFile.state === ImageState.COMPLETE) {
+        this._currentImageFileState = this._currentimageFile.state;
         if (this._currentImageFileUrl) revokeUrl = this._currentImageFileUrl;
         this._currentImageFileUrl = URL.createObjectURL(this._currentimageFile.blob);
       } else {
