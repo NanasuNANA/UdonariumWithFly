@@ -94,7 +94,7 @@ export class StandList extends DataElement {
           for (let postfix of postfixes.split(/[\r\n]+/g)) {
             if (postfix == null || postfix.trim().length == 0) continue;
             if (StringUtil.toHalfWidth(text).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).trimRight().toUpperCase())
-              || StringUtil.toHalfWidth(text.replace(/\s＞\s/g, ' → ')).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).trimRight().toUpperCase())) {
+              || StringUtil.toHalfWidth(text.replace(/(\s|^)＞\s/g, '$1→ ')).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).trimRight().toUpperCase())) {
               if ((postfix.slice(0, 1) == '@' || postfix.slice(0, 1) == '＠') && textTagMatch.length < postfix.length) textTagMatch = postfix;
               conditionPostfix = true;
             }

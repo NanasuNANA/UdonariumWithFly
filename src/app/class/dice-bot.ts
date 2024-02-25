@@ -650,9 +650,15 @@ export class DiceBot extends GameObject {
       let barabaraDiceInfos = [];
       let rerollDiceInfos = [];
       let upperDiceInfos = [];
-      return resultLine.split(' ＞ ').map((resultFragment, i, a) => {
+      if (id === 'Cthulhu7th' && /^\d+(:?回目|次|번째): ＞/.test(resultLine)) resultLine = '🎲' + resultLine; 
+      return resultLine.split(/\s＞\s/).map((resultFragment, i, a) => {
         if (a.length === 1) return resultFragment;
         if (i == 0) {
+          if ((id === 'Cthulhu' && /\d\) (?:故障ナンバー|故障率|고장넘버)\[\-?\d+\]/.test(resultFragment))
+            || (id === 'Cthulhu7th' && /\d\) (?:ボーナス・ペナルティダイス|獎勵、懲罰骰値|보너스, 패널티 주사위)\[\-?\d+\]/.test(resultFragment))
+          ) {
+            return '🎲' + resultFragment;
+          }
           const regExp1 = (DiceBot.apiUrl && DiceBot.apiVersion == 1) ? /^(?:\: )\(([A-Z\d\+\-\*\/=\(\),\[\]\<\>@#\$]+)\)$/i : /^\(([A-Z\d\+\-\*\/=\(\),\[\]\<\>@#\$]+)\)$/i;
           const regExp2 = (DiceBot.apiUrl && DiceBot.apiVersion == 1) ? /^(?:\: )\((CHOICE(?:\d+)?[\[\( ].+)\)$/i : /^\((CHOICE(?:\d+)?[\[\( ].+)\)$/i;
           const parentheses = resultFragment.match(regExp1) || resultFragment.match(regExp2);
@@ -805,7 +811,7 @@ export class DiceBot extends GameObject {
           }
         }
         return resultFragment;
-      }).join(' → ');
+      }).join(' ＞ ').replace(/(\s|^)＞\s/g, '$1→ ');
     }).join("\n");
   }
 
