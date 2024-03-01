@@ -645,13 +645,22 @@ export class DiceBot extends GameObject {
 
   private static formatRollResult(result: string, id='DiceBot'): string {
     if (result == null) return '';
+    let coc7thFARCount = 0; //ToDo CoC他ゲームごとの処理メソッド分離
+    let coc7thBonusDiceCount = 0; //ToDo CoC他ゲームごとの処理メソッド分離
     return result.split("\n").map(resultLine => {
       let addDiceInfos = [];
       let barabaraDiceInfos = [];
       let rerollDiceInfos = [];
       let upperDiceInfos = [];
-      if (id === 'Cthulhu7th' && /^\d+(:?回目|次|번째): ＞/.test(resultLine)) resultLine = '🎲' + resultLine; 
+      if (id === 'Cthulhu7th' && /^\d+(:?回目|次|번째): ＞/.test(resultLine)) {
+        coc7thFARCount += 1;
+        resultLine = '🎲' + resultLine;
+      } 
       return resultLine.split(/\s＞\s/).map((resultFragment, i, a) => {
+        let matchBonusDiceCount = null;
+        if (id === 'Cthulhu7th' && (matchBonusDiceCount = /(?:ボーナス・ペナルティダイス|獎勵、懲罰骰値|보너스, 패널티 주사위)\[(?<bonusDice>\-?\d+)\]/.exec(resultFragment))) {
+          if (matchBonusDiceCount && matchBonusDiceCount.groups) coc7thBonusDiceCount = +matchBonusDiceCount.groups['bonusDice'];
+        }
         if (a.length === 1) return resultFragment;
         if (i == 0) {
           if ((id === 'Cthulhu' && /\d\) (?:故障ナンバー|故障率|고장넘버)\[\-?\d+\]/.test(resultFragment))
@@ -760,6 +769,30 @@ export class DiceBot extends GameObject {
               return diceStr;
             }).join(',');
           }
+        } else if (id == 'Cthulhu7th' && (i == 1 || i == 2)) {
+          console.log(resultFragment)
+          resultFragment = resultFragment.replace(/(?:\d+, )*\d+/, diceAry => {
+            const isBonus = (coc7thBonusDiceCount - (coc7thFARCount > 0 ? (coc7thFARCount - 1) : 0) >= 0);
+            let minMax = (isBonus ? 101 : -1);
+            const diceNumbers = diceAry.split(',').map(str => {
+              let num = +str.trim();
+              if (isBonus && minMax > num) minMax = num;
+              if (!isBonus && minMax < num) minMax = num;
+              return num;
+            });
+            let isOpt = true;
+            return diceNumbers.map(num => {
+              let numStr = num == 1 ? `###${num}###` : num.toString();
+              if (diceNumbers.length > 1) {
+                if (isOpt && num == minMax) {
+                  isOpt = false;
+                } else {
+                  numStr = `~~~${numStr}~~~`
+                }
+              }
+              return numStr;
+            }).join(', ');
+          });
         } else if (id == 'DoubleCross' && i == 1) {
           resultFragment = resultFragment.split('+').map((flagment) => {
             const match1 = flagment.match(/(?<result>\d{1,2})\[(?<diceArrayString>\d{1,2}(?:,\d{1,2})*)\]/);
@@ -811,7 +844,7 @@ export class DiceBot extends GameObject {
           }
         }
         return resultFragment;
-      }).join(' ＞ ').replace(/(\s|^)＞\s/g, '$1→ ');
+      }).join(' ＞ ').replace(/(\s|^)＞\s/g, '$1→ ').replace(/\((\d+)(D)(\d+)＞(\d)/ig, '(🎲$1$2$3→$4');
     }).join("\n");
   }
 
