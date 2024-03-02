@@ -1,6 +1,6 @@
 {
   "name": "udonarium_with_fly",
-  "version": "1.9.5",
+  "version": "1.9.5c",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -53,7 +53,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/lzbase62": "^2.0.3",
     "@types/msgpack-lite": "^0.1.11",
-    "@types/node": "^12.20.13",
+    "@types/node": "^12.20.55",
     "@types/pako": "^2.0.3",
     "@types/vkbeautify": "^0.99.4",
     "jasmine-core": "~5.1.2",
