@@ -666,7 +666,7 @@ export class DiceBot extends GameObject {
           if ((id === 'Cthulhu' && /\d\) (?:故障ナンバー|故障率|고장넘버)\[\-?\d+\]/.test(resultFragment))
             || (id === 'Cthulhu7th' && /\d\) (?:ボーナス・ペナルティダイス|獎勵、懲罰骰値|보너스, 패널티 주사위)\[\-?\d+\]/.test(resultFragment))
           ) {
-            return '🎲' + resultFragment;
+            return '🎲' + resultFragment.replace(/\((1D100<=\d+)\) /i, '$1 ');
           }
           const regExp1 = (DiceBot.apiUrl && DiceBot.apiVersion == 1) ? /^(?:\: )\(([A-Z\d\+\-\*\/=\(\),\[\]\<\>@#\$]+)\)$/i : /^\(([A-Z\d\+\-\*\/=\(\),\[\]\<\>@#\$]+)\)$/i;
           const regExp2 = (DiceBot.apiUrl && DiceBot.apiVersion == 1) ? /^(?:\: )\((CHOICE(?:\d+)?[\[\( ].+)\)$/i : /^\((CHOICE(?:\d+)?[\[\( ].+)\)$/i;
