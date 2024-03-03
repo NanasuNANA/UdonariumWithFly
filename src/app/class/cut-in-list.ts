@@ -67,8 +67,7 @@ export class CutInList extends ObjectNode implements InnerXml {
       if (!cutIn) continue;
       let isMatch = false;
       for (const postfix of cutIn.postfixes) {
-        if (StringUtil.toHalfWidth(text).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).toUpperCase().trimRight())
-          || StringUtil.toHalfWidth(text.replaceAll('＞', '→')).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix).toUpperCase().trimRight())) {
+        if (StringUtil.toHalfWidth(text.replaceAll('＞', '→')).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix.replaceAll('＞', '→')).toUpperCase().trimRight())) {
           isMatch = true;
           if ((postfix.slice(0, 1) == '@' || postfix.slice(0, 1) == '＠') && textTagMatch.length < postfix.length) textTagMatch = postfix;
         }
