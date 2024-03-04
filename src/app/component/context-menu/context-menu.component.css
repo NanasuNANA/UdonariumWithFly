@@ -91,11 +91,11 @@ ul > li.hasHighlight:hover {
   background-color: rgba(30, 30, 30, 0.8);
 }
 ul > li.has-color.hasHighlight:hover {
-  text-shadow:
+  text-shadow: 
     1px  0px 1px #ffffff,
     0px  1px 1px #ffffff,
     -1px  0px 1px #ffffff,
-    0px -1px 1px #ffffff;
+    0px -1px 1px #ffffff; 
 }
 
 .menu-title:not(.icon-menu) {
@@ -109,8 +109,10 @@ td.altitude {
 }
 
 input.altitude {
-  writing-mode: vertical-lr;
+  writing-mode: bt-lr;   
+  appearance: slider-vertical;
   width: 8px;
+  height: 100%;
   padding: 3px;
 }
 
@@ -175,7 +177,7 @@ input.altitude {
 
 .color-indicator {
   font-size: larger;
-  text-shadow:
+  text-shadow: 
   1px  1px 0px #ffffff,
   -1px  1px 0px #ffffff,
    1px -1px 0px #ffffff,
