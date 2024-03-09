@@ -21,7 +21,7 @@
     "@angular/platform-browser-dynamic": "^17.2.4",
     "@angular/router": "^17.2.4",
     "@angular/service-worker": "^17.2.4",
-    "@angular/youtube-player": "^17.2.1",
+    "@angular/youtube-player": "^17.2.2",
     "@skyway-sdk/core": "^1.4.1",
     "autolinker": "^3.16.2",
     "base-x": "^4.0.0",
