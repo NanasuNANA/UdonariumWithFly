@@ -1,5 +1,5 @@
 <div>
-  <div *ngIf="isValid" class="url">{{urlObj.protocol}}//<span [ngClass]="{'outer': isOuter}">{{urlObj.host}}</span>{{urlObj.pathname}}<span class="opt">{{urlObj.search}}{{urlObj.hash}}</span></div>
+  <div *ngIf="isValid" class="url"><small><small>{{urlObj.protocol}}//</small></small><span [ngClass]="{'outer': isOuter}">{{urlObj.host}}</span><small>{{urlObj.pathname}}<span class="opt">{{urlObj.search}}{{urlObj.hash}}</span></small></div>
   <div *ngIf="!isValid" class="url">{{url}}</div>
   <hr />
   <div class="help">
