@@ -276,18 +276,14 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
   onInputStart(e: MouseEvent | TouchEvent) {    
     // TODO:もっと良い方法考える
-    if (this.isLocked) {
-      e.stopPropagation();
-      e.preventDefault();
-      this.card.toTopmost();
-      EventSystem.trigger('DRAG_LOCKED_OBJECT', { srcEvent: e });
-      return;
-    }
-
     this.ngZone.run(() => {
       this.card.toTopmost();
-      this.startIconHiddenTimer();
     });
+    this.startIconHiddenTimer();
+
+    if (this.isLocked) {
+      EventSystem.trigger('DRAG_LOCKED_OBJECT', { });
+    }
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -483,14 +479,16 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
         this.turnRight();
       },
       materialIcon: 'turn_right',
-      hotkey: 'R'
+      hotkey: 'R',
+      disabled: this.isLocked
     }, 
     {
       name: '左回転', action: () => {
         this.turnLeft();
       },
       materialIcon: 'turn_left',
-      hotkey: 'Shift+R'
+      hotkey: 'Shift+R',
+      disabled: this.isLocked
     });
     if (this.card.isVisible) {
       actions.push(ContextMenuSeparator,
@@ -499,14 +497,14 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
           this.vertical();
         },
         hotkey: 'U',
-        disabled: !this.card.isVisible || this.card.rotate == 0 
+        disabled: !this.card.isVisible || this.isLocked || this.card.rotate == 0 
       }, 
       {
         name: '横向き(90°)にする', action: () => {
           this.horizontal();
         },
         hotkey: 'T',
-        disabled: !this.card.isVisible || this.card.rotate == 90
+        disabled: !this.card.isVisible || this.isLocked || this.card.rotate == 90
       });
     }
     actions.push(ContextMenuSeparator);
