@@ -524,7 +524,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     } else if (target.isNote || target.isUrl) {
                       target.value = StringUtil.cr(value);
                     } else {
-                      target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ');
+                      target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ');
                     }
                   } else if (target.isNumberResource && !isOperateMaxValue) {
                     if (value != '') { 
@@ -562,7 +562,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     if (target.isNote || target.isUrl) {
                       target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
                     } else {
-                      target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/, ' ') : parseInt(value);
+                      target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ') : parseInt(value);
                     }
                   } else {
                     throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
