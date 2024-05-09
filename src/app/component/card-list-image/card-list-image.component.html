@@ -1,7 +1,7 @@
 <div class="image-box" style="position: relative" [appTooltip]="card" [cardState]="CardStateFront" [@flipCard]="card?.isFront ? 0 : 1">
   <div class="image" [ngClass]="{'downside': card && !card.isFront}">
     <div class="image" [ngClass]="{'reverse': card && card.rotate == 180}" style="position: relative" [@reverseCard]="card.rotate">
-      <img #cardImage [src]="card?.frontImage?.url | safe: 'resourceUrl'" (load)="onCardImageLoad()" style="position: absolute">
+      <img #cardImage [src]="card?.frontImage?.url | safe: 'resourceUrl'" (load)="onCardImageLoad()" style="position: absolute" draggable="false">
       <div class="text" style="z-index: 5; position: absolute"
         [style.width.px]="imageAreaRect.width" [style.height.px]="imageAreaRect.height" [style.left.px]="imageAreaRect.left" [style.top.px]="imageAreaRect.top"
         [ngStyle]="{transform: 'scale(' + imageAreaRect.scale + ')'}">
@@ -12,7 +12,7 @@
   </div>
   <div class="image" style="position: relative">
     <div class="image" [ngClass]="{'downside': card && card.isFront}">
-      <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180}" [@reverseCard]="card.rotate">
+      <img [src]="card?.backImage?.url | safe: 'resourceUrl'" style="position: absolute" [ngClass]="{'reverse': card && card.rotate == 180}" [@reverseCard]="card.rotate" draggable="false">
       <i *ngIf="!card?.isFront" class="indicate-text"><span style="font-size: smaller">face-</span><br /><span class="initial" style="padding-left: 3px">D</span>own</i>
     </div>
   </div>
