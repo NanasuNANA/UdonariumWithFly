@@ -527,7 +527,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                       target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ');
                     }
                   } else if (target.isNumberResource && !isOperateMaxValue) {
-                    if (value != '') { 
+                    if (value != null && value.toString() != '') {
+                      //console.log(value)
                       const dValue: number = parseInt(target.currentValue + '');
                       const result: number = parseInt((target.currentValue && operator !== '=') ? target.currentValue.toString() : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
                       if (result <= parseInt(target.currentValue + '')) {
@@ -543,7 +544,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                   } else if (isOperateNumber) {
                     const dValue: number = target.currentValue == null ? 0 : parseInt(target.value.toString());
-                    if (value != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                    if (value != null && value.toString() != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
                     delayRef = (parseInt(target.value + '') - dValue).toString();
                   } else if (target.isCheckProperty) {
                     //if (operator == '=') {
