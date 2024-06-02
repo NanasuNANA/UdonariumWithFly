@@ -550,7 +550,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     //if (operator == '=') {
                     switch (operator) {
                     case '=':
-                      target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
+                      target.value = (value === '' || parseInt(value) === 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
                       break;
                     case '+':
                       target.value = target.name;
@@ -561,15 +561,15 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                   } else if (operator === '=') {
                     if (target.isNote || target.isUrl) {
-                      target.value = (isNaN(value) || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
+                      target.value = (isNaN(value) || value === '' || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
                     } else {
-                      target.value = isNaN(value) ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ') : parseInt(value);
+                      target.value = (isNaN(value) || value === '') ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ') : parseInt(value);
                     }
                   } else {
-                    throw `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
+                    throw `→ ${target.name === '' ? '(無名の変数)' : target.name} を操作 → コマンドエラー：` + command.operator + command.value;
                   }
                   const newValue = target.loggingValue;
-                  let loggingText = `→ ${target.name == '' ? '(無名の変数)' : target.name} を操作`;
+                  let loggingText = `→ ${target.name === '' ? '(無名の変数)' : target.name} を操作`;
                   if (isOperateNumber) {
                     loggingText += ` ${oldValue} → ${oldValue === newValue ? '変更なし' : newValue}`;
                   } else if (target.isCheckProperty) {

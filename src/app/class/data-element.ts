@@ -44,7 +44,7 @@ export class DataElement extends ObjectNode {
       ret = `${this.value}`;
       if (this.currentValue) ret += `(${modifire >= 0 ? '+' : ''}${modifire})`;
     } else {
-      ret = this.value ? this.value.toString() : '';
+      ret = this.value == null ? '' : this.value.toString();
     }
     return ret;
   }
