@@ -82,6 +82,14 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
         this.doLogging();
       }, this.timeout);
     });
+
+    // 汚い、本来初期化要るだろうけどとりあえずコマンドへの対処なのでこのまま
+    this.dataElement.changeObserver = () => {
+      if (LoggingValueMap.get(identifier).timerId) clearTimeout(LoggingValueMap.get(identifier).timerId);
+      LoggingValueMap.get(identifier).timerId = setTimeout(() => {
+        if (this.doLogging) this.doLogging(false);
+      }, 0);
+    }
     /*
     loggingNativeElement.addEventListener('change', () => {
       if (!LoggingValueMap.get(identifier).isEditing) return;
@@ -101,7 +109,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
     }
   }
 
-  doLogging() {
+  doLogging(sendMsssage = true) {
     const LoggingValueMap = LoggingInputDirective.LoggingValueMap;
     const identifier = this.dataElement.identifier;
     //LoggingValueMap.get(identifier).isEditing = false;
@@ -112,7 +120,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
     const oldValue = LoggingValueMap.get(identifier).oldValue;
     const value = this.dataElement.loggingValue;
     const dataElement = this.dataElement;
-    if (!this.isDisable && value != oldValue) {
+    if (sendMsssage && !this.isDisable && value != oldValue) {
       let text = `${this.name == '' ? `(無名の${this.type})` : this.name} の ${dataElement.name == '' ? '(無名の変数)' : dataElement.name} を変更`;
       if (this.showValue && (dataElement.isSimpleNumber || dataElement.isNumberResource || dataElement.isAbilityScore)) {
         text += ` ${oldValue} → ${value}`;
