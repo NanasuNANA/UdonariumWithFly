@@ -16,6 +16,9 @@ export class DataElement extends ObjectNode {
   get isAbilityScore(): boolean { return this.type != null && this.type === 'abilityScore'; }
   get isUrl(): boolean { return this.type != null && this.type === 'url'; }
 
+  oldLoggingValue: string;
+  changeObserver: Function;
+
   public static create(name: string, value: number | string = '', attributes: Attributes = {}, identifier: string = ''): DataElement {
     let dataElement: DataElement;
     if (identifier && 0 < identifier.length) {
@@ -45,6 +48,10 @@ export class DataElement extends ObjectNode {
       if (this.currentValue) ret += `(${modifire >= 0 ? '+' : ''}${modifire})`;
     } else {
       ret = this.value == null ? '' : this.value.toString();
+    }
+    if (this.oldLoggingValue !== ret) {
+      this.oldLoggingValue = ret;
+      if (this.changeObserver) this.changeObserver();
     }
     return ret;
   }
