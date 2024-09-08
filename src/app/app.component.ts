@@ -268,6 +268,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('LOAD_CONFIG !!!', event.data);
         if (event.data.dice && event.data.dice.url) {
           const API_VERSION = event.data.dice.api;
+          const langSortOrder = ['A', 'English', 'ChineseTraditional', 'SimplifiedChinese', 'Korean', 'Other'];
           //console.log(api)
           //ToDO BCDice-API管理者情報表示の良いUI思いつかないのでペンディング
           //fetch(event.data.dice.url + '/v1/admin', {mode: 'cors'})
@@ -309,8 +310,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                   return info;
                 })
                 .sort((a, b) => {
-                  return a.lang < b.lang ? -1 
-                    : a.lang > b.lang ? 1
+                  return langSortOrder.indexOf(a.lang) < langSortOrder.indexOf(b.lang) ? -1 
+                    : langSortOrder.indexOf(a.lang) > langSortOrder.indexOf(b.lang) ? 1
                     : a.normalize == b.normalize ? 0 
                     : a.normalize < b.normalize ? -1 : 1;
                 });
@@ -321,7 +322,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 let sentinel = tempInfos[0].normalize.substring(0, 1);
                 let group = { index: tempInfos[0].normalize.substring(0, 1), infos: [] };
                 for (let info of tempInfos) {
-                  let index = info.lang == 'Other' ? 'その他' 
+                  let index = info.lang == 'Other' ? 'Other' 
                     : info.lang == 'ChineseTraditional' ? '正體中文'
                     : info.lang == 'Korean' ? '한국어'
                     : info.lang == 'English' ? 'English'
@@ -335,7 +336,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                   group.infos.push({ id: (API_VERSION == 1 ? info.system : info.id), game: info.name });
                 }
                 DiceBot.diceBotInfosIndexed.push(group);
-                DiceBot.diceBotInfosIndexed.sort((a, b) => a.index == b.index ? 0 : a.index < b.index ? -1 : 1);
+                //DiceBot.diceBotInfosIndexed.sort((a, b) => a.index == b.index ? 0 : a.index < b.index ? -1 : 1);
               }
             });
         }

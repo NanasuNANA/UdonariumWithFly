@@ -898,6 +898,7 @@ export class DiceBot extends GameObject {
 }
 
 function initializeDiceBotQueue(): PromiseQueue {
+  const langSortOrder = ['English', '正體中文', '简体中文', '한국어', 'Other'];
   let queue = new PromiseQueue('DiceBotQueue');
   queue.add(async () => {
     loader = new (await import(
@@ -922,8 +923,8 @@ function initializeDiceBotQueue(): PromiseQueue {
       let langName;
       if (lang && lang[1]) {
         langName = (lang[1] == 'ChineseTraditional') ? '正體中文'
-          : (lang[1] == 'Korean') ? '한국어'
           : (lang[1] == 'English') ? 'English'
+          : (lang[1] == 'Korean') ? '한국어'
           : (lang[1] == 'SimplifiedChinese') ? '简体中文'
           : 'Other';
       }
@@ -958,11 +959,12 @@ function initializeDiceBotQueue(): PromiseQueue {
       //console.log(info.index + ': ' + normalize);
     });
     DiceBot.diceBotInfos.sort((a, b) => {
-      if (a.sort_key == 'Other' && b.sort_key == 'Other') {
-        return 0;
-      } else if (a.sort_key == 'Other') {
+      if (a.lang && b.lang) {
+        return langSortOrder.indexOf(a.lang) == langSortOrder.indexOf(b.lang) ? 0 
+          : langSortOrder.indexOf(a.lang) < langSortOrder.indexOf(b.lang) ? -1 : 1;
+      } else if (a.lang) {
         return 1;
-      } else if (b.sort_key == 'Other') {
+      } else if (b.lang) {
         return -1;
       }
       return a.sort_key == b.sort_key ? 0 
@@ -971,7 +973,6 @@ function initializeDiceBotQueue(): PromiseQueue {
     let sentinel = DiceBot.diceBotInfos[0].sort_key[0];
     let group = { index: sentinel, infos: [] };
     for (let info of DiceBot.diceBotInfos) {
-      if (info.lang == 'Other') info.lang = '简体中文'; //手抜き
       if ((info.lang ? info.lang : info.sort_key[0]) !== sentinel) {
         sentinel = info.lang ? info.lang : info.sort_key[0];
         DiceBot.diceBotInfosIndexed.push(group);
@@ -980,7 +981,6 @@ function initializeDiceBotQueue(): PromiseQueue {
       group.infos.push({ id: info.id, game: info.game });
     }
     DiceBot.diceBotInfosIndexed.push(group);
-    DiceBot.diceBotInfosIndexed.sort((a, b) => a.index == b.index ? 0 : a.index < b.index ? -1 : 1);
   });
   return queue;
 }
