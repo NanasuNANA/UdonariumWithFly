@@ -340,7 +340,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
         }
-        Network.setApiKey(event.data.webrtc.key);
+        console.log('LOAD_CONFIG !!!');
+        Network.configure(event.data);
         Network.open();
       })
       .on<File>('FILE_LOADED', event => {

@@ -12,7 +12,7 @@ import { DataSummarySetting } from '@udonarium/data-summary-setting';
 import { DiceRollTableList } from '@udonarium/dice-roll-table-list';
 import { Room } from '@udonarium/room';
 
-import * as Beautify from 'vkbeautify';
+import Beautify from 'vkbeautify';
 
 import { ImageTagList } from '@udonarium/image-tag-list';
 import { ChatTab } from '@udonarium/chat-tab';

@@ -43,8 +43,8 @@ export class GameObjectInventoryService {
   private locationMap: Map<ObjectIdentifier, LocationName> = new Map();
   private tagNameMap: Map<ObjectIdentifier, ElementName> = new Map();
 
-  readonly newLineStrings: string = '/／';
-  readonly newLineDataElement: DataElement = DataElement.create(this.newLineStrings);
+  static _newLineDataElement = createMockElement('/');
+  get newLineDataElement(): DataElement { return GameObjectInventoryService._newLineDataElement; }
 
   constructor() {
     this.initialize();
@@ -154,8 +154,8 @@ export class GameObjectInventoryService {
 }
 
 class ObjectInventory {
-  newLineStrings: string = '/／';
-  private newLineDataElement: DataElement = DataElement.create(this.newLineStrings);
+  newLineString: string = '/';
+  private newLineDataElement: DataElement = GameObjectInventoryService._newLineDataElement;
 
   private get summarySetting(): DataSummarySetting { return DataSummarySetting.instance; }
 
@@ -198,7 +198,7 @@ class ObjectInventory {
       let caches = this.tabletopObjects;
       for (let object of caches) {
         if (!object.detailDataElement) continue;
-        let elements = this.dataTags.map(tag => (this.newLineStrings.includes(tag)) ? this.newLineDataElement : object.detailDataElement.getFirstElementByNameUnsensitive(tag));
+        let elements = this.dataTags.map(tag => (this.newLineString === StringUtil.toHalfWidth(tag)) ? this.newLineDataElement : object.detailDataElement.getFirstElementByNameUnsensitive(tag));
         this._dataElementMap.set(object.identifier, elements);
       }
       this.needsRefreshElements = false;
@@ -281,4 +281,11 @@ class ObjectInventory {
     }
     return value;
   }
+}
+
+function createMockElement(name: string): DataElement {
+  let identifier = 'newLineString_DataElement';
+  let dataElement = new DataElement(identifier);
+  dataElement.name = name;
+  return dataElement;
 }

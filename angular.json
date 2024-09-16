@@ -38,15 +38,15 @@
               "bcdice",
               "crypto-js/lib-typedarrays",
               "crypto-js/sha256",
+              "events",
               "file-saver",
               "hammerjs",
-              "jszip",
               "lzbase62",
-              "pako",
-              "events",
               "localforage",
               "lodash",
               "msgpack-lite",
+              "pako",
+              "skyway-js",
               "vkbeautify"
             ]
           },

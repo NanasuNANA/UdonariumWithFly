@@ -1,3 +1,4 @@
+import Peer from 'skyway-js';
 import { ArrayUtil } from '../../util/array-util';
 import { compressAsync, decompressAsync } from '../../util/compress';
 import { CryptoUtil } from '../../util/crypto-util';
@@ -8,13 +9,6 @@ import { IPeerContext, PeerContext } from '../peer-context';
 import { IRoomInfo, RoomInfo } from '../room-info';
 import { SkyWayDataConnection } from './skyway-data-connection';
 import { SkyWayDataConnectionList } from './skyway-data-connection-list';
-
-// @types/skywayを使用すると@types/webrtcが定義エラーになるので代替定義
-declare var Peer;
-declare module PeerJs {
-  export type Peer = any;
-  export type DataConnection = any;
-}
 
 interface DataContainer {
   data: Uint8Array;
@@ -36,7 +30,7 @@ export class SkyWayConnection implements Connection {
   bandwidthUsage: number = 0;
 
   private key: string = '';
-  private skyWay: PeerJs.Peer;
+  private skyWay: Peer;
   private connections: SkyWayDataConnectionList = new SkyWayDataConnectionList();
 
   private listAllPeersCache: string[] = [];
@@ -45,8 +39,13 @@ export class SkyWayConnection implements Connection {
   private outboundQueue: Promise<any> = Promise.resolve();
   private inboundQueue: Promise<any> = Promise.resolve();
 
-  private relayingPeerIds: Map<string, string[]> = new Map();
-  private maybeUnavailablePeerIds: Set<string> = new Set();
+  private readonly relayingPeerIds: Map<string, string[]> = new Map();
+  private readonly maybeUnavailablePeerIds: Set<string> = new Set();
+
+  configure(config: any) {
+    if (this.key !== config?.webrtc?.key) console.log('Key Change');
+    this.key = config?.webrtc?.key ?? '';
+  }
 
   open(userId?: string)
   open(userId: string, roomId: string, roomName: string, password: string)
@@ -101,7 +100,7 @@ export class SkyWayConnection implements Connection {
     }
 
     if (!this.peer.verifyPeer(peerId)) {
-      console.log('connect() is Fail. <' + peerId + '> is not valid.');
+      console.log('connect() is Fail. <' + peerId + '> is invalid.');
       return false;
     }
 
@@ -164,11 +163,6 @@ export class SkyWayConnection implements Connection {
     }
   }
 
-  setApiKey(key: string) {
-    if (this.key !== key) console.log('Key Change');
-    this.key = key;
-  }
-
   listAllPeers(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       if (!this.skyWay) return resolve([]);
@@ -222,7 +216,7 @@ export class SkyWayConnection implements Connection {
       if (!validPeerId || !validToken) {
         conn.close();
         conn.on('open', () => conn.close());
-        console.log('connection is close. <' + conn.remoteId + '> is not valid.');
+        console.log('connection is close. <' + conn.remoteId + '> is invalid.');
         return;
       }
       let peer = PeerContext.parse(conn.remoteId);

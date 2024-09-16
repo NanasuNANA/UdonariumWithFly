@@ -112,7 +112,7 @@
       <div class="grid-container-root" *ngIf="hasDataElms">
         <!--<ng-container *ngFor="let dataElm of dataElms">-->
         <ng-container *ngFor="let dataElm of inventoryDataElms">
-          <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
+          <ng-container *ngIf="dataElm && dataElm !== newLineDataElement">
             <div class="grid-container">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: character.name }"></ng-container>
             </div>
@@ -149,7 +149,7 @@
       <div class="grid-container-root" *ngIf="hasDataElms && dice.isVisible">
         <div class="grid-container">
           <ng-container *ngFor="let dataElm of dataElms">
-            <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
+            <ng-container *ngIf="dataElm && dataElm !== newLineDataElement">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: dice.name }"></ng-container>
             </ng-container>
           </ng-container>
@@ -213,7 +213,7 @@
           </ng-container>
           <div *ngIf="dataElms.length > 0" class="section border" style="padding-top: 2px"></div>
           <ng-container *ngFor="let dataElm of dataElms">
-            <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
+            <ng-container *ngIf="dataElm && dataElm !== newLineDataElement">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: range.name }"></ng-container>
             </ng-container>
           </ng-container>
@@ -236,7 +236,7 @@
       <div class="grid-container-root">
         <div class="grid-container">
           <ng-container *ngFor="let dataElm of dataElms">
-            <ng-container *ngIf="dataElm && !newLineStrings.includes(dataElm.name)">
+            <ng-container *ngIf="dataElm && dataElm !== newLineDataElement">
               <ng-container *ngTemplateOutlet="dataElement; context: { dataElm: dataElm, name: object.name }"></ng-container>
             </ng-container>
           </ng-container>

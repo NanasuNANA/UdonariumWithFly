@@ -58,13 +58,14 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
 
   get sortOrderName(): string { return this.sortOrder === SortOrder.ASC ? '昇順' : '降順'; }
 
-  get newLineStrings(): string { return this.inventoryService.newLineStrings; }
+  //get newLineStrings(): string { return this.inventoryService.newLineStrings; }
 
   get isGMMode(): boolean{ return PeerCursor.myCursor ? PeerCursor.myCursor.isGMMode : false; }
 
   selectionState(tabletopObject: TabletopObject): SelectionState { return this.selectionService.state(tabletopObject); }
   checkSelected(tabletopObject: TabletopObject): boolean { return this.selectionState(tabletopObject) !== SelectionState.NONE; }
   checkMagnetic(tabletopObject: TabletopObject): boolean { return this.selectionState(tabletopObject) === SelectionState.MAGNETIC; }
+  get newLineDataElement(): DataElement { return this.inventoryService.newLineDataElement; }
 
   constructor(
     private changeDetector: ChangeDetectorRef,

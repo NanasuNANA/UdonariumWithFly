@@ -1,10 +1,8 @@
-webrtc:
-  key: [Your API KEY]
-  config: #未使用
-    iceServers: #未使用
-      - url: stun:stun.skyway.io:3478
-      - url: turn:homeo@turn.bistri.com:80
-        credential: homeo
+backend:
+  mode: skyway2023 #'skyway2023' or 'skyway'
+  url: https://{your-backend-hostname} #Your Backend API URL
+webrtc: #非推奨（旧SkyWay）
+  key: aaaaaaaa-bbbb-ccccc-dddd-eeeeeeeeeeee #[deprecated] Your (old) SkyWay API key
 app: #未使用
 dice:
   url: 

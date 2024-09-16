@@ -8,7 +8,7 @@ import { PeerCursor } from '@udonarium/peer-cursor';
 
 import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
 import { LobbyComponent } from 'component/lobby/lobby.component';
-import { AppConfigService } from 'service/app-config.service';
+import { AppConfig, AppConfigService } from 'service/app-config.service';
 import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -93,6 +93,8 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   get isDisableConnect(): boolean { return this.isGMHold || this.isGMMode; }
 
   get maskedPassword(): string { return '●●●●●●●●' }
+  get config(): AppConfig { return AppConfigService.appConfig; }
+  get canUsePrivateSession(): boolean { return this.config.backend.mode == 'skyway'; }
 
   constructor(
     private ngZone: NgZone,

@@ -2,19 +2,18 @@ import { Injectable } from '@angular/core';
 
 import { EventSystem } from '@udonarium/core/system';
 
-import * as yaml from 'js-yaml';
+import yaml from 'js-yaml';
 
 export interface AppConfig {
+  backend: {
+    mode: string,
+    url: string
+  },
   webrtc: {
-    key: string,
-    config?: {
-      iceServers?: RTCIceServer[],
-      certificates?: string
-    }
+    key: string
   },
   app: {
-    title: string,
-    mode: string
+    title: string
   },
   dice?: {
     url?: string,
@@ -34,12 +33,15 @@ export class AppConfigService {
   isOpen: boolean = false;
 
   static appConfig: AppConfig = {
+    backend: {
+      mode: '',
+      url: ''
+    },
     webrtc: {
       key: ''
     },
     app: {
-      title: '',
-      mode: ''
+      title: ''
     },
     dice: {
       url: '',

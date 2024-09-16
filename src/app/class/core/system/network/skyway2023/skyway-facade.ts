@@ -4,20 +4,18 @@ import {
   LocalPerson,
   Logger,
   Publication,
-  RemoteMember,
   SkyWayChannel,
   SkyWayContext,
   SkyWayError,
   SkyWayStreamFactory,
-  Subscription,
-  TransportConnectionState
-} from "@skyway-sdk/core";
+  Subscription
+} from '@skyway-sdk/core';
 import { CryptoUtil } from '../../util/crypto-util';
-import { IPeerContext, PeerContext } from "../peer-context";
+import { IPeerContext, PeerContext } from '../peer-context';
 import { SkyWayBackend } from './skyway-backend';
 
 export class SkyWayFacade {
-  appId = '';
+  url = '';
   context: SkyWayContext;
   private lobby: Channel;
   private lobbyPerson: LocalPerson;
@@ -33,10 +31,7 @@ export class SkyWayFacade {
   onOpen: (peer: IPeerContext) => void;
   onClose: (peer: IPeerContext) => void;
   onFatalError: (peer: IPeerContext, errorType: string, errorMessage: string, errorObject: any) => void;
-  onConnectionStateChanged: (peer: IPeerContext, state: TransportConnectionState) => void;
   onSubscribed: (peer: IPeerContext, subscription: Subscription) => void;
-  onUnsubscribed: (peer: IPeerContext, subscription: Subscription) => void;
-  onDataStreamPublished: (peer: IPeerContext, publication: Publication) => void;
   onRoomRestore: (peer: IPeerContext) => void;
 
   async open(peer: IPeerContext) {
@@ -81,11 +76,26 @@ export class SkyWayFacade {
     await this.disposeContext();
     if (this.isDestroyed) return;
 
+    let backend = new SkyWayBackend(this.url);
     let channelName = CryptoUtil.sha256Base64Url(this.peer.roomId + this.peer.roomName + this.peer.password);
-    let context = await SkyWayContext.Create(await SkyWayBackend.createSkyWayAuthToken(this.appId, channelName, this.peer.peerId));
+
+    let authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
+    if (authToken.length < 1) {
+      let message = `APIバックエンド< ${backend.url} >にアクセスできませんでした。SkyWayの認証トークンを発行するサーバが必要です。`
+      if (this.onFatalError) this.onFatalError(this.peer, 'server-error', message, new Error(message));
+      return;
+    }
+
+    let context = await SkyWayContext.Create(authToken);
     context.onTokenUpdateReminder.add(async () => {
       console.log(`skyWay onTokenUpdateReminder ${new Date().toISOString()}`);
-      context.updateAuthToken(await SkyWayBackend.createSkyWayAuthToken(this.appId, channelName, this.peer.peerId));
+      let authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
+      if (authToken.length < 1) {
+        let message = `APIバックエンド< ${backend.url} >にアクセスできませんでした。`
+        if (this.onFatalError) this.onFatalError(this.peer, 'server-error', message, new Error(message));
+        return;
+      }
+      context.updateAuthToken(authToken);
     });
 
     context.onTokenExpired.add(() => {
@@ -141,18 +151,6 @@ export class SkyWayFacade {
       if (lobby !== joinLobby) lobby.dispose();
     });
 
-    joinLobby.onMemberJoined.add(event => {
-      console.log(`lobby<${joinLobby.name}> onMemberJoined: ${event.member.name}`);
-    });
-
-    joinLobby.onMemberLeft.add(event => {
-      console.log(`lobby<${joinLobby.name}> onMemberLeft: ${event.member.name}`);
-    });
-
-    joinLobby.onMemberListChanged.add(() => {
-      console.log(`lobby<${joinLobby.name}> onMemberListChanged`);
-    });
-
     joinLobby.onClosed.add(() => {
       console.log(`lobby<${joinLobby.name}> onClosed`);
       this.joinLobby();
@@ -199,28 +197,6 @@ export class SkyWayFacade {
     });
     console.log(`FindOrCreate<${roomName}>`);
 
-    room.onMemberJoined.add(event => {
-      console.log(`room<${room.name}> onMemberJoined: ${event.member.name}`);
-    });
-
-    room.onMemberLeft.add(event => {
-      console.log(`room<${room.name}> onMemberLeft: ${event.member.name}`);
-    });
-
-    room.onMemberListChanged.add(() => {
-      console.log(`room<${room.name}> onMemberListChanged`);
-    });
-
-    room.onStreamPublished.add(event => {
-      if (event.publication.contentType === 'data'
-        && event.publication.metadata === 'udonarium-data-stream'
-        && 0 < event.publication.publisher.name?.length) {
-        console.log(`room<${room.name}> onStreamPublished: ${event.publication.publisher.name} <${event.publication.metadata}>`);
-        let peer = PeerContext.parse(event.publication.publisher.name);
-        if (this.onDataStreamPublished && peer.peerId !== this.peer.peerId) this.onDataStreamPublished(peer, event.publication);
-      }
-    });
-
     room.onClosed.add(async () => {
       console.log(`room<${room.name}> onClosed`);
       await this.joinRoom();
@@ -240,9 +216,6 @@ export class SkyWayFacade {
     });
 
     console.log(`roomPerson join <${this.room.name}>`);
-    roomPerson.onLeft.add(() => {
-      console.log(`roomPerson onClosed`);
-    });
 
     roomPerson.onFatalError.add(err => {
       console.error('roomPerson onFatalError', err);
@@ -261,15 +234,6 @@ export class SkyWayFacade {
     let dataStream = await SkyWayStreamFactory.createDataStream();
     let publication = await this.roomPerson.publish(dataStream, { metadata: 'udonarium-data-stream' });
 
-    publication.onConnectionStateChanged.add(event => {
-      console.log(`publication onConnectionStateChanged ${event.remoteMember.name} -> ${event.state}`);
-      let peerId = event.remoteMember.name;
-      if (peerId == null) return;
-
-      let peer = PeerContext.parse(peerId);
-      if (this.onConnectionStateChanged) this.onConnectionStateChanged(peer, event.state);
-    });
-
     publication.onSubscribed.add(event => {
       console.log(`publication onSubscribed ${event.subscription.subscriber.name}`);
       let peerId = event.subscription.subscriber.name;
@@ -280,19 +244,6 @@ export class SkyWayFacade {
 
       let peer = PeerContext.parse(event.subscription.subscriber.name);
       if (this.onSubscribed) this.onSubscribed(peer, event.subscription);
-    });
-
-    publication.onUnsubscribed.add(event => {
-      console.log(`publication onUnsubscribed ${event.subscription.subscriber.name}`);
-      let peerId = event.subscription.subscriber.name;
-      if (peerId == null) return;
-
-      let peer = PeerContext.parse(event.subscription.subscriber.name);
-      if (this.onUnsubscribed) this.onUnsubscribed(peer, event.subscription);
-    });
-
-    publication.onCanceled.add(() => {
-      console.log(`publication onCanceled`);
     });
 
     this.publication = publication;
@@ -382,7 +333,7 @@ export class SkyWayFacade {
         lobbys.push(lobby);
       } catch (error) {
         if (error instanceof SkyWayError) {
-          console.log(`${error.name} ${error.message}`);
+          if (error.name != 'channelNotFound') console.error(`${error.name} ${error.message}`);
         } else {
           console.error(error);
         }
@@ -399,25 +350,11 @@ export class SkyWayFacade {
   }
 
   private getLobbyNames(): string[] {
-    let lobbyNames: string[] = [];
-    for (let channel of this.context?.authToken.scope.app.channels ?? []) {
-      let lobbyName = channel.name ?? '';
-      if (lobbyName.startsWith('udonarium-lobby-')) lobbyNames.push(lobbyName);
-    }
+    let lobbyBaseName = this.context?.authToken.scope.app.channels?.find(channel => channel.name.startsWith('udonarium-lobby-'))?.name ?? '';
+    let regArray = /of-(\d+)$/.exec(lobbyBaseName);
+    let lobbySize = Number(regArray[1]);
+    if (isNaN(lobbySize)) lobbySize = 0;
+    let lobbyNames = [...Array(lobbySize)].map((value, index) => `udonarium-lobby-${index + 1}-of-${lobbySize}`);
     return lobbyNames;
-  }
-
-  isConnectedDataStream(remote: RemoteMember, local: LocalPerson = this.roomPerson): boolean {
-    if (!remote || !local) return false;
-    let isReadyForSend = local.publications.find(publication =>
-      publication.metadata === 'udonarium-data-stream' && publication.getConnectionState(remote.id) === 'connected') != null;
-
-    let isReadyForReceive = local.subscriptions.find(subscription =>
-      subscription.publication.metadata === 'udonarium-data-stream'
-      && subscription.publication.publisher.name === remote.name
-      && (subscription.stream?._getConnectionState() === 'connected' || (subscription.stream as any)?._datachannel?.readyState === 'open')) != null;
-
-    console.log('isConnected', isReadyForSend, isReadyForReceive);
-    return isReadyForReceive && isReadyForSend;
   }
 }

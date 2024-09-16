@@ -1,6 +1,6 @@
 {
   "name": "udonarium_with_fly",
-  "version": "1.9.9",
+  "version": "1.10.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -22,7 +22,8 @@
     "@angular/router": "^17.3.12",
     "@angular/service-worker": "^17.3.12",
     "@angular/youtube-player": "^17.3.10",
-    "@skyway-sdk/core": "^1.4.1",
+    "@skyway-sdk/core": "^1.9.2",
+    "@zip.js/zip.js": "^2.7.52",
     "autolinker": "^3.16.2",
     "base-x": "^4.0.0",
     "bcdice": "^4.7.0",
@@ -37,6 +38,7 @@
     "ngx-linky": "^4.0.0",
     "pako": "^2.1.0",
     "rxjs": "^7.8.1",
+    "skyway-js": "^4.4.5",
     "tslib": "^2.6.3",
     "vkbeautify": "^0.99.3",
     "zone.js": "~0.14.10"
