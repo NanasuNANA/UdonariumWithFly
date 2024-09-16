@@ -55,8 +55,7 @@
   overflow: hidden;
 }
 .title-text.rotateble {
-  padding: 0 0 0 3px;
-  text-overflow: clip;
+  padding: 3px 0 0 0;
   overflow: visible;
 }
 
