@@ -30,17 +30,15 @@
 なお、判定結果の成功、失敗での色分けに対応するためにはAPIバージョンが2である必要があります。
 
 ```
-webrtc:
-  key: [SkywayのAPIキー]
-  config: #未使用
-    iceServers: #未使用
-      - url: stun:stun.skyway.io:3478
-      - url: turn:homeo@turn.bistri.com:80
-        credential: homeo
+backend:
+  mode: skyway2023 #'skyway2023' or 'skyway'
+  url: https://{your-backend-hostname} #Your Backend API URL
+webrtc: #非推奨（旧SkyWay）
+  key: aaaaaaaa-bbbb-ccccc-dddd-eeeeeeeeeeee #[deprecated] Your (old) SkyWay API key
 app: #未使用
 dice:
-  url: [BCDice-APIのエンドポイントURL]
-  api: [APIバージョン]
+  url: BCDice-APIのエンドポイントURL
+  api: APIバージョン
 ```
 
 **↓↓↓↓　以下、ユドナリウム本家より　↓↓↓↓**
