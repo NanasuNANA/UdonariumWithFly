@@ -22,7 +22,7 @@
           <span class="id-spacer">{{ networkService.peer.userId }}</span>
           <input class="id-input" type="text" value="{{ networkService.peer.userId }}" readonly>
         </span>
-        <button *ngIf="isAbleClipboardCopy" (click)="copyPeerId()" [disabled]="isCopied" title="クリップボードにコピー"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
+        <button *ngIf="isAbleClipboardCopy && canUsePrivateSession" (click)="copyPeerId()" [disabled]="isCopied" title="クリップボードにコピー"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
         <span [@fadeInOut]="isCopied" class="copied" [style.color]="myPeerColor"> {{ isCopied ? 'クリップボードにコピーしました。' : '' }}</span>
       </ng-container>
     </span>
