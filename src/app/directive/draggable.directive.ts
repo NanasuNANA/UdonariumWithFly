@@ -82,6 +82,10 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
       return;
     }
     this.elementRef.nativeElement.style.cursor = 'grabbing';
+
+    this.removeSelectionRanges();
+    this.removeFocus();
+    if (e.cancelable) e.preventDefault();
     e.stopPropagation();
   }
 
@@ -114,8 +118,6 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
 
     this.prevTrans = trans;
 
-    this.removeSelectionRanges();
-    this.removeFocus();
     if (e.cancelable) e.preventDefault();
     e.stopPropagation();
   }

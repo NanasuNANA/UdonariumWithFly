@@ -1,9 +1,10 @@
 <div [@flyInOut]="'in'" [ngClass]="{'pointer-events-none': isPointerDragging, 'is-full-screen': isFullScreen, 'is-minimized': isMinimized && !isFullScreen, 'i-am-gm': isGMMode}" class="draggable-panel"
   [style.left.px]="left" [style.top.px]="top" [style.width.px]="width" [style.height.px]="height"
-  [resizable.disable]="isMinimized || isFullScreen" [resizable.align]="!isAbleRotateButton ? 'normal' : isHorizontal ? 'horizontal' : 'vertical'" [draggable.disable]="isFullScreen" [draggable.stack]="'.draggable-panel'" [resizable.stack]="'.draggable-panel'" appDraggable appResizable #draggablePanel>
+  [resizable.disable]="isMinimized || isFullScreen" [resizable.align]="!isAbleRotateButton ? 'normal' : isHorizontal ? 'horizontal' : 'vertical'" [draggable.disable]="isFullScreen" 
+  [draggable.stack]="'.draggable-panel'" [resizable.stack]="'.draggable-panel'" appDraggable appResizable #draggablePanel>
   <div class="title" #titleBar (dblclick)="isFullScreen ? toggleFullScreen($event) : toggleMinimize($event)">
-    <button *ngIf="isAbleRotateButton" style="padding: 0px; height: 14px; margin-top: 3px; margin-left: 1px" (dblclick)="notOperaion($event)" (click)="toggleRotate($event)"><i class="material-icons" style="font-size: 14px;">pivot_table_chart</i></button>
-    <div [ngClass]="{'rotateble': isAbleRotateButton}">{{panelService.title}}</div>
+    <button *ngIf="isAbleRotateButton" style="padding: 0px; height: 14px; margin-top: 3px; margin-left: 2px; margin-right: 0px" (dblclick)="notOperaion($event)" (click)="toggleRotate($event)"><i class="material-icons" style="font-size: 14px;">pivot_table_chart</i></button>
+    <div class="title-text" [ngClass]="{'rotateble': isAbleRotateButton}">{{panelService.title}}</div>
     <div class="title-button">
       <button *ngIf="isAbleMinimizeButton" (dblclick)="notOperaion($event)" (click)="toggleMinimize($event)"><i class="material-icons" [style.font-size.px]="isMinimized ? 12 : 14">{{ isMinimized ? 'crop_din' : 'minimize' }}</i></button>
       <button *ngIf="isAbleFullScreenButton" (dblclick)="notOperaion($event)" (click)="toggleFullScreen($event)"><i class="material-icons" [style.font-size.px]="isFullScreen && !isMinimized ? 12 : 14">{{ !isFullScreen ? 'fullscreen' : !isMinimized ? 'crop_din' : 'minimize' }}</i></button>
