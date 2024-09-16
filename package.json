@@ -23,6 +23,7 @@
     "@angular/service-worker": "^17.3.12",
     "@angular/youtube-player": "^17.3.10",
     "@skyway-sdk/core": "^1.9.2",
+    "@types/ws": "^8.5.4",
     "@zip.js/zip.js": "^2.7.52",
     "autolinker": "^3.16.2",
     "base-x": "^4.0.0",
