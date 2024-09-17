@@ -34,7 +34,6 @@
     {
       "name": "scripts",
       "urls": [
-        "https://cdn.webrtc.ecl.ntt.com/skyway-latest.min.js",
         "https://www.youtube.com/iframe_api"
       ],
       "cacheConfig": {
