@@ -168,3 +168,7 @@
 .peer-info:hover .session-info {
   visibility: visible;
 }
+
+.cant-use-private-session {
+  font-size: 90%;
+}

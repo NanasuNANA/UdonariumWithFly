@@ -15,7 +15,7 @@
   </div>
 </div>
 <div>
-  <div>あなたのID：
+  <div [ngClass]="{'cant-use-private-session': !canUsePrivateSession}">あなたのID：
     <span>
       <ng-container *ngIf="networkService.isOpen">
         <span class="id-input-container">

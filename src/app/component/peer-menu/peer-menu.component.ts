@@ -205,7 +205,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   }
 
   copyPeerId() {
-    if (navigator.clipboard) {
+    if (navigator.clipboard && this.canUsePrivateSession) {
       navigator.clipboard.writeText(this.networkService.peer.userId);
       this.isCopied = true;
       clearTimeout(this._timeOutId);
