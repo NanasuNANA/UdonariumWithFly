@@ -266,6 +266,10 @@ s.drop-dice .dropped {
   color: #999;
 }
 
+body, textarea, select {
+  scrollbar-width: thin;
+}
+
 /*
  * デスクトップWindows版Chrome 119におけるレンダリング改善のための定義.
  * 3D表示している画像にこのCSSクラスを付与すると至近距離で表示した時の解像度が鮮明になる.
