@@ -25,7 +25,8 @@
         "files": [
           "/lib/**",
           "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)",
-          "!/card.png"
+          "!/card.png",
+          "!/mobile.jpg"
         ]
       }
     }
