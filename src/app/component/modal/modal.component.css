@@ -96,4 +96,5 @@
   padding: 8px;
 
   flex-grow: 1;
+  scrollbar-width: thin;
 }

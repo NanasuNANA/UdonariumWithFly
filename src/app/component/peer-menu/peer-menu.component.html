@@ -84,7 +84,7 @@
     </div>
   </div>
 </div>
-<div *ngIf="!isGMMode && !isGMHold">
+<div *ngIf="!isGMMode && !isGMHold" style="margin-top: 1px">
   <ng-container *ngIf="!networkService.peer.isRoom && canUsePrivateSession">
     <input [(ngModel)]="targetUserId" placeholder="接続したい相手のID" name="targetUserId" [disabled]="isDisableConnect" />
     <button (click)="connectPeer()" [disabled]="!networkService.isOpen || targetUserId == null || targetUserId == '' || isDisableConnect">プライベート接続</button><br>
