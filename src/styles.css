@@ -266,7 +266,7 @@ s.drop-dice .dropped {
   color: #999;
 }
 
-body, textarea, select {
+* {
   scrollbar-width: thin;
 }
 
