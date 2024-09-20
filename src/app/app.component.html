@@ -2,7 +2,7 @@
   <game-table></game-table>
 </div>
 <ui-panel (rotateEvent)="rotateChange($event)" [top]="0" [left]="0" [width]="100" [height]="710" [title]="'メニュー'" [isAbleFullScreenButton]="false" [isAbleCloseButton]="false"  [isAbleRotateButton]="true">
-  <nav [ngClass]="{'horizontal': isHorizontal}">
+  <nav [ngClass]="{'horizontal': isHorizontal, 'vertical': !isHorizontal}">
     <ul>
       <li (click)="open('PeerMenuComponent')">
         <a routerLink="/" routerLinkActive="active">

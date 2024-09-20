@@ -115,10 +115,6 @@
   /*background: linear-gradient(-30deg, rgba(240,218,189, 0.9), rgba(255, 244, 232, 0.9));*/
 }
 
-.is-vertical-menu {
-  overflow-x: hidden !important;
-}
-
 .scrollable-panel {
   scrollbar-width: thin;
 }
