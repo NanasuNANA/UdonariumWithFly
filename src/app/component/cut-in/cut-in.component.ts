@@ -120,7 +120,9 @@ export class CutInComponent implements OnInit, OnDestroy {
     return this._naturalWidth;
   }
   private get naturalHeight(): number {
-    if (this.videoId && !this.isSoundOnly) return 270;
+    if (this.videoId && !this.isSoundOnly) {
+      return (this.cutIn.videoUrl.indexOf('/shorts/') >= 0) ? 480 : 270;
+    }
     return this._naturalHeight;
   }
 
