@@ -41,8 +41,8 @@ export class CutIn extends ObjectNode {
         if (this.videoUrl.indexOf('/shorts/') >= 0) {
           let tmp = this.videoUrl.split('/shorts/');
           if (tmp[1]) ret = encodeURI(tmp[1].split(/[\?\&\#\/]/)[0]);
-        } else if (this.videoUrl.indexOf('?v=') >= 0) {
-          let tmp = this.videoUrl.split('?v=');
+        } else if (this.videoUrl.indexOf('v=') >= 0) {
+          let tmp = this.videoUrl.split('v=');
           if (tmp[1]) ret = encodeURI(tmp[1].split(/[\?\&\#\/]/)[0]);
         }
       } else if (hostname == 'youtu.be') {
