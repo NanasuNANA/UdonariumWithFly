@@ -241,6 +241,18 @@ class ObjectInventory {
     if (sortTag.length < 1) return objects;
 
     objects.sort((a, b) => {
+      let aElm = a.rootDataElement?.getFirstElementByName('name');
+      let bElm = b.rootDataElement?.getFirstElementByName('name');
+      if (!aElm && !bElm) return 0;
+      if (!bElm) return -1;
+      if (!aElm) return 1;
+
+      let aValue = this.convertToSortableValue(aElm, a);
+      let bValue = this.convertToSortableValue(bElm, b);
+      if (aValue < bValue) return -1;
+      if (aValue > bValue) return 1;
+      return 0;
+    }).sort((a, b) => {
       let aElm = a.rootDataElement?.getFirstElementByNameUnsensitive(sortTag);
       let bElm = b.rootDataElement?.getFirstElementByNameUnsensitive(sortTag);
       if (!aElm && !bElm) return 0;
