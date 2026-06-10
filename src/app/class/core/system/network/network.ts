@@ -168,6 +168,11 @@ export class Network {
           /* webpackChunkName: "lib/backend/skyway2023/skyway-connection" */
           './skyway2023/skyway-connection')
         ).SkyWayConnection;
+      case 'trystero':
+        return (await import(
+          /* webpackChunkName: "lib/backend/trystero/trystero-connection" */
+          './trystero/trystero-connection')
+        ).TrysteroConnection;
       default:
         return (await import(
           /* webpackChunkName: "lib/backend/skyway/skyway-connection" */

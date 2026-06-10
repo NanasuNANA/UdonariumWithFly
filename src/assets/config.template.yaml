@@ -1,8 +1,17 @@
 backend:
-  mode: skyway2023 #'skyway2023' or 'skyway'
-  url: https://{your-backend-hostname} #Your Backend API URL
+  mode: trystero #'trystero' | 'skyway2023' | 'skyway'
+  url: https://{your-skyway2023-backend-hostname} #SkyWay2023 backend URL (mode=skyway2023 only)
+
+# --- Trystero + Firebase (mode=trystero) ---
+trystero:
+  firebase:
+    apiKey: your-api-key
+    databaseURL: https://your-project-default-rtdb.firebaseio.com
+    projectId: your-project-id
+    appId: your-app-id
+
 webrtc: #非推奨（旧SkyWay）
   key: aaaaaaaa-bbbb-ccccc-dddd-eeeeeeeeeeee #[deprecated] Your (old) SkyWay API key
 app: #未使用
 dice:
-  url: 
+  url:
