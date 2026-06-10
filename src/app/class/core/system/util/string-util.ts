@@ -223,29 +223,29 @@ export namespace StringUtil {
   export function aliasNameToClassName(aliasName: string) {
     switch(aliasName) {
       case 'character':
-        return 'キャラクター';
+        return '角色';
       case 'cut-in':
-        return 'カットイン';
+        return '插圖';
       case 'dice-roll-table':
-        return 'ダイスボット表';
+        return '骰子機器人表';
       case 'terrain':
         return '地形';
       case 'table-mask':
-        return 'マップマスク';
+        return '地圖遮罩';
       case 'text-note':
-        return '共有メモ';
+        return '共有備注';
       case 'card':
-        return 'カード';
+        return '牌';
       case 'dice-symbol':
-        return 'ダイスシンボル';
+        return '骰子符號';
       case 'card-stack':
         return '山札';
       case 'game-table':
-        return 'テーブル';
+        return '桌面';
       case 'chat-tab':
-        return 'チャットタブ';
+        return '聊天分頁';
       case 'range':
-        return '射程・範囲';
+        return '射程・範圍';
       default:
        return aliasName;
     }

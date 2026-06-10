@@ -245,14 +245,14 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       let card: Card = e.detail;
       let distance: number = this.cardStack.calcSqrDistance(card);
       if (distance < 50 ** 2) {
-        this.chatMessageService.sendOperationLog(`${card.isFront ? (card.name == '' ? '(無名のカード)' : card.name) : '伏せたカード'} を ${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} に乗せた`);
+        this.chatMessageService.sendOperationLog(`${card.isFront ? (card.name == '' ? '(無名牌)' : card.name) : '蓋牌'} 放入 ${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name}`);
         this.cardStack.putOnTop(card);
       }
     } else if (e.detail instanceof CardStack) {
       let cardStack: CardStack = e.detail;
       let distance: number = this.cardStack.calcSqrDistance(cardStack);
       if (distance < 25 ** 2) {
-        this.chatMessageService.sendOperationLog(`${cardStack.name == '' ? '(無名の山札)' : cardStack.name} を全て ${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} に乗せた`);
+        this.chatMessageService.sendOperationLog(`${cardStack.name == '' ? '(無名牌堆)' : cardStack.name} 全部放入 ${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name}`);
         this.concatStack(cardStack);
       }
     }
@@ -266,9 +266,9 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         SoundEffect.play(PresetSound.cardDraw);
         let text: string;
         if (card.isFront) {
-          text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${card.name == '' ? '(無名のカード)' : card.name} を引いた`
+          text = `${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name} 抽出 ${card.name == '' ? '(無名牌)' : card.name}`
         } else {
-          text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から 1枚引いて伏せた`
+          text = `${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name} 抽出1張並蓋牌`
         }
         this.chatMessageService.sendOperationLog(text);
       }
@@ -425,34 +425,34 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       y: this.cardStack.location.y + (size * this.gridSize) / 2,
       z: this.cardStack.posZ
     };
-    actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
       let selectedCardStacks = () => this.selectionService.objects.filter(object => object.aliasName === this.cardStack.aliasName) as CardStack[];
       actions.push(
         {
-          name: '選択した山札', action: null, subActions: [
+          name: '選取的牌堆', action: null, subActions: [
             {
-              name: 'すべて表にする', action: () => {
+              name: '全部翻面', action: () => {
                 selectedCardStacks().forEach(cardStack => cardStack.faceUpAll());
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
             {
-              name: 'すべて裏にする', action: () => {
+              name: '全部蓋牌', action: () => {
                 selectedCardStacks().forEach(cardStack => cardStack.faceDownAll());
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
             {
-              name: 'すべて正位置にする', action: () => {
+              name: '全部正位置', action: () => {
                 selectedCardStacks().forEach(cardStack => cardStack.uprightAll());
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
             ContextMenuSeparator,
             {
-              name: 'すべてシャッフル', action: () => {
+              name: '全部洗牌', action: () => {
                 SoundEffect.play(PresetSound.cardShuffle);
                 selectedCardStacks().forEach(cardStack => {
                   cardStack.shuffle();
@@ -486,15 +486,15 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         }),
       ContextMenuSeparator,
       {
-        name: 'カードを１枚引く', action: () => {
+        name: '抽1張牌', action: () => {
           const card = this.drawCard();
           if (card) {
             SoundEffect.play(PresetSound.cardDraw);
             let text: string;
             if (card.isFront) {
-              text = `${this.cardStack.name} から ${card.name == '' ? '(無名のカード)' : card.name} を引いた`
+              text = `${this.cardStack.name} 抽出 ${card.name == '' ? '(無名牌)' : card.name}`
             } else {
-              text = `${this.cardStack.name} から 1枚引いて伏せた`
+              text = `${this.cardStack.name} 抽出1張並蓋牌`
             }
             this.chatMessageService.sendOperationLog(text);
           }
@@ -503,7 +503,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         disabled: this.cards.length == 0
       },
       {
-        name: 'カードを引く', action: null,
+        name: '抽牌', action: null,
         subActions: [2, 3, 4, 5, 10].map(n => {
           return {
             name: `${n}枚`,
@@ -519,18 +519,18 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
               if (cards.length > 0) {
                 const frontCards = cards.filter(card => card.isFront);
                 if (frontCards.length == 0) {
-                  this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${cards.length}枚引いて伏せた`);
+                  this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name} 抽出${cards.length}張並蓋牌`);
                 } else {
                   const counter = new Map();
                   for (const card of frontCards) {
-                    const name = card.name == '' ? '(無名のカード)' : card.name;
+                    const name = card.name == '' ? '(無名牌)' : card.name;
                     let count = counter.get(name) || 0;
                     count += 1;
                     counter.set(name, count);
                   }
-                  let text = `${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} から ${[...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}枚`)).join('、')}`;
+                  let text = `${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name} 抽 ${[...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}張`)).join('、')}`;
                   if (frontCards.length === cards.length) {
-                    text += ' を引いた'
+                    text += ' 抽出'
                   } else {
                     text += ` を引き、${cards.length - frontCards.length}枚を伏せた`;
                   }
@@ -544,15 +544,15 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       },
       ContextMenuSeparator,
       (this.cards.length == 0 || !this.cardStack.topCard.isFront ? {
-        name: '一番上を表にする', action: () => {
+        name: '翻開頂部牌', action: () => {
           if (!this.cardStack.topCard) return;
-          if (!this.cardStack.topCard.isFront) this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} の一番上の ${this.cardStack.topCard.name == '' ? '(無名のカード)' : this.cardStack.topCard.name} を公開した`);
+          if (!this.cardStack.topCard.isFront) this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name} 頂部的 ${this.cardStack.topCard.name == '' ? '(無名牌)' : this.cardStack.topCard.name} 公開`);
           this.cardStack.faceUp();
           SoundEffect.play(PresetSound.cardDraw);
         },
         disabled: this.cards.length == 0
       } : {
-        name: '一番上を裏にする', action: () => {
+        name: '蓋住頂部牌', action: () => {
           this.cardStack.faceDown();
           SoundEffect.play(PresetSound.cardDraw);
         },
@@ -560,23 +560,23 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       }),
       ContextMenuSeparator,
       {
-        name: 'すべて表にする', action: () => {
+        name: '全部翻面', action: () => {
           //if (!this.cardStack.topCard) return;
-          //if (!this.cardStack.topCard.isFront) this.chatMessageService.sendOperationLog(`${this.cardStack.name} をすべて表にし、一番上の ${this.cardStack.topCard.name} を公開した`);
+          //if (!this.cardStack.topCard.isFront) this.chatMessageService.sendOperationLog(`${this.cardStack.name} をすべて表にし、一番上の ${this.cardStack.topCard.name} 公開`);
           this.cardStack.faceUpAll();
           SoundEffect.play(PresetSound.cardDraw);
         },
         disabled: this.cards.length == 0
       },
       {
-        name: 'すべて裏にする', action: () => {
+        name: '全部蓋牌', action: () => {
           this.cardStack.faceDownAll();
           SoundEffect.play(PresetSound.cardDraw);
         },
         disabled: this.cards.length == 0
       },
       {
-        name: 'すべて正位置にする', action: () => {
+        name: '全部正位置', action: () => {
           this.cardStack.uprightAll();
           SoundEffect.play(PresetSound.cardDraw);
         },
@@ -584,29 +584,29 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       },
       ContextMenuSeparator,
       {
-        name: 'シャッフル', action: () => {
+        name: '洗牌', action: () => {
           this.cardStack.shuffle();
           SoundEffect.play(PresetSound.cardShuffle);
           EventSystem.call('SHUFFLE_CARD_STACK', { identifier: this.cardStack.identifier });
         },
         disabled: this.cards.length == 0
       },
-      { name: 'カード一覧を見る...', action: () => {
+      { name: '查看牌列表...', action: () => {
         this.showStackList(this.cardStack);
-        this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名の山札)' : this.cardStack.name} のカード一覧を見た`);
+        this.chatMessageService.sendOperationLog(`${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name} 牌列表查看`);
       }, disabled: this.cards.length == 0 },
       ContextMenuSeparator,
       (this.isShowTotal
-        ? { name: '☑ 枚数を表示', action: () => { this.cardStack.isShowTotal = false; }, checkBox: 'check' }
-        : { name: '☐ 枚数を表示', action: () => { this.cardStack.isShowTotal = true; }, checkBox: 'check' }
+        ? { name: '☑ 顯示張數', action: () => { this.cardStack.isShowTotal = false; }, checkBox: 'check' }
+        : { name: '☐ 顯示張數', action: () => { this.cardStack.isShowTotal = true; }, checkBox: 'check' }
       ),
-      { name: 'カードサイズを揃える', action: () => { if (this.cardStack.topCard) this.cardStack.unifyCardsSize(this.cardStack.topCard.size); }, disabled: this.cards.length == 0 },
+      { name: '統一牌的大小', action: () => { if (this.cardStack.topCard) this.cardStack.unifyCardsSize(this.cardStack.topCard.size); }, disabled: this.cards.length == 0 },
       ContextMenuSeparator,
       {
-        name: '山札を分割する',
+        name: '分割牌堆',
         subActions: [
           {
-            name: '人数で分割',
+            name: '依人數分割',
             action: () => {
               this.splitStack(Network.peerIds.length);
               SoundEffect.play(PresetSound.cardDraw);
@@ -626,14 +626,14 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         disabled: this.cards.length == 0
       },
       {
-        name: '山札を崩す', action: () => {
+        name: '拆散牌堆', action: () => {
           this.breakStack();
           SoundEffect.play(PresetSound.cardShuffle);
         },
         disabled: this.cards.length == 0
       },
       {
-        name: '山札全体を裏返す', action: () => {
+        name: '翻轉整個牌堆', action: () => {
           this.cardStack.inverse();
           SoundEffect.play(PresetSound.cardDraw);
           SoundEffect.play(PresetSound.cardDraw);
@@ -642,9 +642,9 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         disabled: this.cards.length == 0
       },
       ContextMenuSeparator,
-      { name: '詳細を表示...', action: () => { this.showDetail(this.cardStack); } },
+      { name: '顯示詳細...', action: () => { this.showDetail(this.cardStack); } },
       (this.cardStack.getUrls().length <= 0 ? null : {
-        name: '参照URLを開く', action: null,
+        name: '開啟參考URL', action: null,
         subActions: this.cardStack.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -657,14 +657,14 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
               }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })
       }),
       (this.cardStack.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
-        name: 'コピーを作る', action: () => {
+        name: '建立副本', action: () => {
           let cloneObject = this.cardStack.clone();
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
@@ -675,7 +675,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         }
       },
       {
-        name: '山札を削除する', action: () => {
+        name: '刪除牌堆', action: () => {
           this.cardStack.setLocation('graveyard');
           this.cardStack.destroy();
           SoundEffect.play(PresetSound.sweep);

@@ -4,11 +4,11 @@
       <ng-container *ngTemplateOutlet="editButtons"></ng-container>
       <select #select (change)="setElementType(select.value)" [ngModel]="gameDataElement.type ?? ''">
         <option value="">通常</option>
-        <option value="simpleNumber">数値</option>
-        <option value="numberResource">リソース</option>
-        <option value="abilityScore">能力値</option>
-        <option value="checkProperty">チェック</option>
-        <option value="note">ノート</option>
+        <option value="simpleNumber">數值</option>
+        <option value="numberResource">資源</option>
+        <option value="abilityScore">能力值</option>
+        <option value="checkProperty">勾選</option>
+        <option value="note">備注</option>
         <option value="url">参照URL</option>
       </select>
     </div>
@@ -69,7 +69,7 @@
             <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" style="width:40%; max-width:5em; text-align:right" type="{{isNum(value) ? 'number' : 'text'}}" size="1" [(ngModel)]="value" placeholder="Value">
             <ng-container *ngIf="isEdit">
               <select class="modeifire-type" style="width:40%; max-width:5em" [(ngModel)]="currentValue">
-                <option value="">なし</option>
+                <option value="">無</option>
                 <option value="div2">÷2</option>
                 <option value="div3">÷3 SRS,LHZ</option>
                 <option value="div4">÷4</option>
@@ -101,7 +101,7 @@
             <!-- size属性がないと小さくならない -->
             <div class="hidden-spacer" style="font-size: 1.0em; font-family: Cambria, Georgia;">{{value}}</div>
             <input *ngIf="!(isHideText && isTabletopObjectName)" style="width:100%; min-width:10px;" size="1" [(ngModel)]="value" placeholder="" />
-            <span *ngIf="isHideText && isTabletopObjectName" style="color: gray; font-size: 1.0em; font-family: Cambria, Georgia;">カード（裏面）</span>
+            <span *ngIf="isHideText && isTabletopObjectName" style="color: gray; font-size: 1.0em; font-family: Cambria, Georgia;">牌（裏面）</span>
           </ng-container>
         </ng-container>
       </ng-container>

@@ -138,9 +138,9 @@ export class ChatMessageService {
   private findObjectName(identifier: string): string {
     let object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
-      return object.name && object.name.length ? object.name : '（無名のキャラクター）';
+      return object.name && object.name.length ? object.name : '（無名角色）';
     } else if (object instanceof PeerCursor) {
-      return object.name && object.name.length ? object.name : '（無名のプレイヤー）';
+      return object.name && object.name.length ? object.name : '（無名玩家）';
     }
     return identifier;
   }

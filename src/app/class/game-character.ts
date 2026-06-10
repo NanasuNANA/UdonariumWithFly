@@ -113,7 +113,7 @@ export class GameCharacter extends TabletopObject {
       this.imageDataElement.getFirstElementByName('imageIdentifier').value = imageIdentifier;
     }
 
-    let resourceElement: DataElement = DataElement.create('リソース', '', {}, 'リソース' + this.identifier);
+    let resourceElement: DataElement = DataElement.create('資源', '', {}, '資源' + this.identifier);
     let hpElement: DataElement = DataElement.create('HP', 200, { 'type': 'numberResource', 'currentValue': '200' }, 'HP_' + this.identifier);
     let mpElement: DataElement = DataElement.create('MP', 100, { 'type': 'numberResource', 'currentValue': '100' }, 'MP_' + this.identifier);
 
@@ -127,40 +127,40 @@ export class GameCharacter extends TabletopObject {
     resourceElement.appendChild(mpElement);
 
     //TEST
-    let testElement: DataElement = DataElement.create('情報', '', {}, '情報' + this.identifier);
+    let testElement: DataElement = DataElement.create('資訊', '', {}, '資訊' + this.identifier);
     this.detailDataElement.appendChild(testElement);
     testElement.appendChild(DataElement.create('説明', 'ここに説明を書く\nあいうえお', { 'type': 'note' }, '説明' + this.identifier));
-    testElement.appendChild(DataElement.create('メモ', '任意の文字列\n１\n２\n３\n４\n５', { 'type': 'note' }, 'メモ' + this.identifier));
-    testElement.appendChild(DataElement.create('参照URL', 'https://www.example.com', { 'type': 'url' }, '参照URL' + this.identifier));
+    testElement.appendChild(DataElement.create('備注', '任意の文字列\n１\n２\n３\n４\n５', { 'type': 'note' }, '備注' + this.identifier));
+    testElement.appendChild(DataElement.create('參考URL', 'https://www.example.com', { 'type': 'url' }, '參考URL' + this.identifier));
 
     //TEST
     testElement = DataElement.create('能力', '', {}, '能力' + this.identifier);
     this.detailDataElement.appendChild(testElement);
-    testElement.appendChild(DataElement.create('器用度', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '器用度' + this.identifier));
-    testElement.appendChild(DataElement.create('敏捷度', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '敏捷度' + this.identifier));
-    testElement.appendChild(DataElement.create('筋力', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '筋力' + this.identifier));
+    testElement.appendChild(DataElement.create('靈巧', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '靈巧' + this.identifier));
+    testElement.appendChild(DataElement.create('敏捷', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '敏捷' + this.identifier));
+    testElement.appendChild(DataElement.create('力量', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '力量' + this.identifier));
     testElement.appendChild(DataElement.create('生命力', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '生命力' + this.identifier));
-    testElement.appendChild(DataElement.create('知力', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '知力' + this.identifier));
+    testElement.appendChild(DataElement.create('智力', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '智力' + this.identifier));
     testElement.appendChild(DataElement.create('精神力', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '精神力' + this.identifier));
 
     //TEST
-    testElement = DataElement.create('戦闘特技', '', {}, '戦闘特技' + this.identifier);
+    testElement = DataElement.create('戰鬥技能', '', {}, '戰鬥技能' + this.identifier);
     this.detailDataElement.appendChild(testElement);
-    testElement.appendChild(DataElement.create('Lv1', '全力攻撃', {}, 'Lv1' + this.identifier));
-    testElement.appendChild(DataElement.create('Lv3', '武器習熟/ソード', {}, 'Lv3' + this.identifier));
-    testElement.appendChild(DataElement.create('Lv5', '武器習熟/ソードⅡ', {}, 'Lv5' + this.identifier));
-    testElement.appendChild(DataElement.create('Lv7', '頑強', {}, 'Lv7' + this.identifier));
-    testElement.appendChild(DataElement.create('Lv9', '薙ぎ払い', {}, 'Lv9' + this.identifier));
-    testElement.appendChild(DataElement.create('自動', '治癒適正', {}, '自動' + this.identifier));
+    testElement.appendChild(DataElement.create('Lv1', '全力攻擊', {}, 'Lv1' + this.identifier));
+    testElement.appendChild(DataElement.create('Lv3', '武器熟練/劍', {}, 'Lv3' + this.identifier));
+    testElement.appendChild(DataElement.create('Lv5', '武器熟練/劍Ⅱ', {}, 'Lv5' + this.identifier));
+    testElement.appendChild(DataElement.create('Lv7', '堅韌', {}, 'Lv7' + this.identifier));
+    testElement.appendChild(DataElement.create('Lv9', '橫掃', {}, 'Lv9' + this.identifier));
+    testElement.appendChild(DataElement.create('自動', '治療適性', {}, '自動' + this.identifier));
 
     let domParser: DOMParser = new DOMParser();
     let gameCharacterXMLDocument: Document = domParser.parseFromString(this.rootDataElement.toXml(), 'application/xml');
 
     let palette: ChatPalette = new ChatPalette('ChatPalette_' + this.identifier);
     palette.setPalette(`チャットパレット入力例：
-2d6+1 ダイスロール
+2d6+1 ダイス擲骰
 １ｄ２０＋{敏捷}＋｛格闘｝　{name}の格闘！
-:ｈｐ-3d6 2d20KH1+{器用度}+2>=15 《{Lv1}》を使用　HP｛＄1｝
+:ｈｐ-3d6 2d20KH1+{靈巧}+2>=15 《{Lv1}》を使用　HP｛＄1｝
 :HP={最大HP}:MP-10 HP全回復！ MP{$2}、HP{HP} → {$HP}（{$1}点回復）
 //敏捷=10+{敏捷A}
 //敏捷A=10

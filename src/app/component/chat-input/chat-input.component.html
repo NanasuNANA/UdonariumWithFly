@@ -20,61 +20,61 @@
     <div class="ff-flex">
       <label style="margin-right: 2px">
         <input *ngIf="character" type="checkbox" [(ngModel)]="isUseFaceIcon" checked="{{isUseFaceIcon ? 'checked' : ''}}" (change)="isUseFaceIcon = (isUseFaceIcon ? true : false)" />
-        <b *ngIf="character" style="font-size: smaller">顔IC</b>
+        <b *ngIf="character" style="font-size: smaller">臉部圖示</b>
       </label>
       <span style="white-space: nowrap">
         <select [style.max-width]="character ? '10em' : '13em'" [ngClass]="{'not-allow-chat': !isAllowsChat}" [(ngModel)]="sendFrom" (change)="onChangeSendFromList()" [ngStyle]="{'color': color, 'font-weight': (sendFrom != myPeer?.identifier ? 'normal' : 'bolder')}">
-          <option *ngIf="!onlyCharacters" value="{{myPeer?.identifier}}" [style.color]="myColor" style="font-weight: bolder;">{{myPeer?.name}}（あなた）</option>
+          <option *ngIf="!onlyCharacters" value="{{myPeer?.identifier}}" [style.color]="myColor" style="font-weight: bolder;">{{myPeer?.name}}（你）</option>
           <option *ngFor="let gameCharacter of gameCharacters" style="font-weight: normal" [style.color]="gameCharacter.chatPalette && gameCharacter.chatPalette.color && gameCharacter.chatPalette.color != '#ffffff' ? gameCharacter.chatPalette.color : '#444'" value="{{gameCharacter.identifier}}">{{gameCharacter.name}}</option>
         </select>
-        <button *ngIf="character" class="indicate ff-button speech-bubble-indicate" [title]="isUseStandImageOnChatTab ? 'チャットの「」内を💭に表示' : '現在のタブでは💭は無効です'" [ngClass]="{'is-active': isUseChatBalloon}" (click)="isUseChatBalloon = !isUseChatBalloon">        
+        <button *ngIf="character" class="indicate ff-button speech-bubble-indicate" [title]="isUseStandImageOnChatTab ? '在聊天「」中的文字以💭顯示' : '目前分頁不支援💭'" [ngClass]="{'is-active': isUseChatBalloon}" (click)="isUseChatBalloon = !isUseChatBalloon">        
             <i class="material-icons" style="font-size: 0.8em">{{ isUseChatBalloon && isUseStandImageOnChatTab ? 'textsms' : 'speaker_notes_off'}}</i>
         </button>
       </span>
       <span style="white-space: nowrap">
         <span style="display: inline-block; margin: auto 2px; text-align: center">➡</span>
         <select style="max-width: 9.5em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo == ''}" [ngStyle]="{'color': (sendTo == '' ? null : sendToColor), 'font-weight': (sendTo == '' ? 'normal' : 'bolder')}">
-          <option value="" class="not-specified">全員</option>
+          <option value="" class="not-specified">全體</option>
           <option *ngFor="let peer of otherPeers" value="{{peer.identifier}}" [style.color]="peer.color" style="font-weight: bolder;">{{peer.name}}
-            <ng-container *ngIf="peer === myPeer">（あなた）</ng-container>
+            <ng-container *ngIf="peer === myPeer">（你）</ng-container>
           </option>
         </select>
       </span>
       <span style="white-space: nowrap">
         <select #select *ngIf="diceBotInfosIndexed.length > 0" style="width: 11em;" (change)="loadDiceBot(select.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}"
           [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
-          <option value="DiceBot" class="not-specified">ダイスボット指定なし</option>
+          <option value="DiceBot" class="not-specified">未指定骰子機器人</option>
           <optgroup *ngFor="let group of diceBotInfosIndexed" class="dice-bot-group" label="{{group.index}}">
             <option *ngFor="let diceBotInfo of group.infos" value="{{diceBotInfo.id}}">{{diceBotInfo.game}}</option>
           </optgroup>
         </select>
         <select #select *ngIf="diceBotInfosIndexed.length < 1" style="width: 11em;" (change)="loadDiceBot(select.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}" disabled
           [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
-          <option value="DiceBot" class="not-specified">ダイスボット読込中…</option>
+          <option value="DiceBot" class="not-specified">骰子機器人載入中…</option>
         </select>
         <button class="ff-button dicebot-help" style="cursor: help" (click)="showDicebotHelp()">?</button>
       </span>
     </div>
-    <div *ngIf="hasStand" [ngClass]="{'disabled-stand': !isUseStandImageOnChatTab}" style="font-size: smaller; margin-top: 1px" [title]="isUseStandImageOnChatTab ? '' : '現在のタブではスタンドは無効です'">
+    <div *ngIf="hasStand" [ngClass]="{'disabled-stand': !isUseStandImageOnChatTab}" style="font-size: smaller; margin-top: 1px" [title]="isUseStandImageOnChatTab ? '' : '目前分頁不支援立繪'">
       <span style="font-size: medium">
-        <button class="indicate ff-button stand-indicate" style="font-size: 0.8em; padding: 1px; height: 1.3rem; width: 1.3rem; margin-left: 2px; margin-right: 2px" [title]="isUseStandImageOnChatTab ? 'スタンドを表示' : '現在のタブではスタンドは無効です'" [ngClass]="{'is-active': isUseStandImage}" (click)="isUseStandImage = !isUseStandImage">        
+        <button class="indicate ff-button stand-indicate" style="font-size: 0.8em; padding: 1px; height: 1.3rem; width: 1.3rem; margin-left: 2px; margin-right: 2px" [title]="isUseStandImageOnChatTab ? '顯示立繪' : '目前分頁不支援立繪'" [ngClass]="{'is-active': isUseStandImage}" (click)="isUseStandImage = !isUseStandImage">        
           <i class="material-icons" style="font-size: 12px; overflow: hidden; vertical-align: text-bottom">{{ isUseStandImageOnChatTab && isUseStandImage ? 'how_to_reg' : 'person_off'}}</i>
         </button>
       </span>
       <select style="width: 10em; margin-right: 3px" (change)="isUseStandImage = true" [(ngModel)]="standName" [ngModelOptions]="{standalone: true}" [ngClass]="{'not-specified': standName == ''}" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null" >
-        <option value="" class="not-specified">未選択</option>
+        <option value="" class="not-specified">未選取</option>
         <option *ngFor="let name of standNameList" value="{{name}}">{{name}}</option>
       </select>
       <span style="white-space: nowrap; margin-left: 0.6em; display: inline-block">
         <b style="font-size: smaller;">Pos: </b><input style="width: 176px" (change)="isUseStandImage = true" type="range" min="0" max="100" [(ngModel)]="character.standList.position" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null">
         <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" (change)="isUseStandImage = true" [(ngModel)]="character.standList.position" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null"><b style="font-size: smaller;">％</b>
       </span>
-      <button style="margin-left: 0.6em; font-size: smaller;" type="button" (click)="farewellStand()">退去</button>
+      <button style="margin-left: 0.6em; font-size: smaller;" type="button" (click)="farewellStand()">退場</button>
     </div>
     <div>
       <form>
         <input *ngIf="onlyCharacters" type="color" style="width:1em; margin-left: 3px" [(ngModel)]="paletteColor" [ngModelOptions]="{standalone: true}">
-        <textarea class="chat-input" [placeholder]="!onlyCharacters ? 'Ctrl+⇅:履歴 &#x23CE;:送信 Shift+&#x23CE;:改行　チャットパレットの色を優先' : 'Ctrl+⇅:履歴 &#x23CE;:送信 Shift+&#x23CE;:改行　白(255,255,255):あなたの色'" [(ngModel)]="text"
+        <textarea class="chat-input" [placeholder]="!onlyCharacters ? 'Ctrl+⇅:歷史 ↵:發送 Shift+↵:換行　優先使用聊天面板顏顏顏色' : 'Ctrl+⇅:歷史 ↵:發送 Shift+↵:換行　白(255,255,255):你的顏顏顏色'" [(ngModel)]="text"
           [ngModelOptions]="{standalone: true}" (input)="onInput()" (keydown.enter)="sendChat($event)" (focus)="isFilterTextUpdate = true" (blur)="isFilterTextUpdate = false"
           (keydown.control.arrowup)="moveHistory($event, 1)" (keydown.control.arrowdown)="moveHistory($event, -1)" (keydown.arrowdown)="moveTo($event)" [disabled]="!isAllowsChat"
           #textArea></textarea>
@@ -87,7 +87,7 @@
           <div *ngIf="peerNameAndColor.imageUrl" class="cover mini-icon" [style.background-image]="'url(' + peerNameAndColor.imageUrl + ')' | safe: 'style' "></div>
           <div style="display: inline"><span style="font-weight: bold" class="peer-name" [style.color]="peerNameAndColor.color | safe: 'style'">{{peerNameAndColor.name}}</span><span style="user-select: none" *ngIf="writingPeerNameAndColors.length !== (i + 1)">, </span></div>
         </div>
-         が入力中...
+         正在輸入...
       </ng-container>
     </div>
   </div>

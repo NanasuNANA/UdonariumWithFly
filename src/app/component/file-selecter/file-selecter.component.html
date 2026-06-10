@@ -21,18 +21,18 @@
   </span>
   <span style="white-space: nowrap">
     <select [(ngModel)]="serchCondIsOr" style="margin-left: 3px">
-      <option value="true">いずれか (OR)</option>
-      <option value="">すべて (AND)</option>
+      <option value="true">任一符合 (OR)</option>
+      <option value="">全部符合 (AND)</option>
     </select>
-    <label sytle="white-space: nowrap" title="最近使ったタグの画像を前に">
+    <label sytle="white-space: nowrap" title="將最近使用標籤的圖片排在前面">
       <input name="is-sort" value="Sort" type="checkbox" [(ngModel)]="isSort" checked="{{isSort ? 'checked' : ''}}" (change)="isSort = (isSort ? true : false)">
-      <b style="font-size: smaller; margin-right: 3px">ソート</b>
+      <b style="font-size: smaller; margin-right: 3px">排序</b>
     </label>
   </span>
 </div>
 <div id="file-list" style="min-height: 250px; margin-left: 1px; padding-top: 3px">
   <span *ngIf="isAllowedEmpty" class="empty" style="display: inline-block;">
-    <button (click)="onSelectedFile(empty)" style="min-width: 100px; margin-left: -1px; margin-right: 3px">画像なし<br>/設定解除</button>
+    <button (click)="onSelectedFile(empty)" style="min-width: 100px; margin-left: -1px; margin-right: 3px">画像無<br>/設定解除</button>
   </span>
   <div *ngFor="let file of images; trackBy: identify" @scaleInOut class="image" style="text-align: center; min-width: 100px; height: 120px; position: relative" [ngClass]="{'current-images': getCurrent(file)}">
     <div style="position: absolute; font-size: xx-small; text-align: left; bottom: 0px; width: 100%; height: 100%; overflow: hidden; pointer-events: none">

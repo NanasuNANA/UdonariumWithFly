@@ -96,7 +96,7 @@ export class CutInList extends ObjectNode implements InnerXml {
       }
     }
     */
-    // 再度シャッフルして出現順をランダムに
+    // 再度洗牌して出現順をランダムに
     const matchCutIns = matchCutIn.map<[number, CutIn]>(cutIn => [Math.random(), cutIn]).sort((a, b) => { return a[0] - b[0]; });
     return {
       names: matchCutIns.map(pair => pair[1].name),

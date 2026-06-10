@@ -18,7 +18,7 @@ export interface PaletteVariable {
 export class ChatPalette extends ObjectNode {
   @SyncVar() dicebot: string = '';
   @SyncVar() paletteColor: string = '';
-  //TODO: キャラシ項目のコピー
+  //TODO: キャラシ項目的副本
 
   get color(): string {
     if (this.paletteColor && this.paletteColor != PeerCursor.CHAT_TRANSPARENT_COLOR) {
@@ -103,7 +103,7 @@ export class ChatPalette extends ObjectNode {
               || extendVariables.getFirstElementByNameUnsensitive(name, /^初期/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /初期値$/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /最大値$/)
-            ) && (element.isNumberResource || element.isAbilityScore)) { // 互換のためにいったん残し、将来リソースのみにするかも？
+            ) && (element.isNumberResource || element.isAbilityScore)) { // 互換のためにいったん残し、将来資源のみにするかも？
               ret = element.value;
             } else if ((
               element = extendVariables.getFirstElementByNameUnsensitive(name, /^基本/)

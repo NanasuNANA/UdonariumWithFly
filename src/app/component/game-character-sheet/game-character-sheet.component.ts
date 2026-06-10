@@ -120,7 +120,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
             case 'card':
               const card = this.tabletopObject;
               if (card instanceof Card) { 
-                this.panelService.title = `カード設定 - ${card.isFront ? this.tabletopObjectName : 'カード（裏面）'}`;
+                this.panelService.title = `牌設定 - ${card.isFront ? this.tabletopObjectName : '牌（裏面）'}`;
               } 
               break;
             case 'card-stack':
@@ -133,13 +133,13 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
               this.panelService.title = `共有メモ設定 - ${this.tabletopObjectName}`;
               break;
             case 'dice-symbol':
-              this.panelService.title = `ダイスシンボル設定 - ${this.tabletopObjectName}`;
+              this.panelService.title = `骰子符號設定 - ${this.tabletopObjectName}`;
               break;
             case 'character':
-              this.panelService.title = `キャラクターシート - ${this.tabletopObjectName}`;
+              this.panelService.title = `角色シート - ${this.tabletopObjectName}`;
               break;
             case 'range':
-              this.panelService.title = `射程・範囲設定 - ${this.tabletopObjectName}`;
+              this.panelService.title = `射程・範圍設定 - ${this.tabletopObjectName}`;
               break;
           }
         }
@@ -148,7 +148,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   ngAfterViewInit() {
     queueMicrotask(() => {
-      const title = (this.tabletopObject instanceof Card && !this.tabletopObject.isFront) ? 'カード設定 - カード（裏面）' : this.panelService.title;
+      const title = (this.tabletopObject instanceof Card && !this.tabletopObject.isFront) ? '牌設定 - 牌（裏面）' : this.panelService.title;
       this.chatMessageService.sendOperationLog(`${title} を開いた`);
     });
   }
@@ -163,8 +163,8 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   addDataElement() {
     if (this.tabletopObject.detailDataElement) {
-      let title = DataElement.create('見出し', '', {});
-      let tag = DataElement.create('タグ', '', {});
+      let title = DataElement.create('標題', '', {});
+      let tag = DataElement.create('標籤', '', {});
       title.appendChild(tag);
       this.tabletopObject.detailDataElement.appendChild(title);
     }
@@ -244,7 +244,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
     //let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
     //let objectName: string = element ? <string>element.value : '';
-    const objectName = ((this.tabletopObject instanceof Card && !this.tabletopObject.isFront) ? 'カード' : this.tabletopObjectName);
+    const objectName = ((this.tabletopObject instanceof Card && !this.tabletopObject.isFront) ? '牌' : this.tabletopObjectName);
 
     await this.saveDataService.saveGameObjectAsync(this.tabletopObject, 'fly_xml_' + objectName, percent => {
       this.progresPercent = percent;

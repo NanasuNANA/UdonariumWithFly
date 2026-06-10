@@ -1,10 +1,10 @@
 <div class="flex-container">
   <div class="flex-item no-grow">
     <div>
-      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="add()">ダイスボット表の追加</button>
+      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="add()">新增骰子機器人表</button>
     </div>
     <select #diceRollTableSelecter style="width: 14em;" size="15" (change)="onChangeDiceRollTable(diceRollTableSelecter.value)">
-      <option *ngFor="let diceRollTable of diceRollTables" value="{{ diceRollTable.identifier }}" title="{{diceRollTable.name}}" [style.color]="diceRollTable.name == '' ? 'gray' : ''">{{ diceRollTable.name == '' ? '(無名のダイスボット表)' : diceRollTable.name }}</option>
+      <option *ngFor="let diceRollTable of diceRollTables" value="{{ diceRollTable.identifier }}" title="{{diceRollTable.name}}" [style.color]="diceRollTable.name == '' ? 'gray' : ''">{{ diceRollTable.name == '' ? '(無名骰子機器人表)' : diceRollTable.name }}</option>
     </select>
   </div>
   <div class="flex-item">
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div>
-        <textarea style="width: 100%; height: 20em; margin-top: 3px; resize: vertical;" placeholder="1:数字と結果を:（コロン）で区切って記述&#13;&#10;2:結果２&#13;&#10;3:結果３&#13;&#10;4:…" [(ngModel)]="diceRollTableText" [attr.disabled]="!isEditable ? '' : null" ></textarea>
+        <textarea style="width: 100%; height: 20em; margin-top: 3px; resize: vertical;" placeholder="1:用:（冒號）分隔數字與結果&#13;&#10;2:結果2&#13;&#10;3:結果3&#13;&#10;4:…" [(ngModel)]="diceRollTableText" [attr.disabled]="!isEditable ? '' : null" ></textarea>
       </div>
       <hr/>
       <div>
@@ -38,22 +38,22 @@
             <!--
             <button [disabled]="isSaveing || !diceRollTables.length" (click)="saveAll()">
               <div style="position: relative;">
-                <div [ngClass]="{'is-hidden': isSaveing}">すべて保存</div>
+                <div [ngClass]="{'is-hidden': isSaveing}">全部儲存</div>
                 <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
               </div>
             </button>
             -->
             <button [disabled]="isSaveing" (click)="save()">
               <div style="position: relative;">
-                <div [ngClass]="{'is-hidden': isSaveing}">保存</div>
+                <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
                 <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
               </div>
             </button>
-            <button class="danger" (click)="delete()">削除</button>
+            <button class="danger" (click)="delete()">刪除</button>
           </div>
         </ng-container>
         <ng-container *ngIf="isDeleted && selectedDiceRollTableXml">
-          <button (click)="restore()">元に戻す</button>
+          <button (click)="restore()">還原</button>
         </ng-container>
       </div>
     </ng-container>
@@ -61,9 +61,9 @@
 </div>
 <ng-container *ngIf="isEmpty">
   <div style="font-size: 12px;">
-    ※ダイスボット表がありません。
+    ※目前沒有骰子機器人表。
     <ng-container *ngIf="isDeleted && selectedDiceRollTableXml">
-      <button (click)="restore()">元に戻す</button>
+      <button (click)="restore()">還原</button>
     </ng-container>
   </div>
 </ng-container>

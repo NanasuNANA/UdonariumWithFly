@@ -52,7 +52,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
         this.type = '地形';
       }
       if (elm instanceof TextNote) {
-        this.type = '共有メモ';
+        this.type = '共用備注';
       }
       if (elm instanceof RangeArea) {
         this.type = '射程・範囲';
@@ -121,7 +121,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
     const value = this.dataElement.loggingValue;
     const dataElement = this.dataElement;
     if (sendMsssage && !this.isDisable && value != oldValue) {
-      let text = `${this.name == '' ? `(無名の${this.type})` : this.name} の ${dataElement.name == '' ? '(無名の変数)' : dataElement.name} を変更`;
+      let text = `${this.name == '' ? `(無名の${this.type})` : this.name} の ${dataElement.name == '' ? '(無名變數)' : dataElement.name} を変更`;
       if (this.showValue && (dataElement.isSimpleNumber || dataElement.isNumberResource || dataElement.isAbilityScore)) {
         text += ` ${oldValue} → ${value}`;
       } else if (dataElement.isCheckProperty) {

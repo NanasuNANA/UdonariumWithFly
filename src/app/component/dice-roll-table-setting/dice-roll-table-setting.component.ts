@@ -49,7 +49,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
   ) { }
 
   ngOnInit() {
-    Promise.resolve().then(() => this.modalService.title = this.panelService.title = 'ダイスボット表設定');
+    Promise.resolve().then(() => this.modalService.title = this.panelService.title = '骰子機器人表設定');
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 1000, event => {
         if (!this.selectedDiceRollTable || event.data.identifier !== this.selectedDiceRollTable.identifier) return;
@@ -79,7 +79,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     this.selectedDiceRollTableXml = '';
   }
 
-  create(name: string = 'ダイスボット表'): DiceRollTable {
+  create(name: string = '骰子機器人表'): DiceRollTable {
     return DiceRollTableList.instance.addDiceRollTable(name)
   }
 
@@ -167,14 +167,14 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     let coordinate = this.pointerDeviceService.pointers[0];
     let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 788 };
     let textView = this.panelService.open(TextViewComponent, option);
-    textView.title = 'ダイスボット表ヘルプ';
+    textView.title = '骰子機器人表說明';
     textView.text = 
-`　名前、コマンド、振るダイスを設定し、ダイスの数字で表を参照し、表示します。
+`　名稱、コマンド、振るダイスを設定し、ダイスの数字で表を参照し、顯示します。
 　チャットでコマンドを送信することにより、ダイスボットと同様に結果が送信されます。
-　表は1行ごとに数字と結果を:（コロン）で区切り「数字:結果」の形で記述します（よって、ダイスは最後に一つの数字を返すものである必要があります、バラバラダイス nBm、個数振り足しダイス nRm、上方無限ロール nUm の成功数にも対応しています）。
+　表は1行ごとに数字と結果を:（コロン）で区切り「数字:結果」の形で記述します（よって、ダイスは最後に一つの数字を返すものである必要があります、バラバラダイス nBm、個数振り足しダイス nRm、上方無限擲骰 nUm の成功数にも対応しています）。
 　
-　-（ハイフン）または～で区切って数字の範囲を指定することもできます。
-　表に \\n と書くと、そこで改行します（\\nは表示されません）。
+　-（ハイフン）または～で区切って数字の範圍を指定することもできます。
+　表に \\n と書くと、そこで改行します（\\nは顯示されません）。
 
 ダイスボット表の例）
 　name: 遭遇艦種　
@@ -187,16 +187,16 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
 　　5-6:駆逐艦
 
 　表を参照する際は先にあるものが優先されます、上記の例では最後の行を「1-6:駆逐艦」などとしても同じ結果になります（が、分かりやすい記述をお勧めします）。
-　デフォルトの D66 はソートされませんので、必要な場合（サイコロ・フィクションの名前表など）は、 D66S としてソートした数字を得てください。
-　数字の記述の際 *（アスタリスク）をワイルドカード（任意の数字）として使用可能です、例えば *-1 とすれば1以下、6-* とすれば6以上の任意の数字です（*単独はすべての数字となり、先にあるものから参照されますので、ダイスボット表の途中の行に書いた場合それより先の行が参照されなくなります）。後述の修正により表からはみ出しても結果を得られるようにすることができます。
+　預設の D66 はソートされませんので、必要な場合（サイコロ・フィクションの名稱表など）は、 D66S としてソートした数字を得てください。
+　数字の記述の際 *（アスタリスク）をワイルド牌（任意の数字）として使用可能です、例えば *-1 とすれば1以下、6-* とすれば6以上の任意の数字です（*単独はすべての数字となり、先にあるものから参照されますので、ダイスボット表の途中の行に書いた場合それより先の行が参照されなくなります）。後述の修正により表からはみ出しても結果を得られるようにすることができます。
 
 　チャットからのコマンドの際、全角半角、アルファベットの大文字小文字は無視されます。またダイスに修正を足し引きする、あるいは任意の数字で参照することが可能です。コマンドの後に +修正値 または -修正値 を記述することで振られたダイスの数字を修正します。また =指定値 と記載することで、その数字でコマンドに対応するダイスボット表を参照します。修正値、指定値は任意の整数です。
 
 コマンドの例）
 　ShipType=3
-　前述のダイスボット表の例「遭遇艦種」を数字3指定で参照します、結果「重巡洋艦」が表示されます。もし、1未満や6を超える数字を指定した場合「（結果なし）」となるでしょう。
+　前述のダイスボット表の例「遭遇艦種」を数字3指定で参照します、結果「重巡洋艦」が顯示されます。もし、1未満や6を超える数字を指定した場合「（結果なし）」となるでしょう。
 
 　ShipType+2
-　前述のダイスボット表の例「遭遇艦種」を1d6の結果に+2した数字で参照します。「遭遇艦種」には7以降の記載がありません、その場合「（結果なし）」となるでしょう、それを避けたい場合は前述のワイルドカード * を使用します。`;
+　前述のダイスボット表の例「遭遇艦種」を1d6の結果に+2した数字で参照します。「遭遇艦種」には7以降の記載がありません、その場合「（結果なし）」となるでしょう、それを避けたい場合は前述のワイルド牌 * を使用します。`;
   }
 }

@@ -521,7 +521,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     let menuArray = [];
 
     if (this.selectionService.objects.length) {
-      menuArray.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+      menuArray.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
       menuArray.push(ContextMenuSeparator);
     }
 
@@ -544,14 +544,14 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     )
     menuArray.push(
       {
-        name: '影響グリッドの判定方法', action: null, 
+        name: '判定影響格線的方式', action: null, 
         subActions: [
-          { name: `${this.range.fillType == 0 ? '◉' : '○'} 判定なし (輪郭内を塗りつぶす)`, action: () => { this.range.fillType = 0; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 0 ? '◉' : '○'} 無判定（填滿輪廓內）`, action: () => { this.range.fillType = 0; }, checkBox: 'radio' },
           ContextMenuSeparator,
-          { name: `${this.range.fillType == 1 ? '◉' : '○'} グリッドの中心を覆う`, action: () => { this.range.fillType = 1; }, checkBox: 'radio' },
-          { name: `${this.range.fillType == 2 ? '◉' : '○'} グリッドの一部でも覆う`, action: () => { this.range.fillType = 2; }, checkBox: 'radio' },
-          { name: `${this.range.fillType == 3 ? '◉' : '○'} グリッドの半分以上を覆う`, action: () => { this.range.fillType = 3; }, checkBox: 'radio' },
-          { name: `${this.range.fillType == 4 ? '◉' : '○'} グリッド全体を覆う`, action: () => { this.range.fillType = 4; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 1 ? '◉' : '○'} 覆蓋格線中心`, action: () => { this.range.fillType = 1; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 2 ? '◉' : '○'} 覆蓋格線任意部分`, action: () => { this.range.fillType = 2; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 3 ? '◉' : '○'} 覆蓋格線半數以上`, action: () => { this.range.fillType = 3; }, checkBox: 'radio' },
+          { name: `${this.range.fillType == 4 ? '◉' : '○'} 完全覆蓋格線`, action: () => { this.range.fillType = 4; }, checkBox: 'radio' },
         ]
       }
     );
@@ -559,7 +559,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
     if (this.range.type == 'CIRCLE' || this.range.type == 'SQUARE' || this.range.type == 'DIAMOND') {
       let menu: ContextMenuAction[] = this.dockableCharacters.length <= 0
-        ? this.followingCharactor ? [] : [{ name: 'キャラクターがいません', action: null, disabled: true, center: true }] 
+        ? this.followingCharactor ? [] : [{ name: '沒有角色', action: null, disabled: true, center: true }] 
         : this.dockableCharacters.map(character => {
           return {
             name: `${this.followingCharactor && this.followingCharactor.identifier === character.identifier ? '◉' : '○'} ${character.name}`,
@@ -577,7 +577,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
       //if (this.followingCharactor) {
         if (menu.length != 0) menu.push(ContextMenuSeparator);
         menu.push({
-            name: '追従を解除する', action: () => {
+            name: '取消跟隨', action: () => {
               SoundEffect.play(PresetSound.unlock);
               this.followingCharactor = null;
             },
@@ -585,19 +585,19 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
           });
       //}
       menuArray.push({
-          name: '付近のキャラクターに追従', action: null, 
+          name: '跟隨附近的角色', action: null, 
           subActions: menu
         });
       menuArray.push(
         this.range.isExpandByFollowing
         ? {
-          name: '☑ 追従時サイズに合わせて拡大', action: () => {
+          name: '☑ 跟隨時縮放以配合大小', action: () => {
             this.range.isExpandByFollowing = false;
           },
           checkBox: 'check'
         }
         : {
-          name: '☐ 追従時サイズに合わせて拡大', action: () => {
+          name: '☐ 跟隨時縮放以配合大小', action: () => {
             this.range.isExpandByFollowing = true;
           },
           checkBox: 'check'
@@ -605,13 +605,13 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
         menuArray.push(
           this.range.isFollowAltitude
           ? {
-            name: '☑ 高さ・高度にも追従', action: () => {
+            name: '☑ 也跟隨高度', action: () => {
               this.range.isFollowAltitude = false;
             },
             checkBox: 'check'
           }
           : {
-            name: '☐ 高さ・高度にも追従', action: () => {
+            name: '☐ 也跟隨高度', action: () => {
               this.range.isFollowAltitude = true;
               if (this.followingCharactor) this.range.following();
             },
@@ -621,13 +621,13 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
       menuArray.push(
         this.range.subDivisionSnapPolygonal
         ? {
-          name: '☑ 細かい角度で回転', action: () => {
+          name: '☑ 細分角度旋轉', action: () => {
             this.range.subDivisionSnapPolygonal = false;
           },
           checkBox: 'check'
         } :
         {
-          name: '☐ 細かい角度で回転', action: () => {
+          name: '☐ 細分角度旋轉', action: () => {
             this.range.subDivisionSnapPolygonal = true;
           },
           checkBox: 'check'
@@ -638,7 +638,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 /*
     menuArray.push(
       {
-        name: 'グリッド表示をずらす', action: null, 
+        name: '偏移格線顯示', action: null, 
         subActions: [
           this.range.offSetX 
           ? { name: '☑ 横(左右) 方向', action: () => { this.range.offSetX = false; },
@@ -657,18 +657,18 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 */
     menuArray.push(this.isAltitudeIndicate
       ? {
-        name: '☑ 高度の表示', action: () => {
+        name: '☑ 顯示高度', action: () => {
           this.isAltitudeIndicate = false;
         },
         checkBox: 'check'
       } : {
-        name: '☐ 高度の表示', action: () => {
+        name: '☐ 顯示高度', action: () => {
           this.isAltitudeIndicate = true;
         },
         checkBox: 'check'
       });
     menuArray.push({
-      name: '高度を0にする', action: () => {
+      name: '重置高度為0', action: () => {
         if (this.altitude != 0) {
           this.altitude = 0;
           SoundEffect.play(PresetSound.sweep);
@@ -678,12 +678,12 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     });
     menuArray.push(ContextMenuSeparator);
     menuArray.push(
-      { name: '射程・範囲を編集...', action: () => { this.showDetail(this.range); } }
+      { name: '編輯射程・範圍...', action: () => { this.showDetail(this.range); } }
     );
     if (this.range.getUrls().length > 0) {
       menuArray.push(
         {
-          name: '参照URLを開く', action: null,
+          name: '開啟參考URL', action: null,
           subActions: this.range.getUrls().map((urlElement) => {
             const url = urlElement.value.toString();
             return {
@@ -696,7 +696,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
                 } 
               },
               disabled: !StringUtil.validUrl(url),
-              error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
+              error: !StringUtil.validUrl(url) ? 'URL無效' : null,
               isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
             };
           })
@@ -706,7 +706,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     }
     menuArray.push(
       {
-        name: 'コピーを作る', action: () => {
+        name: '建立副本', action: () => {
           let cloneObject = this.range.clone();
           //console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
@@ -721,7 +721,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     );
     menuArray.push(
       {
-        name: '削除する', action: () => {
+        name: '刪除', action: () => {
           this.range.destroy();
           SoundEffect.play(PresetSound.sweep);
         }
@@ -729,7 +729,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     );
     menuArray.push( ContextMenuSeparator );
     menuArray.push(
-      { name: 'オブジェクト作成', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
+      { name: '建立物件', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
     );
 
     this.contextMenuService.open(menuPosition, menuArray, this.name);
@@ -739,7 +739,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   dockingWindowOpen() {
     let coordinate = this.pointerDeviceService.pointers[0];
     let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 350, height: 200 };
-    option.title = 'キャラクターに追従';
+    option.title = '跟隨角色';
     let component = this.panelService.open<RangeDockingCharacterComponent>(RangeDockingCharacterComponent, option);
     component.tabletopObject = <RangeArea>this.range;
   }
@@ -761,7 +761,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   private showDetail(gameObject: RangeArea) {
     let coordinate = this.pointerDeviceService.pointers[0];
-    let title = '射程・範囲設定';
+    let title = '射程・範圍設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
     let option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 390 };
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);

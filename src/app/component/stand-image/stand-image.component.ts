@@ -89,7 +89,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
   ) { }
 
   onSpeaking(event: any) {
-    //キャラクターの吹き出し表示に合わせる
+    //角色の吹き出し顯示に合わせる
     if (this.gameCharacter && this.gameCharacter.text && (this.isApplyDialog || this.isSpeakable || this.gameCharacter.isShowChatBubble)) {
       clearTimeout(this._timeoutId);
       this._timeoutId = setTimeout(() => {

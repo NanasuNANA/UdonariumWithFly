@@ -3,11 +3,11 @@
     <span>
       <i class="material-icons large-font">add_photo_alternate</i>
     </span>
-    <span>ここに画像をドロップ</span>
-    <span class="small-font">またはここをクリックして選択</span>
+    <span>將圖片拖曳至此</span>
+    <span class="small-font">或點擊此處選取</span>
     <input type="file" style="display: none;" (change)="handleFileSelect($event)" multiple accept="image/*"/>
     <span class="small-font">
-      <br>１ファイルにつき2MBまで</span>
+      <br>每個檔案最大2MB</span>
   </span>
 </label>
 <div class="sticky-top">
@@ -33,12 +33,12 @@
   </span>
   <span style="white-space: nowrap">
     <select [(ngModel)]="serchCondIsOr" style="margin-left: 3px">
-      <option value="true">いずれか (OR)</option>
-      <option value="">すべて (AND)</option>
+      <option value="true">任一符合 (OR)</option>
+      <option value="">全部符合 (AND)</option>
     </select>
-    <label sytle="white-space: nowrap" title="最近使ったタグの画像を前に">
+    <label sytle="white-space: nowrap" title="將最近使用標籤的圖片排在前面">
       <input name="is-sort" value="Sort" type="checkbox" [(ngModel)]="isSort" checked="{{isSort ? 'checked' : ''}}" (change)="isSort = (isSort ? true : false)">
-      <b style="font-size: smaller; margin-right: 3px">ソート</b>
+      <b style="font-size: smaller; margin-right: 3px">排序</b>
     </label>
   </span>
 </div>
@@ -77,12 +77,12 @@
 <div *ngIf="isSelected" class="sticky-bottom" @fadeAndUpInOut>
   <div>
     <div style="margin-left: 3px; float: right">
-      <button style="padding: 2px 0.5em;" [attr.title]="selectedImagesIsHidden ? '選択画像を表示設定にする' : '選択画像を非表示設定にする'" (click)="setectedImagesToHidden(!selectedImagesIsHidden)">
+      <button style="padding: 2px 0.5em;" [attr.title]="selectedImagesIsHidden ? '將選取圖片設為顯示' : '將選取圖片設為隱藏'" (click)="setectedImagesToHidden(!selectedImagesIsHidden)">
         <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': selectedImagesIsHidden}">{{ selectedImagesIsHidden ? 'visibility' : 'visibility_off' }}</i>
       </button>
     </div>
-    <button style="font-size: x-small; margin-right: 2em" (click)="onUnselect()">選択解除 ({{ selectedImageFiles.length }} 選択中)</button>
-    <input attr.list="{{panelId}}_suggest" type="text" [(ngModel)]="addingTagWord" style="width: 14em" placeholder="スペース 区切りで 複数可能"><button style="font-size: x-small" [disabled]="addingTagWord == null || addingTagWord.trim() === ''" (click)="addTagWord()">タグ追加 ➡</button>
+    <button style="font-size: x-small; margin-right: 2em" (click)="onUnselect()">取消選取 ({{ selectedImageFiles.length }} 個已選取)</button>
+    <input attr.list="{{panelId}}_suggest" type="text" [(ngModel)]="addingTagWord" style="width: 14em" placeholder="可用空格分隔多個"><button style="font-size: x-small" [disabled]="addingTagWord == null || addingTagWord.trim() === ''" (click)="addTagWord()">新增標籤 ➡</button>
     <ng-container *ngIf="selectedImagesOwnWords().length > 0">
       <span style="user-select: none">
         <label *ngFor="let word of selectedImagesOwnWords()" class="word-tag" (click)="removeTagWord(word)" style="cursor: pointer; font-size: smaller">{{ word }}<sup style="font-size: xx-small; color: red">×</sup></label>

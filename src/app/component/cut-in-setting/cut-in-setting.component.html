@@ -1,10 +1,10 @@
 <div class="flex-container">
   <div class="flex-item no-grow">
     <div>
-      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="add()">カットインの追加</button>
+      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="add()">新增插圖</button>
     </div>
     <select #cutInSelecter style="width: 12em;" size="15" (change)="onChangeCutIn(cutInSelecter.value)">
-      <option *ngFor="let cutIn of cutIns" value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name == '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name == '' ? '(無名のカットイン)' : cutIn.name) }}</option>
+      <option *ngFor="let cutIn of cutIns" value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name == '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name == '' ? '(無名插圖)' : cutIn.name) }}</option>
     </select>
   </div>
   <div class="flex-item">
@@ -19,7 +19,7 @@
               <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
             </div>
             <div *ngIf="isEditable" style="position: absolute; top: 1px; left: -1px; z-index: 5">
-              <button *ngIf="!cutInVideoId || cutInisSoundOnly" (click)="openModal()"><b>画像変更</b></button>
+              <button *ngIf="!cutInVideoId || cutInisSoundOnly" (click)="openModal()"><b>變更圖片</b></button>
             </div>
             <div *ngIf="cutInVideoId && !cutInisSoundOnly" class="grow" style="opacity: 0.8; position: absolute; bottom: 1px; right: -1px; z-index: 5"><i style="font-size: 32px" class="material-icons">{{ cutInPlayListId ? 'featured_play_list' : 'movie' }}</i></div>
             <img style="width: 160px; height: 160px; object-fit: contain" [ngClass]="{ blackout: (!cutInVideoId || cutInisSoundOnly) && !isShowHideImages && getHidden(cutInImage) }" [src]="cutInImageUrl | safe: 'resourceUrl'" draggable="false">
@@ -39,36 +39,36 @@
             <b style="font-size: smaller; margin-left: 1em">Tag: </b><input type="text" style="width: 3em" placeholder="Tag" [(ngModel)]="cutInTag" [attr.disabled]="!isEditable ? '' : null">
           </div>
           <div style="padding-left: 2px; padding-top: 2px">
-            <b style="font-size: smaller">Duration (0=無制限): </b><input type="number" min="0" max="1000" [(ngModel)]="cutInDuration" style="width: 3.5em" [attr.disabled]="!isEditable || isPlaying ? '' : null"><b style="font-size: smaller; padding-left: 2px">sec.</b>
+            <b style="font-size: smaller">Duration (0=無限制): </b><input type="number" min="0" max="1000" [(ngModel)]="cutInDuration" style="width: 3.5em" [attr.disabled]="!isEditable || isPlaying ? '' : null"><b style="font-size: smaller; padding-left: 2px">sec.</b>
           </div>
           <div style="padding-left: 2px">
             <b style="font-size: smaller">Cut In: </b>
             <select [(ngModel)]="cutInType" style="min-width: 8em" [attr.disabled]="!isEditable ? '' : null">
-              <option [value]="-1" [selected]="cutInType == -1">即時出現</option>
-              <option [value]="0" [selected]="cutInType == 0">浮き出る</option>
-              <option [value]="1" [selected]="cutInType == 1">飛び出す</option>
-              <option [value]="2" [selected]="cutInType == 2">開く（左右）</option>
-              <option [value]="3" [selected]="cutInType == 3">開く（上下）</option>
+              <option [value]="-1" [selected]="cutInType == -1">立即出現</option>
+              <option [value]="0" [selected]="cutInType == 0">浮現</option>
+              <option [value]="1" [selected]="cutInType == 1">彈出</option>
+              <option [value]="2" [selected]="cutInType == 2">展開（左右）</option>
+              <option [value]="3" [selected]="cutInType == 3">展開（上下）</option>
             </select>
-            <label style="margin-left: 1em; font-size: smaller" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="borderStyle" type="checkbox" (click)="borderStyle = borderStyle == 0 ? 1 : 0" [checked]="borderStyle == 1" [attr.disabled]="!isEditable ? '' : null"><b>枠あり</b></label>
+            <label style="margin-left: 1em; font-size: smaller" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="borderStyle" type="checkbox" (click)="borderStyle = borderStyle == 0 ? 1 : 0" [checked]="borderStyle == 1" [attr.disabled]="!isEditable ? '' : null"><b>有外框</b></label>
           </div>
           <div style="padding-left: 2px">
-            <b style="font-size: smaller">チャット末尾: </b><br>
-            <textarea style="width: 100%; height: 3em" placeholder="1行に一つ、冒頭@でマッチ時にテキストから切り取り&#13;&#10;@街並み" [(ngModel)]="cutInCond" [attr.disabled]="!isEditable ? '' : null"></textarea>
+            <b style="font-size: smaller">聊天末尾: </b><br>
+            <textarea style="width: 100%; height: 3em" placeholder="每行一個，開頭@時從文字中截取&#13;&#10;@街景" [(ngModel)]="cutInCond" [attr.disabled]="!isEditable ? '' : null"></textarea>
           </div>
         </div>
       </div>
       <div style="font-size: smaller; display: flex; flex-direction: column; width: 100%">
         <div>
-          <button [attr.disabled]="!isEditable ? '' : null" (click)="testCutIn()"><b>テスト (自分だけ見る)<sup class="self-only">*</sup></b></button>
+          <button [attr.disabled]="!isEditable ? '' : null" (click)="testCutIn()"><b>測試（只有自己看見）<sup class="self-only">*</sup></b></button>
           <span style="margin-left: 2em">
-            <button style="margin-right: 0px" [attr.disabled]="!isEditable ? '' : null" (click)="playCutIn()"><b><i class="material-icons" style="font-size: smaller">play_arrow</i>再生</b></button>
+            <button style="margin-right: 0px" [attr.disabled]="!isEditable ? '' : null" (click)="playCutIn()"><b><i class="material-icons" style="font-size: smaller">play_arrow</i>播放</b></button>
             <button style="margin-left: 0px" [attr.disabled]="!isEditable ? '' : null" (click)="stopCutIn()"><b><i class="material-icons" style="font-size: smaller">stop</i>停止</b></button>
             <span style="white-space: nowrap"> ➡
               <select style="max-width: 10em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo == ''}" [ngStyle]="{'color': (sendTo == '' ? null : sendToColor), 'font-weight': (sendTo == '' ? 'normal' : 'bolder')}">
-                <option value="" class="not-specified">全員</option>
+                <option value="" class="not-specified">全體</option>
                 <option *ngFor="let peer of otherPeers" value="{{peer.identifier}}" [style.color]="peer.color" style="font-weight: bolder;">{{peer.name}}
-                  <ng-container *ngIf="peer === myPeer">（あなた）</ng-container>
+                  <ng-container *ngIf="peer === myPeer">（你）</ng-container>
                 </option>
               </select>
             </span>
@@ -77,7 +77,7 @@
         <div class="section">
           <div>
             <b class="header">位置</b>
-            <label style="margin-left: 0.6em" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="cutInIsPreventOutBounds" type="checkbox" [(ngModel)]="cutInIsPreventOutBounds" [checked]="cutInIsPreventOutBounds" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>見切れ防止</b></label>
+            <label style="margin-left: 0.6em" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="cutInIsPreventOutBounds" type="checkbox" [(ngModel)]="cutInIsPreventOutBounds" [checked]="cutInIsPreventOutBounds" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>防止超出畫面</b></label>
           </div>
           <div style="margin-left: 1em; display: table; width: 65%">
             <div style="display: table-row">
@@ -104,21 +104,21 @@
             </div>
           </div>
           <div style="margin-left: 1em">
-            <b>Z-Index (大きいものが前): </b><input [(ngModel)]="cutInZIndex" type="number" min="{{-maxSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable  || cutInVideoId ? '' : null">
-            <label style="margin-left: 0.6em"><input name="cutInIsFrontOfStand" type="checkbox" [(ngModel)]="cutInIsFrontOfStand" [checked]="cutInIsFrontOfStand" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>スタンドの前面に表示</b></label>
+            <b>Z-Index (數值大的顯示在前): </b><input [(ngModel)]="cutInZIndex" type="number" min="{{-maxSize}}" max="{{maxSize}}" style="width: 3.5em" [attr.disabled]="!isEditable  || cutInVideoId ? '' : null">
+            <label style="margin-left: 0.6em"><input name="cutInIsFrontOfStand" type="checkbox" [(ngModel)]="cutInIsFrontOfStand" [checked]="cutInIsFrontOfStand" [value]="true" [attr.disabled]="!isEditable || cutInVideoId ? '' : null"><b>顯示在立繪前方</b></label>
           </div>
         </div>
         <div class="section">
           <div>
-            <b class="header">サイズ（幅、高さ共に0の場合は元画像のまま）</b>
+            <b class="header">尺寸（寬高皆為0時維持原始尺寸）</b>
           </div>
           <div style="margin-left: 1em; display: table; width: 90%">
             <div style="display: table-row">
               <div style="display: table-cell; width: 11.5em">
-                <b>Width (0=指定なし): </b>
+                <b>Width (0=不指定): </b>
               </div>
               <div style="display: table-cell; width: calc(100% - 15.5em)">
-                <input [(ngModel)]="cutInWidth" type="range" [title]="cutInWidth ? cutInWidth + '%' : '指定なし'" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutInWidth" [attr.disabled]="!isEditable ? '' : null" />
+                <input [(ngModel)]="cutInWidth" type="range" [title]="cutInWidth ? cutInWidth + '%' : '不指定'" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutInWidth" [attr.disabled]="!isEditable ? '' : null" />
               </div>
               <div style="display: table-cell; width: 6em; text-align: right">
                 <input [(ngModel)]="cutInWidth" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
@@ -126,10 +126,10 @@
             </div>
             <div style="display: table-row">
               <div style="display: table-cell; width: 11.5em">
-                <b>Height (0=指定なし): </b>
+                <b>Height (0=不指定): </b>
               </div>
               <div style="display: table-cell; width: calc(100% - 15.5em)">
-                <input [(ngModel)]="cutInHeight" type="range" [title]="cutInHeight ? cutInHeight + '%' : '指定なし'" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutIHeight" [attr.disabled]="!isEditable ? '' : null" />
+                <input [(ngModel)]="cutInHeight" type="range" [title]="cutInHeight ? cutInHeight + '%' : '不指定'" min="{{minSize}}" max="{{maxSize}}" style="width: 100%" name="cutIHeight" [attr.disabled]="!isEditable ? '' : null" />
               </div>
               <div style="display: table-cell; width: 6em; text-align: right">
                 <input [(ngModel)]="cutInHeight" type="number" min="{{minSize}}" max="{{maxSize * 2}}" style="width: 3.5em" [attr.disabled]="!isEditable ? '' : null"><b style="padding-left: 2px">%</b>
@@ -137,22 +137,22 @@
             </div>
           </div>
           <div style="margin-left: 1em">
-            <b>元画像と縦横比が異なる場合: </b>
+            <b>與原始圖片比例不符時: </b>
             <select [(ngModel)]="objectFitType" [attr.disabled]="(cutInVideoId && !cutInisSoundOnly) || !isEditable ? '' : null">
-              <option [value]="0" [selected]="objectFitType == 0">伸縮する</option>
-              <option [value]="1" [selected]="objectFitType == 1">切り取る</option>
-              <!-- <option [value]="2" [selected]="objectFitType == 2">範囲に収める</option> -->
+              <option [value]="0" [selected]="objectFitType == 0">拉伸</option>
+              <option [value]="1" [selected]="objectFitType == 1">裁切</option>
+              <!-- <option [value]="2" [selected]="objectFitType == 2">縮放至範圍</option> -->
             </select>
           </div>
         </div>
         <div class="section">
           <div>
-            <b class="header">効果音・動画</b>
-            <label style="margin-left: 0.6em" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="cutInSEIsLoop" type="checkbox" [(ngModel)]="cutInSEIsLoop" [checked]="cutInSEIsLoop" [value]="true" [attr.disabled]="!isEditable || isPlaying ? '' : null"><b>繰り返し</b></label>
+            <b class="header">音效・影片</b>
+            <label style="margin-left: 0.6em" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="cutInSEIsLoop" type="checkbox" [(ngModel)]="cutInSEIsLoop" [checked]="cutInSEIsLoop" [value]="true" [attr.disabled]="!isEditable || isPlaying ? '' : null"><b>循環播放</b></label>
           </div>
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-sound" [(ngModel)]="cutInIsVideo" [checked]="!cutInIsVideo" [value]="false" [attr.disabled]="!isEditable || isPlaying ? '' : null">
-            <label for="{{panelId}}-media-sound" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>音楽ファイル: </b></label>
+            <label for="{{panelId}}-media-sound" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>音樂檔案: </b></label>
             <select #audioSelect 
               [style.min-width.em]="isValidAudio ? 10 : 5"
               [style.max-width.em]="isValidAudio ? 20 : 5"
@@ -160,7 +160,7 @@
               [ngClass]="{'not-specified': cutInAudioIdentifier == ''}" 
               [attr.disabled]="cutInIsVideo || !isEditable || isPlaying ? '' : null"
               (change)="onAudioFileChange(audioSelect.value)">
-              <option value="" class="not-specified">効果音なし</option>
+              <option value="" class="not-specified">効果音無</option>
               <option style="color: black" *ngFor="let audio of audios" value="{{audio.identifier}}">{{ audio.name }}</option>
             </select>
             <ng-container *ngIf="isEditable && this.cutInAudioFileName.length > 0">
@@ -170,10 +170,10 @@
           </div>
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-video" [(ngModel)]="cutInIsVideo" [checked]="cutInIsVideo" [value]="true" [disabled]="!isEditable || isPlaying ? '' : null">
-            <label for="{{panelId}}-media-video" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>動画URL: </b></label><input type="text" style="width: 24em" [(ngModel)]="cutInVideoURL" [disabled]="!cutInIsVideo || !isEditable || isPlaying ? '' : null">
+            <label for="{{panelId}}-media-video" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>影片URL: </b></label><input type="text" style="width: 24em" [(ngModel)]="cutInVideoURL" [disabled]="!cutInIsVideo || !isEditable || isPlaying ? '' : null">
           </div>
           <div style="padding-left: 2.5em">
-            <a href="https://www.youtube.com/terms" target="_blank" class="outer-link" (click)="openYouTubeTerms()">YouTube 利用規約</a>
+            <a href="https://www.youtube.com/terms" target="_blank" class="outer-link" (click)="openYouTubeTerms()">YouTube 使用條款</a>
           </div>
         </div>
       </div>
@@ -185,15 +185,15 @@
           <div style="float: right">
             <button [disabled]="isSaveing" (click)="save()">
               <div style="position: relative;">
-                <div [ngClass]="{'is-hidden': isSaveing}">保存</div>
+                <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
                 <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
               </div>
             </button>
-            <button class="danger" (click)="delete()">削除</button>
+            <button class="danger" (click)="delete()">刪除</button>
           </div>
         </ng-container>
         <ng-container *ngIf="isDeleted && selectedCutInXml">
-          <button (click)="restore()">元に戻す</button>
+          <button (click)="restore()">還原</button>
         </ng-container>
       </div>
     </ng-container>
@@ -201,9 +201,9 @@
 </div>
 <ng-container *ngIf="isEmpty">
   <div style="font-size: 12px;">
-    ※カットインがありません。
+    ※目前沒有插圖。
     <ng-container *ngIf="isDeleted && selectedCutInXml">
-      <button (click)="restore()">元に戻す</button>
+      <button (click)="restore()">還原</button>
     </ng-container>
   </div>
 </ng-container>

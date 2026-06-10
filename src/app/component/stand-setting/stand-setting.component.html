@@ -6,17 +6,17 @@
     <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" [(ngModel)]="position"><b sytle="margin-left: 3px; margin-right: 1em ">％　</b>
     <label style="margin-left: 1em; white-space: nowrap">
       <input type="checkbox" [(ngModel)]="isSortNameList" checked="{{isSortNameList ? 'checked' : ''}}" (change)="isSortNameList = (isSortNameList ? true : false)" />
-      <b style="font-size: smaller">チャット入力で名前をソート</b>
+      <b style="font-size: smaller">在聊天輸入中依名稱排序</b>
     </label>
   </div>
   <div class="position-indicate">
-    <b>Height (0=元画像のまま): </b> 
-    <input style="width: 350px" type="range" [title]="height ? height + '%' : '元画像のまま'" min="0" max="100" [(ngModel)]="height">
+    <b>Height (0=維持原始): </b> 
+    <input style="width: 350px" type="range" [title]="height ? height + '%' : '維持原始'" min="0" max="100" [(ngModel)]="height">
     <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="200" [(ngModel)]="height"><b sytle="margin-left: 3px; margin-right: 1em ">％</b>
   </div>
 </div>
 <div class="overview-selecter" [style.border-color]="overviewIndex == -1 ? 'red' : 'transparent'" style="padding: 0px; width: 695px;">
-  <label style="font-size: smaller; font-weight: bolder;"><input type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="-1" [checked]="overviewIndex == -1" (click)="overviewIndex = -1"> スタンド画像をオーバービューに使用しない</label>
+  <label style="font-size: smaller; font-weight: bolder;"><input type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="-1" [checked]="overviewIndex == -1" (click)="overviewIndex = -1"> 不使用立繪圖片作為概覽</label>
 </div>
 <hr>
 <div style="display: flex; flex-direction: row; flex-wrap: wrap">
@@ -37,5 +37,5 @@
     <hr>
   </div>
 </div>
-<button (click)="add()">スタンド設定の追加</button>
-<button *ngIf="standSettingXML" (click)="restore()">直前に削除したスタンド設定を戻す</button>
+<button (click)="add()">新增立繪設定</button>
+<button *ngIf="standSettingXML" (click)="restore()">還原剛才刪除的立繪設定</button>

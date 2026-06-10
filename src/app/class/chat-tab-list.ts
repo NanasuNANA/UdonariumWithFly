@@ -73,7 +73,7 @@ export class ChatTabList extends ObjectNode implements InnerXml {
 <html lang="ja-JP">
 <head>
 <meta charset="UTF-8">
-<title>Udonarium with Fly：チャットログ：${ !target ? '全てのタブ' : (target[0].name  == '' ? '（無名のタブ）' : target[0].name) }${ target && target.length > 1 ? '、他' : '' }${imageDict ? '（画像付き）' : ''}</title>
+<title>Udonarium with Fly：チャットログ：${ !target ? '全部分頁' : (target[0].name  == '' ? '（無名分頁）' : target[0].name) }${ target && target.length > 1 ? '、其他' : '' }${imageDict ? '（含圖片）' : ''}</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 ${ ChatMessage.logCss(imageDict) }

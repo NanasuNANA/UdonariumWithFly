@@ -255,7 +255,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
     let actions: ContextMenuAction[] = [];
 
     let objectPosition = { x: this.textNote.location.x, y: this.textNote.location.y, z: this.textNote.posZ };
-    actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
     actions.push(ContextMenuSeparator);
 
     return actions;
@@ -294,24 +294,24 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
         }),
       (this.isShowTitle
         ? {
-          name: '☑ タイトルバーの表示', action: () => {
+          name: '☑ 顯示標題欄', action: () => {
             this.isShowTitle = false;
           },
           checkBox: 'check'
         } : {
-          name: '☐ タイトルバーの表示', action: () => {
+          name: '☐ 顯示標題欄', action: () => {
             this.isShowTitle = true;
           },
           checkBox: 'check'
         }),
       (this.isWhiteOut
         ? {
-          name: '☑ 背景の色抜き', action: () => {
+          name: '☑ 移除背景顏色', action: () => {
             this.isWhiteOut = false;
           },
           checkBox: 'check'
         } : {
-          name: '☐ 背景の色抜き', action: () => {
+          name: '☐ 移除背景顏色', action: () => {
             this.isWhiteOut = true;
           },
           checkBox: 'check'
@@ -319,18 +319,18 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
       ContextMenuSeparator,
       (this.isAltitudeIndicate
         ? {
-          name: '☑ 高度の表示', action: () => {
+          name: '☑ 顯示高度', action: () => {
             this.isAltitudeIndicate = false;
           },
           checkBox: 'check'
         } : {
-          name: '☐ 高度の表示', action: () => {
+          name: '☐ 顯示高度', action: () => {
             this.isAltitudeIndicate = true;
           },
           checkBox: 'check'
         }),
       {
-        name: '高度を0にする', action: () => {
+        name: '重置高度為0', action: () => {
           if (this.altitude != 0) {
             this.altitude = 0;
             SoundEffect.play(PresetSound.sweep);
@@ -339,9 +339,9 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
         altitudeHande: this.textNote
       },
       ContextMenuSeparator,
-      { name: 'メモを編集...', action: () => { this.showDetail(this.textNote); } },
+      { name: '編輯備注...', action: () => { this.showDetail(this.textNote); } },
       (this.textNote.getUrls().length <= 0 ? null : {
-        name: '参照URLを開く', action: null,
+        name: '開啟參考URL', action: null,
         subActions: this.textNote.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -354,14 +354,14 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
               } 
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })
       }),
       (this.textNote.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
-        name: 'コピーを作る', action: () => {
+        name: '建立副本', action: () => {
           let cloneObject = this.textNote.clone();
           cloneObject.isLocked = false;
           cloneObject.location.x += this.gridSize;
@@ -371,7 +371,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
         }
       },
       {
-        name: '削除する', action: () => {
+        name: '刪除', action: () => {
           this.textNote.destroy();
           SoundEffect.play(PresetSound.sweep);
         }
@@ -415,7 +415,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   private showDetail(gameObject: TextNote) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
     let coordinate = this.pointerDeviceService.pointers[0];
-    let title = '共有メモ設定';
+    let title = '共用備注設定';
     if (gameObject.title.length) title += ' - ' + gameObject.title;
     let option: PanelOption = { title: title, left: coordinate.x - 350, top: coordinate.y - 200, width: 560, height: 470 };
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);

@@ -431,7 +431,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (0 < this.selectionService.size) {
       menuActions.push({
-        name: 'ここに集める', action: () => {
+        name: '集中於此', action: () => {
           this.selectionService.congregate(objectPosition);
         },
         //enabled: 0 < this.selectionService.size
@@ -442,7 +442,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     Array.prototype.push.apply(menuActions, this.tabletopActionService.makeDefaultContextMenuActions(objectPosition));
     menuActions.push(ContextMenuSeparator);
     menuActions.push({
-      name: 'テーブル設定...', action: () => {
+      name: '桌面設定...', action: () => {
         this.modalService.open(GameTableSettingComponent);
       }
     });

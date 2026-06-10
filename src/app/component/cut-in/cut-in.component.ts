@@ -527,20 +527,20 @@ export class CutInComponent implements OnInit, OnDestroy {
     let position = this.pointerDeviceService.pointers[0];
     this.contextMenuService.open(position, [
       {
-        name: '閉じる（自分のみ停止）',
+        name: '關閉（僅停止自己）',
         action: () => { this.stop(); },
         default: true,
         selfOnly: true
       },
       ContextMenuSeparator,
       {
-        name: `${this.isIndicateSender ? '☑' : '☐'}送信者を表示`,
+        name: `${this.isIndicateSender ? '☑' : '☐'}顯示發送者`,
         action: () => { this.isIndicateSender = !this.isIndicateSender; },
         selfOnly: true,
         checkBox: 'check'
       },
       {
-        name: `${this.isBackyard ? '☑' : '☐'}ウィンドウの背後に表示`,
+        name: `${this.isBackyard ? '☑' : '☐'}顯示在視窗後方`,
         action: () => { this.isBackyard = !this.isBackyard; },
         selfOnly: true,
         checkBox: 'check'
@@ -555,25 +555,25 @@ export class CutInComponent implements OnInit, OnDestroy {
       (!this.videoId ? null : ContextMenuSeparator),
       (!this.videoId ? null :
         {
-          name: 'YouTubeで開く',
+          name: '在YouTube開啟',
           action: () => { 
             this.modalService.open(OpenUrlComponent, { url: `https://www.youtube.com/watch?v=${this.cutIn.videoId}`, title: this.cutIn.name });
           },
           //disabled: !StringUtil.validUrl(url),
-          //error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
+          //error: !StringUtil.validUrl(url) ? 'URL無效' : null,
           isOuterLink: true
         }
       )
       ContextMenuSeparator,
       {
-        name: '効果音の開始／最初から',
+        name: '開始音效/從頭播放',
         action: () => { this.audioPlayer.play() },
         disabled: !(this.cutIn && this.cutIn.audioIdentifier && this.cutIn.isValidAudio), 
         selfOnly: true,
         materialIcon: 'play_arrow'
       },
       {
-        name: '効果音の停止',
+        name: '停止音效',
         action: () => { this.audioPlayer.stop() },
         disabled: !this.audioPlayer.paused && !(this.cutIn && this.cutIn.audioIdentifier && this.cutIn.isValidAudio), 
         selfOnly: true,

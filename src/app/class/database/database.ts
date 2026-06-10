@@ -68,14 +68,14 @@ export class Database<T> {
   }
 
   private initializeDB(database: IDBDatabase): IDBDatabase {
-    // 別のページがバージョン変更を求めた場合に、通知されるようにするためのハンドラを追加するようにしてください。
+    // 別のページが版本変更を求めた場合に、通知されるようにするためのハンドラを追加するようにしてください。
     // データベースを閉じなければなりません。データベースを閉じると、別のページがデータベースをアップグレードできます。
     // これを行わなければ、ユーザがタブを閉じるまでデータベースはアップグレードされません。
     database.onversionchange = event => {
       console.warn('database.onversionchange.');
       database.close();
       this.openDBPromise = null;
-      //alert('新しいバージョンのページが使用可能になりました。再読み込みしてください!');
+      //alert('新しい版本のページが使用可能になりました。再読み込みしてください!');
     };
     database.onabort = database.onerror = event => console.error(event);
     return database;

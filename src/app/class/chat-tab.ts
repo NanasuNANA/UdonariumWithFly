@@ -8,7 +8,7 @@ import { StringUtil } from './core/system/util/string-util';
 
 @SyncObject('chat-tab')
 export class ChatTab extends ObjectNode implements InnerXml {
-  @SyncVar() name: string = 'タブ';
+  @SyncVar() name: string = '分頁';
   @SyncVar() isUseStandImage: boolean = true;
   @SyncVar() recieveOperationLogLevel: number = 0;
   get chatMessages(): ChatMessage[] { return <ChatMessage[]>this.children; }
@@ -84,7 +84,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
 <html lang="ja-JP">
 <head>
 <meta charset="UTF-8">
-<title>Udonarium with Fly：チャットログ：${ StringUtil.escapeHtml(this.name == '' ? '(無名のタブ)' : this.name) + (imageDict ? '（画像付き）' : '') }</title>
+<title>Udonarium with Fly：チャットログ：${ StringUtil.escapeHtml(this.name == '' ? '(無名のタブ)' : this.name) + (imageDict ? '（含圖片）' : '') }</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 ${ ChatMessage.logCss(imageDict) }

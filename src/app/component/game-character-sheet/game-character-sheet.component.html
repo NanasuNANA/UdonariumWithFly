@@ -1,46 +1,46 @@
-<button (click)="toggleEditMode()">編集切り替え</button>
+<button (click)="toggleEditMode()">切換編輯</button>
 <ng-container [ngSwitch]="tabletopObject.aliasName">
   <ng-container *ngSwitchCase="'numberResource'">
   </ng-container>
   <ng-container *ngSwitchCase="'card'">
-    <button (click)="openModal('front')" [disabled]="!isVisible">表面の画像を変更</button>
-    <button (click)="openModal('back')">裏面の画像を変更</button>
+    <button (click)="openModal('front')" [disabled]="!isVisible">變更正面圖片</button>
+    <button (click)="openModal('back')">變更背面圖片</button>
   </ng-container>
   <ng-container *ngSwitchCase="'card-stack'">
-    <button (click)="openModalChangeAllCardImages()">全カードの裏面の画像を変更</button>
+    <button (click)="openModalChangeAllCardImages()">變更所有牌的背面圖片</button>
   </ng-container>
   <ng-container *ngSwitchCase="'terrain'">
-    <button (click)="openModal('floor')">床の画像を変更</button>
-    <button (click)="openModal('wall')">壁の画像を変更</button>
+    <button (click)="openModal('floor')">變更地板圖片</button>
+    <button (click)="openModal('wall')">變更牆壁圖片</button>
   </ng-container>
   <ng-container *ngSwitchCase="'dice-symbol'">
-    <button (click)="openModal(tabletopObject['face'])" [disabled]="!isVisible">ダイス目の画像を変更</button>
+    <button (click)="openModal(tabletopObject['face'])" [disabled]="!isVisible">變更骰面圖片</button>
   </ng-container>
   <ng-container *ngSwitchCase="'character'">
-    <button (click)="openModalReplaceImage(tabletopObject.imageFiles.length > 1 || 0 < tabletopObject.imageFile?.url.length)">画像{{ (tabletopObject.imageFiles?.length > 1) ? '置換/削除' : '設定' }}</button>
-    <button [disabled]="tabletopObject.faceIcons?.length >= MAX_IMAGE_ICON_COUNT" (click)="openModal('faceIcon')">顔IC{{ (tabletopObject.faceIcons?.length > 0) ? '追加' : '設定' }}</button>
+    <button (click)="openModalReplaceImage(tabletopObject.imageFiles.length > 1 || 0 < tabletopObject.imageFile?.url.length)">画像{{ (tabletopObject.imageFiles?.length > 1) ? '置換/刪除' : '設定' }}</button>
+    <button [disabled]="tabletopObject.faceIcons?.length >= MAX_IMAGE_ICON_COUNT" (click)="openModal('faceIcon')">臉部圖示{{ (tabletopObject.faceIcons?.length > 0) ? '新增' : '設定' }}</button>
   </ng-container>
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="tabletopObject.aliasName !== 'range'">
-      <button (click)="openModal('imageIdentifier', tabletopObject.imageFile && tabletopObject.imageFile.url.length > 0)">画像変更</button>
+      <button (click)="openModal('imageIdentifier', tabletopObject.imageFile && tabletopObject.imageFile.url.length > 0)">變更圖片</button>
     </ng-container>
   </ng-container>
 </ng-container>
-<button (click)="clone()">コピーを作る</button>
+<button (click)="clone()">建立副本</button>
 <button [disabled]="isSaveing" (click)="saveToXML()">
   <div style="position: relative;">
-    <div [ngClass]="{'is-hidden': isSaveing}">保存</div>
+    <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
     <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
   </div>
 </button>
 <ng-container *ngIf="tabletopObject.aliasName === 'character'">
   <select #select *ngIf="tabletopObject" (change)="setLocation(select.value)" [ngModel]="tabletopObject.location.name">
-    <option value="table">テーブル</option>
-    <option value="common">共有インベントリ</option>
-    <option value="{{networkService.peerId}}">個人インベントリ</option>
+    <option value="table">桌面</option>
+    <option value="common">共用物品欄</option>
+    <option value="{{networkService.peerId}}">個人物品欄</option>
     <option value="graveyard">墓地</option>
   </select>
-  <button (click)="openModal('shadowImageIdentifier', tabletopObject.shadowImageFile.url.length > 0)" [disabled]="!tabletopObject.imageElement || tabletopObject.imageElement.value == 'null'">画像の影の変更</button>
+  <button (click)="openModal('shadowImageIdentifier', tabletopObject.shadowImageFile.url.length > 0)" [disabled]="!tabletopObject.imageElement || tabletopObject.imageElement.value == 'null'">變更圖片陰影</button>
 </ng-container>
 <div *ngIf="tabletopObject" class="flex-container">
   <span>
@@ -51,7 +51,7 @@
       <div *ngFor="let faceIconImage of tabletopObject.faceIcons; index as i; trackBy: identify" style="position: relative" [style.top.px]="-showIconOffset(i)">
         <span @bounceInOut *ngIf="0 < faceIconImage.url.length" class="icon-image-box" style="display: block" [ngClass]="{'current-icon': tabletopObject.currntIconIndex == i}">
           <img [src]="faceIconImage.url | safe: 'resourceUrl'" [style.cursor]="tabletopObject.currntIconIndex == i ? 'auto' : 'pointer'" [alt]="faceIconImage.name" (click)="selectIcon(i)" draggable="false" />
-          <button *ngIf="tabletopObject.currntIconIndex == i" class="button-delete-icon" title="顔IC削除" (click)="deleteIcon(i, faceIconImage.identifier)">
+          <button *ngIf="tabletopObject.currntIconIndex == i" class="button-delete-icon" title="臉部圖示刪除" (click)="deleteIcon(i, faceIconImage.identifier)">
             <b class="material-icons" style="font-size: 1rem;">close</b>
           </button>
         </span>
@@ -64,7 +64,7 @@
       <button *ngIf="tabletopObject.aliasName == 'character' && tabletopObject.imageFiles.length < MAX_IMAGE_ICON_COUNT && (tabletopObject.imageFiles.length > 1 || 0 < tabletopObject.imageFile?.url.length)"
         (click)="openModalAddImage()"
         style="position: relative; bottom: 30px; z-index: 700;" 
-        [style.left.px]="tabletopObject.imageFiles.length < 0 ? -5 : (tabletopObject.imageFiles.length - 1) * 45 - 5 - showCaseOffset(tabletopObject.imageFiles.length-2)">{{ tabletopObject.imageFiles.length < 2 ? '切り替え画像設定' : '＋' }}</button>
+        [style.left.px]="tabletopObject.imageFiles.length < 0 ? -5 : (tabletopObject.imageFiles.length - 1) * 45 - 5 - showCaseOffset(tabletopObject.imageFiles.length-2)">{{ tabletopObject.imageFiles.length < 2 ? '設定切換圖片' : '＋' }}</button>
     </div>
     <div *ngIf="(tabletopObject.aliasName == 'card' && ($any(tabletopObject).isFront || $any(tabletopObject).isHand || isVisible)) || (tabletopObject.aliasName == 'card-stack' && $any(tabletopObject).topCard.isFront)"
       class="text" [style.width.px]="imageAreaRreact.width" [style.height.px]="imageAreaRreact.height" [ngStyle]="{transform: 'scale(' + imageAreaRreact.scale + ')'}">
@@ -88,8 +88,8 @@
           [isHideText]="tabletopObject.aliasName === 'card' && !$any(tabletopObject).isFront && !$any(tabletopObject).isHand && !tabletopObject.isGMMode" [isNoLogging]="isNoLogging" [descriptionType]="descriptionType"></div>
       </div>
       <div *ngIf="tabletopObject.aliasName === 'character'" style="margin-top: 3px; text-align: right">
-        <button class="character-setteings" (click)="showChatPalette()" [disabled]="!isAllowsChat">チャットパレットを表示</button>
-        <button class="character-setteings" (click)="showStandSetting()" [disabled]="!isAllowsChat">スタンド設定</button>
+        <button class="character-setteings" (click)="showChatPalette()" [disabled]="!isAllowsChat">顯示聊天面板</button>
+        <button class="character-setteings" (click)="showStandSetting()" [disabled]="!isAllowsChat">立繪設定</button>
       </div>
     </div>
   </ng-container>
@@ -104,7 +104,7 @@
 
   <ng-container *ngIf="isEdit">
     <div class="flex-item">
-      <button style="width:100%; color: #555;" (click)="addDataElement()">新しい項目を追加</button>
+      <button style="width:100%; color: #555;" (click)="addDataElement()">新增項目</button>
     </div>
   </ng-container>
 </div>

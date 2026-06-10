@@ -101,7 +101,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    Promise.resolve().then(() => { this.modalService.title = this.panelService.title = 'テーブル設定' });
+    Promise.resolve().then(() => { this.modalService.title = this.panelService.title = '桌面設定' });
     this.selectedTable = this.tableSelecter.viewTable;
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 2000, event => {
@@ -129,7 +129,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
 
   createGameTable() {
     let gameTable = new GameTable();
-    gameTable.name = '白紙のテーブル';
+    gameTable.name = '空白桌面';
     gameTable.imageIdentifier = 'testTableBackgroundImage_image';
     gameTable.initialize();
     this.selectGameTable(gameTable.identifier);
@@ -207,13 +207,13 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     } else {
       $event.preventDefault();
       this.modalService.open(ConfirmationComponent, {
-        title: '非表示設定の画像を表示', 
-        text: '非表示設定の画像を表示しますか？',
-        help: 'ネタバレなどにご注意ください。',
+        title: '顯示隱藏圖片', 
+        text: '確定要顯示隱藏圖片嗎？',
+        help: '請注意劇透等問題。',
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'visibility',
         action: () => {
-          this.chatMessageService.sendOperationLog('テーブル設定 から非表示設定の画像を表示した');
+          this.chatMessageService.sendOperationLog('從桌面設定顯示了隱藏圖片');
           this.isShowHideImages = true;
           (<HTMLInputElement>$event.target).checked = true;
           this.changeDetector.markForCheck();

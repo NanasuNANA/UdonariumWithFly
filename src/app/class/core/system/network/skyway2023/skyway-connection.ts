@@ -70,9 +70,9 @@ export class SkyWayConnection implements Connection {
 
   connect(peer: IPeerContext): boolean {
     if (!this.peer.isRoom) {
-      console.warn('connect() is Fail. ルーム接続のみ可能');
+      console.warn('connect() is Fail. 房間接続のみ可能');
       let errorType = 'udonarium-unsupported';
-      let errorMessage = '現在のユドナリウムでSkyWay(2023)を使用する場合、プライベート接続は利用できません。ルーム接続機能を利用してください。';
+      let errorMessage = '在目前版本使用SkyWay(2023)時，無法使用私人連線。請使用房間連線功能。';
       if (this.callback.onError) this.callback.onError(this.peer, errorType, errorMessage, {});
       return false;
     }

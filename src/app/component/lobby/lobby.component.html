@@ -1,14 +1,14 @@
 <div *ngIf="!isConnected;else other_content">
-  <button (click)="reload()" [disabled]="isReloading"><i class="material-icons" style="display: inline-block; margin-right: 2px">refresh</i>一覧を更新</button>
-  <button (click)="showRoomSetting()"><i class="material-icons" style="display: inline-block; margin-right: 2px">room_preferences</i>新しいルームを作成する</button>
+  <button (click)="reload()" [disabled]="isReloading"><i class="material-icons" style="display: inline-block; margin-right: 2px">refresh</i>重新整理列表</button>
+  <button (click)="showRoomSetting()"><i class="material-icons" style="display: inline-block; margin-right: 2px">room_preferences</i>建立新房間</button>
   <hr/>
   <ng-container *ngIf="rooms.length">
     <table class="room-list">
       <tr>
-        <th class="is-0-width is-small-font">ルームID</th>
-        <th class="is-small-font">ルーム名</th>
-        <th class="is-0-width is-small-font">パスワード</th>
-        <th class="is-0-width is-small-font">参加者</th>
+        <th class="is-0-width is-small-font">房間ID</th>
+        <th class="is-small-font">房間名稱</th>
+        <th class="is-0-width is-small-font">密碼</th>
+        <th class="is-0-width is-small-font">參加者</th>
         <th class="is-0-width is-small-font"></th>
       </tr>
       <ng-container *ngFor="let room of rooms">
@@ -21,7 +21,7 @@
           <td *ngIf="!room.hasPassword">-</td>
           <td>{{room.peers.length}}人</td>
           <td>
-            <button [disabled]="room.id === currentRoom" *ngIf="0 < room.id.length" type="submit" (click)="connect(room)">接続</button>
+            <button [disabled]="room.id === currentRoom" *ngIf="0 < room.id.length" type="submit" (click)="connect(room)">連線</button>
           </td>
         </tr>
       </ng-container>
@@ -29,4 +29,4 @@
   </ng-container>
   <span *ngIf="rooms.length < 1" style="font-size: 12px;">{{help}}</span>
 </div>
-<ng-template #other_content><span style="font-size: 12px;">別のルームに接続したい場合は、他の参加者との接続を切ってください。<br>（※メニューから退出／切断できます。）</span></ng-template>
+<ng-template #other_content><span style="font-size: 12px;">如需連線其他房間，請先與所有參加者斷線。<br>（※可從選單退出/斷線。）</span></ng-template>

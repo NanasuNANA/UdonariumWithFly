@@ -348,7 +348,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   private _scratchingTimerId;
   scratching(isStart: boolean, position: {offsetX: number, offsetY: number} = null) {
     if (!this.gameTableMask.isMine) return;
-    // とりあえず、本当は周辺を表示したい。
+    // とりあえず、本当は周辺を顯示したい。
     const tableSelecter = TableSelecter.instance;
     if (!tableSelecter.gridShow) tableSelecter.viewTable.gridClipRect = {
         top: 0,
@@ -438,7 +438,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     this._scratchingGridX = -1;
     this._scratchingGridY = -1;
     SoundEffect.play(PresetSound.cardPut);
-    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
+    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 結束刮除`);
     return false;
   }
 
@@ -456,7 +456,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     this._scratchingGridX = -1;
     this._scratchingGridY = -1;
     SoundEffect.play(PresetSound.unlock);
-    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを終了した`);
+    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 結束刮除`);
     return false;
   }
 
@@ -471,21 +471,21 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     let actions: ContextMenuAction[] = [];
 
     let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
-    actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
       let selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.gameTableMask.aliasName) as GameTableMask[];
       actions.push(
         {
-          name: '選択したマップマスク', action: null, subActions: [
+          name: '選取的地圖遮罩', action: null, subActions: [
             {
-              name: 'すべて固定する', action: () => {
+              name: '全部鎖定', action: () => {
                 selectedGameTableMasks().forEach(gameTableMask => gameTableMask.isLock = true);
                 SoundEffect.play(PresetSound.lock);
               }
             },
             {
-              name: 'すべてのコピーを作る', action: () => {
+              name: '全部建立副本', action: () => {
                 selectedGameTableMasks().forEach(gameTableMask => {
                   let cloneObject = gameTableMask.clone();
                   cloneObject.location.x += this.gridSize;
@@ -509,13 +509,13 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     let actions: ContextMenuAction[] = [
       (this.isGMMode ?
         this.gameTableMask.isTransparentOnGMMode ? {
-          name: '☑ GM時透過表示', action: () => {
+          name: '☑ GM時透過顯示', action: () => {
             this.gameTableMask.isTransparentOnGMMode = false;
           },
           checkBox: 'check'
         }
         : {
-          name: '☐ GM時透過表示', action: () => {
+          name: '☐ GM時透過顯示', action: () => {
             this.gameTableMask.isTransparentOnGMMode = true;
           },
           checkBox: 'check'
@@ -523,13 +523,13 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
       : null),
       (this.isGMMode ?
         this.gameTableMask.isScratchPreviewOnGMMode ? {
-          name: '☑ GM時スクラッチプレビュー', action: () => {
+          name: '☑ GM時預覽刮除', action: () => {
             this.gameTableMask.isScratchPreviewOnGMMode = false;
           },
           checkBox: 'check'
         }
         : {
-          name: '☐ GM時スクラッチプレビュー', action: () => {
+          name: '☐ GM時預覽刮除', action: () => {
             this.gameTableMask.isScratchPreviewOnGMMode = true;
           },
           checkBox: 'check'
@@ -555,9 +555,9 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           checkBox: 'check'
         }
       ),
-      (this.isLock ? null : { name: '重なり順', action: null, subActions: [
+      (this.isLock ? null : { name: '層疊順序', action: null, subActions: [
         {
-          name: 'マップマスクの一番上に', action: () => {
+          name: '移至地圖遮罩最上層', action: () => {
             if (!this.isLock) {
               const parent = this.gameTableMask.parent;
               if (parent) parent.appendChild(this.gameTableMask);
@@ -566,7 +566,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           disabled: this.isLock
         },
         {
-          name: 'マップマスクの一番下に', action: () => {
+          name: '移至地圖遮罩最下層', action: () => {
             if (!this.isLock) {
               const parent = this.gameTableMask.parent;
               if (parent) parent.prependChild(this.gameTableMask);
@@ -579,7 +579,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
       ContextMenuSeparator,
       (!this.gameTableMask.isMine ?
         {
-          name: 'スクラッチ開始', action: () => { 
+          name: '開始刮除', action: () => { 
             let isHandover = false;
             if (this.gameTableMask.owner != '') {
               this.isPreview = false;
@@ -587,7 +587,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
               this._currentScratchingSet = null;
               const owner = PeerCursor.findByUserId(this.gameTableMask.owner);
               if (owner) {
-                this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを ${ owner.name == '' ? '(無名のプレイヤー)' : owner.name } から引き継いだ`);
+                this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 的刮除從 ${ owner.name == '' ? '(無名玩家)' : owner.name } 接手`);
                 isHandover = true;
               }
             }
@@ -595,21 +595,21 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
             this._scratchingGridX = -1;
             this._scratchingGridY = -1;
             SoundEffect.play(PresetSound.lock);
-            if (!isHandover) this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを開始した`);
+            if (!isHandover) this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 開始刮除`);
           },
         } : {
-          name: `スクラッチ${ this.isNonScratching ? '終了' : '確定' }`, action: () => { this.scratchDone(); },
+          name: `刮除${ this.isNonScratching ? '結束' : '確定' }`, action: () => { this.scratchDone(); },
         }
       ),
       {
-        name: 'スクラッチキャンセル', action: () => { this.scratchCancel(); },
+        name: '取消刮除', action: () => { this.scratchCancel(); },
         disabled: !this.isScratching || (!this.gameTableMask.isMine && this.ownerIsOnline)
       },
       {
-        name: 'スクラッチ操作',
+        name: '刮除操作',
         subActions: [
           { 
-            name: '適用して続ける', action: () => {
+            name: '套用並繼續', action: () => {
               if (!this.gameTableMask.isMine) return;
               this.ngZone.run(() => {
                 this.scratched();
@@ -622,7 +622,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
             disabled: !this.gameTableMask.isMine || this.isNonScratching
           },
           { 
-            name: '破棄して続ける' , action: () => {
+            name: '捨棄並繼續' , action: () => {
               if (!this.gameTableMask.isMine) return;
               this.ngZone.run(() => {
                 this.scratchingGrids = '';
@@ -638,7 +638,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           ContextMenuSeparator,
           (this.isPreview
             ? {
-              name: 'プレビューモード解除', action: () => {
+              name: '取消預覽模式', action: () => {
                 if (!this.gameTableMask.isMine) return;
                 this.ngZone.run(() => {
                   this.isPreview = false;
@@ -649,12 +649,12 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
               disabled: !this.gameTableMask.isMine
             }
             : {
-              name: 'プレビューモード開始', action: () => {
+              name: '開始預覽模式', action: () => {
                 if (!this.gameTableMask.isMine) return;
                 this.modalService.open(ConfirmationComponent, {
-                  title: 'スクラッチプレビューモード', 
-                  text: 'スクラッチ中に適用後の状態を表示しますか？',
-                  helpHtml: '自分のみ、<b>このスクラッチを確定/キャンセルするまで</b>マップマスクは透過表示になり、またスクラッチ適用後の状態を表示します。',
+                  title: '刮除預覽模式', 
+                  text: '是否在刮除中顯示套用後的狀態？',
+                  helpHtml: '僅限自己，<b>在確定/取消此刮除之前</b>地圖遮罩將以透明顯示，並顯示刮除套用後的狀態。',
                   type: ConfirmationType.OK_CANCEL,
                   materialIcon: 'visibility',
                   action: () => {
@@ -662,7 +662,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
                       this.isPreview = true;
                     });
                     SoundEffect.play(PresetSound.unlock);
-                    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチをプレビューモードにした`);
+                    this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 進入預覽模式`);
                   }
                 });
               }, 
@@ -671,12 +671,12 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
             }
           ),
           { 
-            name: 'スクラッチ初期化' , action: () => {
+            name: '初始化刮除' , action: () => {
               if (!this.gameTableMask.isMine) return;
               this.modalService.open(ConfirmationComponent, {
-                title: 'スクラッチ初期化', 
-                text: 'スクラッチを初期化しますか？',
-                help: 'マップマスクはスクラッチされていない状態になり、操作を終了します。',
+                title: '初始化刮除', 
+                text: '確定要初始化刮除嗎？',
+                help: '地圖遮罩將回到未刮除狀態，操作結束。',
                 type: ConfirmationType.OK_CANCEL,
                 materialIcon: 'draw',
                 action: () => {
@@ -690,7 +690,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
                   this._scratchingGridX = -1;
                   this._scratchingGridY = -1;
                   SoundEffect.play(PresetSound.sweep);
-                  this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } のスクラッチを初期化した`);
+                  this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 初始化刮除`);
                 }
               });
             },
@@ -701,40 +701,40 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
       },
       ContextMenuSeparator,
       {
-        name: 'ボーダーラインの表示',
+        name: '顯示邊框線',
         subActions: [
-          { name: `${this.borderType == 0 ? '◉' : '○'} 操作時のみ表示`,  action: () => { this.borderType = 0 }, checkBox: 'radio' },
+          { name: `${this.borderType == 0 ? '◉' : '○'} 僅操作時顯示`,  action: () => { this.borderType = 0 }, checkBox: 'radio' },
           { name: `${this.borderType == 1 ? '◉' : '○'} 操作時、非固定`,  action: () => { this.borderType = 1 }, checkBox: 'radio' },
-          { name: `${this.borderType == 2 ? '◉' : '○'} 常に表示`,  action: () => { this.borderType = 2 }, checkBox: 'radio' },
+          { name: `${this.borderType == 2 ? '◉' : '○'} 常駐顯示`,  action: () => { this.borderType = 2 }, checkBox: 'radio' },
         ],
         disabled: this.isScratching
       },
       {
-        name: '画像と色の表示',
+        name: '圖片與顏色顯示',
         subActions: [
-          { name: `${this.blendType == 0 ? '◉' : '○'} 画像のみ`,  action: () => { this.blendType = 0; SoundEffect.play(PresetSound.cardDraw) }, checkBox: 'radio' },
-          { name: `${this.blendType == 1 ? '◉' : '○'} 背景色と重ねる`,  action: () => { this.blendType = 1; SoundEffect.play(PresetSound.cardDraw) }, checkBox: 'radio' },
-          { name: `${this.blendType == 2 ? '◉' : '○'} 背景色と混ぜる`,  action: () => { this.blendType = 2; SoundEffect.play(PresetSound.cardDraw) }, checkBox: 'radio' },
+          { name: `${this.blendType == 0 ? '◉' : '○'} 僅圖片`,  action: () => { this.blendType = 0; SoundEffect.play(PresetSound.cardDraw) }, checkBox: 'radio' },
+          { name: `${this.blendType == 1 ? '◉' : '○'} 疊加背景顏色`,  action: () => { this.blendType = 1; SoundEffect.play(PresetSound.cardDraw) }, checkBox: 'radio' },
+          { name: `${this.blendType == 2 ? '◉' : '○'} 混合背景顏色`,  action: () => { this.blendType = 2; SoundEffect.play(PresetSound.cardDraw) }, checkBox: 'radio' },
           ContextMenuSeparator,
-          { name: '色の初期化', action: () => { this.color = '#555555'; this.bgcolor = '#0a0a0a'; SoundEffect.play(PresetSound.cardDraw) } }
+          { name: '重置顏色', action: () => { this.color = '#555555'; this.bgcolor = '#0a0a0a'; SoundEffect.play(PresetSound.cardDraw) } }
         ],
         disabled: this.isScratching
       },
       ContextMenuSeparator,
       (this.isAltitudeIndicate
         ? {
-          name: '☑ 高度の表示', action: () => {
+          name: '☑ 顯示高度', action: () => {
             this.isAltitudeIndicate = false;
           },
           checkBox: 'check'
         } : {
-          name: '☐ 高度の表示', action: () => {
+          name: '☐ 顯示高度', action: () => {
             this.isAltitudeIndicate = true;
           },
           checkBox: 'check'
         }),
       {
-        name: '高度を0にする', action: () => {
+        name: '重置高度為0', action: () => {
           if (this.altitude != 0) {
             this.altitude = 0;
             SoundEffect.play(PresetSound.sweep);
@@ -745,9 +745,9 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
         altitudeDisabled: this.isScratching
       },
       ContextMenuSeparator,
-      { name: 'マップマスクを編集...', action: () => { this.showDetail(this.gameTableMask); } },
+      { name: '編輯地圖遮罩...', action: () => { this.showDetail(this.gameTableMask); } },
       (this.gameTableMask.getUrls().length <= 0 ? null : {
-        name: '参照URLを開く', action: null,
+        name: '開啟參考URL', action: null,
         subActions: this.gameTableMask.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -760,14 +760,14 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
               } 
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })
       }),
       (this.gameTableMask.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
-        name: 'コピーを作る', action: () => {
+        name: '建立副本', action: () => {
           let cloneObject = this.gameTableMask.clone();
           console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
@@ -779,14 +779,14 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
         }
       },
       {
-        name: '削除する', action: () => {
-          this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名のマップマスク)' : this.gameTableMask.name } を削除した`);
+        name: '刪除', action: () => {
+          this.chatMessageService.sendOperationLog(`${ this.gameTableMask.name == '' ? '(無名地圖遮罩)' : this.gameTableMask.name } 刪除`);
           this.gameTableMask.destroy();
           SoundEffect.play(PresetSound.sweep);
         }
       },
       ContextMenuSeparator,
-      { name: 'オブジェクト作成', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
+      { name: '建立物件', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
     ];
     
     return actions;
@@ -794,7 +794,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
 
   private showDetail(gameObject: GameTableMask) {
     let coordinate = this.pointerDeviceService.pointers[0];
-    let title = 'マップマスク設定';
+    let title = '地圖遮罩設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
     let option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 530 };
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);

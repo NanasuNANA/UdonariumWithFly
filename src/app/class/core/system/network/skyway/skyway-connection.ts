@@ -386,7 +386,7 @@ export class SkyWayConnection implements Connection {
       case 'signaling-limited': return 'シグナリング回数が無償利用枠を超過しているため、全ての機能が利用できません。（SkyWay Community Edition のみ）';
       case 'sfu-limited': return 'SFU サーバの利用量が無償利用枠を超過しているため、SFU の機能が利用できません。（SkyWay Community Edition のみ）';
       case 'turn-limited': return 'TURN サーバの利用量が無償利用枠を超過しているため、TURN の機能が利用できません。（SkyWay Community Edition のみ）\nこの状態では、一部のユーザの接続に問題が発生する可能性があります。';
-      default: return 'SkyWayに関する不明なエラーが発生しました。';
+      default: return 'SkyWayに関する不明な發生錯誤。';
     }
   }
 }

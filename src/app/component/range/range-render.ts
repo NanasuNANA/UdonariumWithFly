@@ -116,7 +116,7 @@ export class RangeRender {
     // console.log('p1:' + p1x + ',' + p1y +' p2:' + p2x + ',' + p2y + ' pchk:' + pchkx + ',' + pchky);
     // console.log('a:' + ax + ',' + ay +' b:' + bx + ',' + by + ' calc:' + calc);
     //return calc >= -100000;
-    return calc >= -0.01 // 丸め誤差対策で少し許容範囲を広くする
+    return calc >= -0.01 // 丸め誤差対策で少し許容範圍を広くする
   }
 
   chkInCircle(radius: number, pchkx: number,pchky: number ): boolean{
@@ -263,7 +263,7 @@ export class RangeRender {
     this.canvasElement.height = setting.areaHeight * gridSize;
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
-    // 範囲座標
+    // 範圍座標
     let p1x_ = 0;
     let p1y_ = 0.5 * setting.width * gridSize;
     let p2x_ = 0;
@@ -274,7 +274,7 @@ export class RangeRender {
     let p4y_ = 0.5 * setting.width * gridSize;
 
     // クリッピング座標
-    // コーンの根本から時計回りにクリップ範囲を定義
+    // コーンの根本から時計回りにクリップ範圍を定義
     let clip01x_ = p1x_ - gridSize * Math.sqrt(2);
     let clip01y_ = p1y_ + gridSize * Math.sqrt(2);
     let clip02x_ = p2x_ - gridSize * Math.sqrt(2);
@@ -398,7 +398,7 @@ export class RangeRender {
     let gridSize = setting.gridSize;
     let rad = Math.PI / 180 * setting.degree;
 
-    // 範囲座標
+    // 範圍座標
     let p1x_ = 0;
     let p1y_ = 0.5 * setting.width * gridSize;
     let p2x_ = 0;
@@ -409,7 +409,7 @@ export class RangeRender {
     let p4y_ = 0.5 * setting.width * gridSize;
 
     // クリッピング座標
-    // コーンの根本から時計回りにクリップ範囲を定義
+    // コーンの根本から時計回りにクリップ範圍を定義
     let clip01x_ = p1x_;
     let clip01y_ = p1y_;
     let clip02x_ = p2x_;
@@ -464,7 +464,7 @@ export class RangeRender {
     this.canvasElement.height = setting.areaHeight * gridSize;
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
-    // 範囲座標
+    // 範圍座標
     let p1x = -setting.range * gridSize; // 左下
     let p1y = setting.range * gridSize;
     let p2x = -setting.range * gridSize; // 左上
@@ -475,7 +475,7 @@ export class RangeRender {
     let p4y = setting.range * gridSize;
 
     // クリッピング座標
-    // 根本から時計回りにクリップ範囲を定義
+    // 根本から時計回りにクリップ範圍を定義
     let clip01x = p1x - (gridSize * 1.0);
     let clip01y = p1y + (gridSize * 1.0);
     let clip02x = p2x - (gridSize * 1.0);
@@ -600,7 +600,7 @@ export class RangeRender {
     let gridSize = setting.gridSize;
     let rad = Math.PI / 180 * setting.degree;
 
-    // 範囲座標
+    // 範圍座標
     let p1x = -setting.range * gridSize; // 左下
     let p1y = setting.range * gridSize;
     let p2x = -setting.range * gridSize; // 左上
@@ -611,7 +611,7 @@ export class RangeRender {
     let p4y = setting.range * gridSize;
 
     // クリッピング座標
-    // 根本から時計回りにクリップ範囲を定義
+    // 根本から時計回りにクリップ範圍を定義
     let clip01x = p1x;
     let clip01y = p1y;
     let clip02x = p2x;
@@ -667,7 +667,7 @@ export class RangeRender {
     this.canvasElement.height = setting.areaHeight * gridSize;
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
-    // 範囲座標
+    // 範圍座標
     let p1x = -setting.range * gridSize; // 左
     let p1y = 0;
     let p2x = 0; // 上
@@ -678,7 +678,7 @@ export class RangeRender {
     let p4y = setting.range * gridSize;
 
     // クリッピング座標
-    // 根本から時計回りにクリップ範囲を定義
+    // 根本から時計回りにクリップ範圍を定義
     let clip01x = p1x - (gridSize * 2);
     let clip01y = 0;
     let clip02x = 0;
@@ -804,14 +804,14 @@ export class RangeRender {
   static gripAreaPathDiamond(setting: RangeRenderSetting): ClipAreaSquare {
     let gridSize = setting.gridSize;
 
-    // 範囲座標
+    // 範圍座標
     let p1x = -setting.range * gridSize; // 左
     let p2y = -setting.range * gridSize;
     let p3x = setting.range * gridSize; // 右
     let p4y = setting.range * gridSize;
 
     // クリッピング座標
-    // 根本から時計回りにクリップ範囲を定義
+    // 根本から時計回りにクリップ範圍を定義
     let clip01x = p1x;
     let clip01y = 0;
     let clip02x = 0;
@@ -866,7 +866,7 @@ export class RangeRender {
     this.canvasElement.height = setting.areaHeight * gridSize;
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
-    // 範囲座標
+    // 範圍座標
     let cx_ = 0.0;
     let cy_ = 0.0;
     let p1x_ = setting.range * gridSize;
@@ -875,7 +875,7 @@ export class RangeRender {
     let p2y_ = 0.5 * setting.width * gridSize;
 
     // クリッピング座標
-    // コーンの根本から時計回りにクリップ範囲を定義
+    // コーンの根本から時計回りにクリップ範圍を定義
     
     let clip01x_ = cx_ - gridSize * Math.sqrt(2); // コーン根本
     let clip01y_ = cy_;
@@ -1013,14 +1013,14 @@ export class RangeRender {
     let gridSize = setting.gridSize;
     let rad = Math.PI / 180 * setting.degree;
 
-    // 範囲座標
+    // 範圍座標
     let cx_ = 0.0;
     let cy_ = 0.0;
     let p1x_ = setting.range * gridSize;
     let p1y_ = -0.5 * setting.width * gridSize;
 
     // クリッピング座標
-    // コーンの根本から時計回りにクリップ範囲を定義
+    // コーンの根本から時計回りにクリップ範圍を定義
     
     let clip01x_ = cx_; // コーン根本
     let clip01y_ = cy_;

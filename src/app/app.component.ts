@@ -178,7 +178,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     sampleDiceRollTable.name = 'サンプルダイスボット表'
     sampleDiceRollTable.command = 'SAMPLE'
     sampleDiceRollTable.dice = '1d6';
-    sampleDiceRollTable.value = "1:これはダイスボット表のサンプルです\n2:数字と対応する結果を1行に1つづつ:（コロン）で区切り\n3:数字:結果のように記述します\n4:\\\\n  \\nで改行します\n5-6:また、-（ハイフン）で区切って数字の範囲を指定可能です";
+    sampleDiceRollTable.value = "1:これはダイスボット表のサンプルです\n2:数字と対応する結果を1行に1つづつ:（コロン）で区切り\n3:数字:結果のように記述します\n4:\\\\n  \\nで改行します\n5-6:また、-（ハイフン）で区切って数字の範圍を指定可能です";
     DiceRollTableList.instance.addDiceRollTable(sampleDiceRollTable);
 
     let fileContext = ImageFile.createEmpty('none_icon').toContext();
@@ -271,7 +271,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           const API_VERSION = event.data.dice.api;
           const langSortOrder = ['A', 'English', 'ChineseTraditional', 'SimplifiedChinese', 'Korean', 'Other'];
           //console.log(api)
-          //ToDO BCDice-API管理者情報表示の良いUI思いつかないのでペンディング
+          //ToDO BCDice-API管理者情報顯示の良いUI思いつかないのでペンディング
           //fetch(event.data.dice.url + '/v1/admin', {mode: 'cors'})
           //  .then(response => { return response.json() })
           //  .then(infos => { DiceBot.adminUrl = infos.url });
@@ -476,7 +476,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           Notification.requestPermission().then((permission) => {
             if (permission === 'granted') {
               notification = new Notification('Udonarium with Fly', { 
-                body: 'Udonarium with Fly の新しいバージョンをダウンロード中です。',
+                body: 'Udonarium with Fly の新しい版本をダウンロード中です。',
                 icon: 'card.png'
               });
               notification.addEventListener('click', function(e) {
@@ -497,7 +497,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           if (!this.isUpdateCanceled) {
             this.modalService.open(ConfirmationComponent, {
               title: 'Udonarium with Fly の更新', 
-              text: 'Udonarium with Fly の新しいバージョンをダウンロードしました。更新を行いますか？',
+              text: 'Udonarium with Fly の新しい版本をダウンロードしました。更新を行いますか？',
               helpHtml: '<b style="color: red">更新の際にページを再読み込みします。</b>手動で再読み込みを行うことでも更新可能です。',
               type: ConfirmationType.OK_CANCEL,
               materialIcon: 'browser_updated',
@@ -582,7 +582,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.progresPercent = 0;
     let roomName = 0 < Network.peer.roomName.length
       ? Network.peer.roomName
-      : 'fly_ルームデータ';
+      : 'fly_房間資料';
     await this.saveDataService.saveRoomAsync(roomName, percent => {
       this.progresPercent = percent;
     });
@@ -633,16 +633,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const menu = [];
     const cunIns = CutInList.instance.cutIns;
-    menu.push({ name: 'カットイン再生', materialIcon: 'play_arrow',
+    menu.push({ name: '插圖再生', materialIcon: 'play_arrow',
       action: null, subActions: cunIns.length === 0 ? [
         {
-          name: '(カットインなし)',
+          name: '(插圖なし)',
           disabled: true,
           center: true
         }
       ] : cunIns.map(cutIn => {
         return { 
-          name: `${cutIn.isValidAudio ? '' : '⚠️'}${cutIn.name == '' ? '(無名のカットイン)' : cutIn.name}`, 
+          name: `${cutIn.isValidAudio ? '' : '⚠️'}${cutIn.name == '' ? '(無名插圖)' : cutIn.name}`, 
           subActions: [{
               name: '全員',
               action: () => {
@@ -651,7 +651,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                   secret: false,
                   sender: PeerCursor.myCursor.peerId
                 });
-                this.chatMessageService.sendOperationLog((cutIn.name == '' ? '(無名のカットイン)' : cutIn.name) + ' を再生した');
+                this.chatMessageService.sendOperationLog((cutIn.name == '' ? '(無名插圖)' : cutIn.name) + ' 播放');
               }
             }, ContextMenuSeparator, ...this.otherPeers.map(peer => {
             return {
@@ -678,8 +678,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     });
     menu.push(ContextMenuSeparator);
-    menu.push({ name: 'カットイン設定...', materialIcon: 'movie_creation', action: () => this.open('CutInSettingComponent') });
-    menu.push({ name: 'ダイスボット表設定...', materialIcon: 'table_rows', action: () => this.open('DiceRollTableSettingComponent') })
+    menu.push({ name: '插圖設定...', materialIcon: 'movie_creation', action: () => this.open('CutInSettingComponent') });
+    menu.push({ name: '骰子機器人表設定...', materialIcon: 'table_rows', action: () => this.open('DiceRollTableSettingComponent') })
     this.contextMenuService.open(position, menu, 'ツールボックス');
   }
 
@@ -707,7 +707,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const isShowNameTag = StandImageComponent.isShowNameTag;
     const isCanBeGone = StandImageComponent.isCanBeGone; 
     this.contextMenuService.open(position, [
-      { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }テーブルグリッドを常に表示`, 
+      { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }テーブルグリッドを常に顯示`, 
         action: () => {
           TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;
           EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelecter.instance.toContext()); 
@@ -728,13 +728,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         checkBox: 'check'
       },
       ContextMenuSeparator,
-      { name: `${ isShowStand ? '☑' : '☐' }スタンド表示`, 
+      { name: `${ isShowStand ? '☑' : '☐' }スタンド顯示`, 
         action: () => {
           StandImageComponent.isShowStand = !isShowStand;
         },
         checkBox: 'check'
       },
-      { name: `${ isShowNameTag ? '☑' : '☐' }ネームタグ表示`, 
+      { name: `${ isShowNameTag ? '☑' : '☐' }名稱標籤顯示`, 
         action: () => {
           StandImageComponent.isShowNameTag = !isShowNameTag;
         },
@@ -751,7 +751,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         checkBox: 'check'
       },
       ContextMenuSeparator,
-      { name: '表示スタンド全消去', action: () => EventSystem.trigger('DESTORY_STAND_IMAGE_ALL', null) }
+      { name: '顯示スタンド全消去', action: () => EventSystem.trigger('DESTORY_STAND_IMAGE_ALL', null) }
     ], '個人設定');
   }
 /*
@@ -762,7 +762,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   diceAllOpne() {
     this.modalService.open(ConfirmationComponent, {
       title: 'ダイス一斉公開', 
-      text: 'テーブル上のダイス、コインを公開しますか？',
+      text: 'テーブル上のダイス、硬幣を公開しますか？',
       help: '「一斉公開しない」設定のものは公開されません。',
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'all_out',

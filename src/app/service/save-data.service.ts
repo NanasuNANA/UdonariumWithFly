@@ -34,12 +34,12 @@ export class SaveDataService {
     private chatMessageService: ChatMessageService
   ) { }
 
-  saveRoomAsync(fileName: string = 'fly_ルームデータ', updateCallback?: UpdateCallback): Promise<void> {
-    this.chatMessageService.sendOperationLog(`ルームデータ ${fileName}.zip を保存`);
+  saveRoomAsync(fileName: string = 'fly_房間資料', updateCallback?: UpdateCallback): Promise<void> {
+    this.chatMessageService.sendOperationLog(`ルームデータ ${fileName}.zip を儲存`);
     return SaveDataService.queue.add((resolve, reject) => resolve(this._saveRoomAsync(fileName, updateCallback)));
   }
 
-  private _saveRoomAsync(fileName: string = 'fly_ルームデータ', updateCallback?: UpdateCallback): Promise<void> {
+  private _saveRoomAsync(fileName: string = 'fly_房間資料', updateCallback?: UpdateCallback): Promise<void> {
     let files: File[] = [];
     let roomXml = this.convertToXml(new Room());
     let chatXml = this.convertToXml(ChatTabList.instance);
@@ -70,7 +70,7 @@ export class SaveDataService {
   }
 
   saveGameObjectAsync(gameObject: GameObject, fileName: string = 'fly_xml_data', updateCallback?: UpdateCallback): Promise<void> {
-    this.chatMessageService.sendOperationLog(`${StringUtil.aliasNameToClassName(gameObject.aliasName)}のデータ ${fileName}.zip を保存`);
+    this.chatMessageService.sendOperationLog(`${StringUtil.aliasNameToClassName(gameObject.aliasName)}のデータ ${fileName}.zip を儲存`);
     return SaveDataService.queue.add((resolve, reject) => resolve(this._saveGameObjectAsync(gameObject, fileName, updateCallback)));
   }
 
@@ -167,7 +167,7 @@ export class SaveDataService {
     const mimeType = (logFormat == 0 ? 'text/plain' : 'text/html');
     const ext = (logFormat == 0 ? '.txt' : '.html');
     const trueFileName = 'fly_' + this.appendTimestamp(fileName) + ext;
-    this.chatMessageService.sendOperationLog(`チャットログ ${trueFileName} を保存`);
+    this.chatMessageService.sendOperationLog(`チャットログ ${trueFileName} を儲存`);
     //const xml = ChatTabList.instance.log(logFormat, dateFormat, isWriteOerationLog, chatTabs);
     
     //const files: File[] = [];
@@ -178,7 +178,7 @@ export class SaveDataService {
 
   async saveChatLogAsync(logFormat: number, fileName: string, chatTabs: ChatTab[]=null, dateFormat='HH:mm', isWriteOerationLog=true, updateCallback?: UpdateCallback): Promise<void> {
     const trueFileName = 'fly_' + this.appendTimestamp(fileName);
-    this.chatMessageService.sendOperationLog(`チャットログ ${trueFileName}.zip を保存`);
+    this.chatMessageService.sendOperationLog(`チャットログ ${trueFileName}.zip を儲存`);
     const files: File[] = [];
     const images: ImageFile[] = (chatTabs ? chatTabs : [ChatTabList.instance]).reduce<ImageFile[]>((acm, obj) => acm.concat(this.searchImageFiles(this.convertToXml(obj))), []);
     const imageDict = {};

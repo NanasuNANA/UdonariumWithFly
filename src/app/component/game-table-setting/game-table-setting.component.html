@@ -1,10 +1,10 @@
 <div class="flex-container">
   <div class="flex-item no-grow">
     <div>
-      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="createGameTable()">新しいテーブルを作る</button>
+      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="createGameTable()">建立新桌面</button>
     </div>
     <select #select style="width: 100%; max-width: 155px" size="19" (change)="selectGameTable(select.value)" [ngModel]="selectedTable?.identifier">
-      <option *ngFor="let gameTable of getGameTables()" value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name == '' ? 'gray' : ''">{{gameTable.name == '' ? '(無名のテーブル)' : gameTable.name}}</option>
+      <option *ngFor="let gameTable of getGameTables()" value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name == '' ? 'gray' : ''">{{gameTable.name == '' ? '(無名桌面)' : gameTable.name}}</option>
     </select>
   </div>
   <div class="flex-item">
@@ -28,9 +28,9 @@
       </div>
       <div class="images-select">
         <div>
-          <b>背景１（前面）</b>
+          <b>背景1（前景）</b>
           <div *ngIf="!tableDistanceviewImage.url">
-            <button (click)="openDistanceViewImageModal()" style="height: 120px; margin: 0px 1px 2px 0px" [disabled]="!isEditable">背景画像１を追加</button>
+            <button (click)="openDistanceViewImageModal()" style="height: 120px; margin: 0px 1px 2px 0px" [disabled]="!isEditable">新增背景圖片1</button>
           </div>
           <span *ngIf="tableDistanceviewImage.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
             <span *ngIf="getHidden(tableDistanceviewImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
@@ -40,9 +40,9 @@
           </span>
         </div>
         <div>
-          <b>背景２（背面）</b>
+          <b>背景2（背面）</b>
           <div *ngIf="!tableDistanceviewImage2.url">
-            <button (click)="openDistanceViewImageModal2()" style="height: 120px; margin: 0px 0px 2px 0px" [disabled]="!isEditable">背景画像２を追加</button>
+            <button (click)="openDistanceViewImageModal2()" style="height: 120px; margin: 0px 0px 2px 0px" [disabled]="!isEditable">新增背景圖片2</button>
           </div>
           <span *ngIf="tableDistanceviewImage2.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
             <span *ngIf="getHidden(tableDistanceviewImage2)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
@@ -80,23 +80,23 @@
         </div>
       </div>
       <div>
-        <div style="display: inline" class="self-setting">グリッド：
+        <div style="display: inline" class="self-setting">格線：
           <select [(ngModel)]="tableGridType" name="tableGridType" [disabled]="!isEditable">
-            <option value="-1">なし</option>
-            <option value="0">スクエア</option>
-            <option value="1">ヘクス（縦揃え）</option>
-            <option value="2">ヘクス（横揃え）</option>
+            <option value="-1">無</option>
+            <option value="0">方格</option>
+            <option value="1">六角（縱向）</option>
+            <option value="2">六角（橫向）</option>
           </select>
         </div>
-        <div style="display: inline; margin-left: 1.2em" class="self-setting">色：
+        <div style="display: inline; margin-left: 1.2em" class="self-setting">顏顏顏色：
           <select [(ngModel)]="tableGridColor" name="tableGridColor" [disabled]="!isEditable || tableGridType == -1">
-            <option value="#000000e6">黒</option>
-            <option value="#0000dde6">青</option>
-            <option value="#00dd00e6">緑</option>
-            <option value="#00dddde6">水色</option>
-            <option value="#dd0000e6">赤</option>
+            <option value="#000000e6">黑</option>
+            <option value="#0000dde6">藍</option>
+            <option value="#00dd00e6">綠</option>
+            <option value="#00dddde6">青</option>
+            <option value="#dd0000e6">紅</option>
             <option value="#dd00dde6">紫</option>
-            <option value="#dddd00e6">黄</option>
+            <option value="#dddd00e6">黃</option>
             <option value="#dddddde6">白</option>
           </select>
         </div>
@@ -104,15 +104,15 @@
       <div>
         <label class="self-setting">
           <input type="checkbox" [(ngModel)]="tableGridNumberShow" name="tableGridNumberShow" [disabled]="!isEditable || tableGridType == -1" />
-          <span [ngClass]="{disabled: !isEditable || tableGridType == -1}" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">グリッドの座標番号を表示</span>
+          <span [ngClass]="{disabled: !isEditable || tableGridType == -1}" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">顯示格線座標編號</span>
         </label>
       </div>
       <div>
-        <div style="display: inline" class="self-setting">背景フィルタ：
+        <div style="display: inline" class="self-setting">背景濾鏡：
           <select [(ngModel)]="tableDistanceviewFilter" name="tableDistanceviewFilter" [disabled]="!isEditable">
-            <option value="">なし</option>
-            <option value="white">ホワイト</option>
-            <option value="black">ブラック</option>
+            <option value="">無</option>
+            <option value="white">白顏顏色</option>
+            <option value="black">黑顏顏色</option>
           </select>
         </div>
       </div>
@@ -120,28 +120,28 @@
       <div>
         <label class="self-setting">
           <input type="checkbox" [(ngModel)]="tableGridShow" name="tableGridShow" />
-          グリッドを常に表示<sup class="self-only">*</sup>
+          常駐顯示格線<sup class="self-only">*</sup>
         </label>
         <label style="margin-left: 1em" class="self-setting">
           <input type="checkbox" [(ngModel)]="tableGridSnap" name="tableGridSnap" />
-          スナップ<sup class="self-only">*</sup>
+          吸附<sup class="self-only">*</sup>
         </label>
         <ng-container *ngIf="!isDeleted">
           <button style="margin-left: 2em" [disabled]="isSaveing" (click)="save()">
             <div style="position: relative;">
-              <div [ngClass]="{'is-hidden': isSaveing}">保存</div>
+              <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
               <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
             </div>
           </button>
-          <button class="danger" (click)="delete()" [disabled]="getGameTables().length <= 1">削除</button>
+          <button class="danger" (click)="delete()" [disabled]="getGameTables().length <= 1">刪除</button>
         </ng-container>
         <ng-container *ngIf="isDeleted">
-          <button (click)="restore()">元に戻す</button>
+          <button (click)="restore()">還原</button>
         </ng-container>
       </div>
     </ng-container>
   </div>
 </div>
 <ng-container *ngIf="isEmpty">
-  <div style="font-size: 12px;">※テーブルが１つも作成されていません。「新しいテーブルを作る」から新しいテーブルを作成することができます。</div>
+  <div style="font-size: 12px;">※尚未建立任何桌面。請點擊「建立新桌面」來建立桌面。</div>
 </ng-container>

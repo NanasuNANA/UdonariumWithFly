@@ -216,7 +216,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         if (this.owner && !this.isLock) {
           this.owner = '';
           SoundEffect.play(PresetSound.unlock);
-          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名の' + (this.isCoin ? 'コイン' : 'ダイス') + ')' : this.diceSymbol.name} の${this.isCoin ? '表／裏' : '目'}を公開 → ${this.face}`);
+          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 的${this.isCoin ? '正面／背面' : '骰面'}公開 → ${this.face}`);
         }
       })
       .on<object>('TABLE_VIEW_ROTATE', event => {
@@ -319,7 +319,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       y: this.diceSymbol.location.y + (this.diceSymbol.size * this.gridSize) / 2,
       z: this.diceSymbol.posZ
     };
-    actions.push({ name: 'ここに集める', action: () => this.selectionService.congregate(objectPosition) });
+    actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
       let selectedDiceSymbols = () => this.selectionService.objects.filter(object => object.aliasName === this.diceSymbol.aliasName) as DiceSymbol[];
@@ -327,9 +327,9 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       const isContainDice = selectedDiceSymbols().some(diceSymbol => !diceSymbol.isCoin);
       actions.push(
         {
-          name: `選択した${isContainCoin ? 'コイン' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? 'ダイス' : ''}`, action: null, subActions: [
+          name: `選取的${isContainCoin ? '硬幣' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '骰子' : ''}`, action: null, subActions: [
             {
-              name: `すべて${isContainCoin ? 'トス' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '振る' : ''}`, action: () => {
+              name: `全部${isContainCoin ? '拋擲' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '擲骰' : ''}`, action: () => {
                 let needsSound = false;
                 let isContainCoin = false;
                 let isContainDice = false;
@@ -341,7 +341,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
                     isContainDice = isContainDice || !diceSymbol.isCoin;
                     EventSystem.call('ROLL_DICE_SYMBOL', { identifier: diceSymbol.identifier });
                     let face = diceSymbol.diceRoll();
-                    let message = `${diceSymbol.name == '' ? '(無名の' + (diceSymbol.isCoin ? 'コイン' : 'ダイス') + ')' : diceSymbol.name} を${diceSymbol.isCoin ? 'トスした' : '振った'}`;
+                    let message = `${diceSymbol.name == '' ? '(無名的' + (diceSymbol.isCoin ? '硬幣' : '骰子') + ')' : diceSymbol.name} ${diceSymbol.isCoin ? '拋擲' : '擲骰'}`;
                     if (diceSymbol.owner === '') message += ` → ${face}`;
                     messages.push(message);
                   }
@@ -354,11 +354,11 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
               }
             },
             {
-              name: 'すべて公開', action: () => {
+              name: '全部公開', action: () => {
                 const messages: string[] = []; 
                 selectedDiceSymbols().forEach(diceSymbol => {
                   if (diceSymbol.owner != '') {
-                    messages.push(`${diceSymbol.name == '' ? '(無名の' + (diceSymbol.isCoin ? 'コイン' : 'ダイス') + ')' : diceSymbol.name} の${diceSymbol.isCoin ? '表／裏' : '目'}を公開 → ${diceSymbol.face}`);
+                    messages.push(`${diceSymbol.name == '' ? '(無名的' + (diceSymbol.isCoin ? '硬幣' : '骰子') + ')' : diceSymbol.name} 的${diceSymbol.isCoin ? '正面／背面' : '骰面'}公開 → ${diceSymbol.face}`);
                   }
                   diceSymbol.owner = '';
                 });
@@ -368,15 +368,15 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
               disabled: !selectedDiceSymbols().some(diceSymbol => diceSymbol.owner != '')
             },
             {
-              name: 'すべて自分だけ見る', action: () => {
+              name: '全部只有自己查看', action: () => {
                 const names: string[] = []; 
                 selectedDiceSymbols().forEach(diceSymbol => {
                   if (diceSymbol.owner != Network.peer.userId) {
-                    names.push(diceSymbol.name == '' ? '(無名の' + (diceSymbol.isCoin ? 'コイン' : 'ダイス') + ')' : diceSymbol.name);
+                    names.push(diceSymbol.name == '' ? '(無名的' + (diceSymbol.isCoin ? '硬幣' : '骰子') + ')' : diceSymbol.name);
                   }
                   diceSymbol.owner = Network.peer.userId;
                 });
-                if (names.length) this.chatMessageService.sendOperationLog(names.join('、') + ' を自分だけ見た');
+                if (names.length) this.chatMessageService.sendOperationLog(names.join('、') + ' 只有自己查看');
                 SoundEffect.play(PresetSound.lock);
               },
               disabled: !selectedDiceSymbols().some(diceSymbol => diceSymbol.owner != Network.peer.userId)
@@ -395,7 +395,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
 
     //if (this.isVisible) {
       actions.push({
-        name: this.isCoin ? 'コイントス' : 'ダイスを振る', action: () => {
+        name: this.isCoin ? '拋擲硬幣' : '擲骰', action: () => {
           this.diceRoll();
         },
         disabled: !this.isVisible,
@@ -405,32 +405,32 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     actions.push(ContextMenuSeparator);
     if (this.isMine || this.hasOwner) {
       actions.push({
-        name: `${this.isCoin ? 'コイン' : 'ダイス'}を公開`, action: () => {
+        name: `公開${this.isCoin ? '硬幣' : '骰子'}`, action: () => {
           this.owner = '';
           SoundEffect.play(PresetSound.unlock);
-          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名の' + (this.isCoin ? 'コイン' : 'ダイス') + ')' : this.diceSymbol.name} の${this.isCoin ? '表／裏' : '目'}を公開 → ${this.face}`);
+          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 的${this.isCoin ? '正面／背面' : '骰面'}公開 → ${this.face}`);
         }
       });
     }
     if (!this.isMine) {
       actions.push({
-        name: '自分だけ見る', action: () => {
+        name: '只有自己查看', action: () => {
           this.owner = Network.peer.userId;
-          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名の' + (this.isCoin ? 'コイン' : 'ダイス') + ')' : this.diceSymbol.name} を自分だけ見た`);
+          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 只有自己查看`);
           SoundEffect.play(PresetSound.lock);
         }
       });
     }
     actions.push((this.isLock
       ? {
-        name: '☑ 一斉公開しない', action: () => {
+        name: '☑ 不同時公開', action: () => {
           this.isLock = false;
           SoundEffect.play(PresetSound.unlock);
         },
         disabled: this.hasOwner && !this.isVisible,
         checkBox: 'check'
       } : {
-        name: '☐ 一斉公開しない', action: () => {
+        name: '☐ 不同時公開', action: () => {
           this.isLock = true;
           SoundEffect.play(PresetSound.lock);
         },
@@ -456,35 +456,35 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         subActions.push({
           name: `${this.face == face ? '◉' : '○'} ${face}　`, action: () => {
             if (this.owner === '') SoundEffect.play(PresetSound.dicePut);
-            if (this.owner === '' && this.face != face) this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名の' + (this.isCoin ? 'コイン' : 'ダイス') + ')' : this.diceSymbol.name} の${this.isCoin ? '表／裏' : '目'}を変更 → ${face}`);
+            if (this.owner === '' && this.face != face) this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 的${this.isCoin ? '正面／背面' : '骰面'}變更 → ${face}`);
             this.face = face;
           },
           checkBox: 'radio'
         });
       });
-      actions.push({ name: this.isCoin ? '表／裏' : 'ダイス目', action: null, subActions: subActions });
+      actions.push({ name: this.isCoin ? '正面／背面' : '骰面', action: null, subActions: subActions });
     }
 
     actions.push(ContextMenuSeparator);
 
     actions.push((this.isDropShadow
       ? {
-        name: '☑ 影の表示', action: () => {
+        name: '☑ 顯示陰影', action: () => {
           this.isDropShadow = false;
         },
         checkBox: 'check'
       } : {
-        name: '☐ 影の表示', action: () => {
+        name: '☐ 顯示陰影', action: () => {
           this.isDropShadow = true;
         },
         checkBox: 'check'
       }));
 
     actions.push(ContextMenuSeparator);
-    actions.push({ name: '詳細を表示...', action: () => { this.showDetail(this.diceSymbol); } });
+    actions.push({ name: '顯示詳細...', action: () => { this.showDetail(this.diceSymbol); } });
     if (this.diceSymbol.getUrls().length > 0) {
       actions.push({
-        name: '参照URLを開く', action: null,
+        name: '開啟參考URL', action: null,
         subActions: this.diceSymbol.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -497,7 +497,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
               }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URLが不正です' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         }),
@@ -505,7 +505,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       actions.push(ContextMenuSeparator);
     }
     actions.push({
-      name: 'コピーを作る', action: () => {
+      name: '建立副本', action: () => {
         let cloneObject = this.diceSymbol.clone();
         cloneObject.location.x += this.gridSize;
         cloneObject.location.y += this.gridSize;
@@ -514,7 +514,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       }
     });
     actions.push({
-      name: '削除する', action: () => {
+      name: '刪除', action: () => {
         this.diceSymbol.destroy();
         SoundEffect.play(PresetSound.sweep);
       }
@@ -541,7 +541,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       }
     //}
     let face = this.diceSymbol.diceRoll();
-    let message = `${this.diceSymbol.name == '' ? '(無名の' + (this.isCoin ? 'コイン' : 'ダイス') + ')' : this.diceSymbol.name} を${this.isCoin ? 'トスした' : '振った'}`;
+    let message = `${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} ${this.isCoin ? '拋擲' : '擲骰'}`;
     if (this.owner === '') message += ` → ${face}`;
     this.chatMessageService.sendOperationLog(message);
     return face;
@@ -550,7 +550,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   showDetail(gameObject: DiceSymbol) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
     let coordinate = this.pointerDeviceService.pointers[0];
-    let title = 'ダイスシンボル設定';
+    let title = '骰子符號設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
     let option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
     let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);

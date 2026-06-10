@@ -27,7 +27,7 @@ export class TabletopActionService {
   constructor() { }
 
   createGameCharacter(position: PointerCoordinate): GameCharacter {
-    let character = GameCharacter.create('新しいキャラクター', 1, '');
+    let character = GameCharacter.create('新角顏顏色', 1, '');
     character.location.x = position.x - 25;
     character.location.y = position.y - 25;
     character.posZ = position.z;
@@ -38,7 +38,7 @@ export class TabletopActionService {
     let viewTable = this.getViewTable();
     if (!viewTable) return;
 
-    let tableMask = GameTableMask.create('マップマスク', 5, 5, 100);
+    let tableMask = GameTableMask.create('地圖遮罩', 5, 5, 100);
     tableMask.location.x = position.x - 25;
     tableMask.location.y = position.y - 25;
     tableMask.posZ = position.z;
@@ -69,7 +69,7 @@ export class TabletopActionService {
   }
 
   createTextNote(position: PointerCoordinate): TextNote {
-    let textNote = TextNote.create('共有メモ', 'テキストを入力してください', 5, 4, 3);
+    let textNote = TextNote.create('共用備注', '請輸入文字', 5, 4, 3);
     textNote.location.x = position.x;
     textNote.location.y = position.y;
     textNote.posZ = position.z;
@@ -86,7 +86,7 @@ export class TabletopActionService {
       //if (!image) { image = ImageStorage.instance.add(url); }
       if (!image) {
         image = ImageStorage.instance.add(url);
-        ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? 'コイン' : 'ダイス'}`;
+        ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? '硬幣' : '骰子'}`;
       }
       diceSymbol.imageDataElement.getFirstElementByName(face).value = image.identifier;
     });
@@ -97,7 +97,7 @@ export class TabletopActionService {
       //if (!image) { image = ImageStorage.instance.add(url); }
       if (!image) {
         image = ImageStorage.instance.add(url);
-        ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? 'コイン' : 'ダイス'}`;
+        ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? '硬幣' : '骰子'}`;
       }
       diceSymbol.imageDataElement.getFirstElementByName(face).value = image.identifier;
     });
@@ -117,14 +117,14 @@ export class TabletopActionService {
     frontImage = ImageStorage.instance.get(frontUrl);
     if (!frontImage) {
       frontImage = ImageStorage.instance.add(frontUrl);
-      ImageTag.create(frontImage.identifier).tag = '*default カード';
+      ImageTag.create(frontImage.identifier).tag = '*default 牌';
     }
     backImage = ImageStorage.instance.get(backUrl);
     if (!backImage) {
       backImage = ImageStorage.instance.add(backUrl);
-      ImageTag.create(backImage.identifier).tag = '*default カード';
+      ImageTag.create(backImage.identifier).tag = '*default 牌';
     }
-    let card = Card.create('カード', frontImage.identifier, backImage.identifier);
+    let card = Card.create('牌', frontImage.identifier, backImage.identifier);
     card.location.x = position.x - 25;
     card.location.y = position.y - 25;
     card.posZ = position.z;
@@ -135,34 +135,34 @@ export class TabletopActionService {
     let ret = '';
     const suit = code.slice(0, 1);
     const number = parseInt(code.substring(1, 3));
-    const jqk = ['ジャック', 'クイーン', 'キング']
+    const jqk = ['J', 'Q', 'K']
     switch(suit) {
       case 'c':
-        ret = 'クラブ'
+        ret = '梅花'
         break;
       case 'd':
-        ret = 'ダイヤ'
+        ret = '方塊'
         break;
       case 'h':
-        ret = 'ハート'
+        ret = '紅心'
         break;
       case 's':
-        ret = 'スペード'
+        ret = '黑桃'
         break;
       case 'x':
-        ret = 'ジョーカー'
+        ret = '鬼牌'
         break;
     }
     if (suit == 'x') {
       ret += `（${(number == 1) ? '赤' : '黒' }）`;
     } else {
-      ret += `の${number == 1 ? 'エース' : number >= 11 ? jqk[number - 11] : number }`
+      ret += ` ${number == 1 ? 'A' : number >= 11 ? jqk[number - 11] : number }`
     }
     return ret;
   }
 
   createTrump(position: PointerCoordinate): CardStack {
-    let cardStack = CardStack.create('トランプ山札');
+    let cardStack = CardStack.create('撲克牌堆');
     cardStack.location.x = position.x - 25;
     cardStack.location.y = position.y - 25;
     cardStack.posZ = position.z;
@@ -171,7 +171,7 @@ export class TabletopActionService {
     if (!ImageStorage.instance.get(back)) {
       //ImageStorage.instance.add(back);
       const image = ImageStorage.instance.add(back);
-      ImageTag.create(image.identifier).tag = '*default カード';
+      ImageTag.create(image.identifier).tag = '*default 牌';
     }
 
     let suits: string[] = ['c', 'd', 'h', 's'];
@@ -191,10 +191,10 @@ export class TabletopActionService {
       if (!ImageStorage.instance.get(url)) {
         //ImageStorage.instance.add(url);
         const image = ImageStorage.instance.add(url);
-        ImageTag.create(image.identifier).tag = '*default カード';
+        ImageTag.create(image.identifier).tag = '*default 牌';
       }
       let card = Card.create(this.cardName(trump), url, back);
-      //let card = Card.create('カード', url, back);
+      //let card = Card.create('牌', url, back);
       cardStack.putOnBottom(card);
     }
     return cardStack;
@@ -204,20 +204,20 @@ export class TabletopActionService {
     let range;
     switch (typeName) {
       case 'LINE':
-        range = RangeArea.create('射程・範囲 (直線)', 1, 6, 100);
+        range = RangeArea.create('射程・範圍 (直線)', 1, 6, 100);
         break;
       case 'CIRCLE':
-        range = RangeArea.create('射程・範囲 (円)', 3, 3, 100);
+        range = RangeArea.create('射程・範圍 (円)', 3, 3, 100);
         break;
       case 'SQUARE':
-        range = RangeArea.create('射程・範囲 (正方形)', 3, 3, 100);
+        range = RangeArea.create('射程・範圍 (正方形)', 3, 3, 100);
         break;
       case 'DIAMOND':
-        range = RangeArea.create('射程・範囲 (ダイヤ)', 3, 3, 100);
+        range = RangeArea.create('射程・範圍 (菱形)', 3, 3, 100);
         break;
       case 'CORN':
       default:
-        range = RangeArea.create('射程・範囲 (錐形)', 6, 6, 100);
+        range = RangeArea.create('射程・範圍 (錐形)', 6, 6, 100);
         break;
     }
 
@@ -226,7 +226,7 @@ export class TabletopActionService {
     range.posZ = position.z;
     range.type = typeName;
     let data = range.commonDataElement.getFirstElementByName('opacity');
-    //console.log( '射程範囲TEST' + data);
+    //console.log( '射程範圍TEST' + data);
     data.currentValue = 60;
     return range;
   }
@@ -237,8 +237,8 @@ export class TabletopActionService {
     let bgFileContext = ImageFile.createEmpty('testTableBackgroundImage_image').toContext();
     bgFileContext.url = './assets/images/BG10a_80.jpg';
     testBgFile = ImageStorage.instance.add(bgFileContext);
-    ImageTag.create(testBgFile.identifier).tag = '*default テーブル';
-    gameTable.name = '最初のテーブル';
+    ImageTag.create(testBgFile.identifier).tag = '*default 桌面';
+    gameTable.name = '第一個桌面';
     gameTable.imageIdentifier = testBgFile.identifier;
     gameTable.width = 20;
     gameTable.height = 15;
@@ -256,59 +256,59 @@ export class TabletopActionService {
     fileContext = ImageFile.createEmpty('testCharacter_1_image').toContext();
     fileContext.url = './assets/images/mon_052.gif';
     testFile = ImageStorage.instance.add(fileContext);
-    ImageTag.create(testFile.identifier).tag = '*default キャラクター';
+    ImageTag.create(testFile.identifier).tag = '*default 角色';
     testCharacter.location.x = 5 * 50;
     testCharacter.location.y = 9 * 50;
     testCharacter.initialize();
-    testCharacter.createTestGameDataElement('モンスターA', 1, testFile.identifier);
+    testCharacter.createTestGameDataElement('怪物A', 1, testFile.identifier);
 
     testCharacter = new GameCharacter('testCharacter_2');
     testCharacter.location.x = 8 * 50;
     testCharacter.location.y = 8 * 50;
     testCharacter.initialize();
-    testCharacter.createTestGameDataElement('モンスターB', 1, testFile.identifier);
+    testCharacter.createTestGameDataElement('怪物B', 1, testFile.identifier);
 
     testCharacter = new GameCharacter('testCharacter_3');
     fileContext = ImageFile.createEmpty('testCharacter_3_image').toContext();
     fileContext.url = './assets/images/mon_128.gif';
     testFile = ImageStorage.instance.add(fileContext);
-    ImageTag.create(testFile.identifier).tag = '*default キャラクター';
+    ImageTag.create(testFile.identifier).tag = '*default 角色';
     testCharacter.location.x = 4 * 50;
     testCharacter.location.y = 2 * 50;
     testCharacter.initialize();
-    testCharacter.createTestGameDataElement('モンスターC', 3, testFile.identifier);
+    testCharacter.createTestGameDataElement('怪物C', 3, testFile.identifier);
 
     testCharacter = new GameCharacter('testCharacter_4');
     fileContext = ImageFile.createEmpty('testCharacter_4_image').toContext();
     fileContext.url = './assets/images/mon_150.gif';
     testFile = ImageStorage.instance.add(fileContext);
-    ImageTag.create(testFile.identifier).tag = '*default キャラクター';
+    ImageTag.create(testFile.identifier).tag = '*default 角色';
     testCharacter.location.x = 6 * 50;
     testCharacter.location.y = 11 * 50;
     testCharacter.initialize();
-    testCharacter.createTestGameDataElement('キャラクターA', 1, testFile.identifier);
+    testCharacter.createTestGameDataElement('角色A', 1, testFile.identifier);
 
     testCharacter = new GameCharacter('testCharacter_5');
     fileContext = ImageFile.createEmpty('testCharacter_5_image').toContext();
     fileContext.url = './assets/images/mon_211.gif';
     testFile = ImageStorage.instance.add(fileContext);
-    ImageTag.create(testFile.identifier).tag = '*default キャラクター';
+    ImageTag.create(testFile.identifier).tag = '*default 角色';
     testCharacter.location.x = 12 * 50;
     testCharacter.location.y = 12 * 50;
     testCharacter.initialize();
-    testCharacter.createTestGameDataElement('キャラクターB', 1, testFile.identifier);
+    testCharacter.createTestGameDataElement('角色B', 1, testFile.identifier);
 
     testCharacter = new GameCharacter('testCharacter_6');
     fileContext = ImageFile.createEmpty('testCharacter_6_image').toContext();
     fileContext.url = './assets/images/mon_135.gif';
     testFile = ImageStorage.instance.add(fileContext);
 
-    ImageTag.create(testFile.identifier).tag = '*default キャラクター';
+    ImageTag.create(testFile.identifier).tag = '*default 角色';
     testCharacter.initialize();
     testCharacter.location.x = 5 * 50;
     testCharacter.location.y = 13 * 50;
     testCharacter.initialize();
-    testCharacter.createTestGameDataElement('キャラクターC', 1, testFile.identifier);
+    testCharacter.createTestGameDataElement('角色C', 1, testFile.identifier);
   }
 
   makeDefaultContextMenuActions(position: PointerCoordinate): ContextMenuAction[] {
@@ -326,7 +326,7 @@ export class TabletopActionService {
 
   private getCreateCharacterMenu(position: PointerCoordinate): ContextMenuAction {
     return {
-      name: 'キャラクターを作成', action: () => {
+      name: '建立角色', action: () => {
         let character = this.createGameCharacter(position);
         EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: character.identifier, className: character.aliasName });
         SoundEffect.play(PresetSound.piecePut);
@@ -336,7 +336,7 @@ export class TabletopActionService {
 
   private getCreateTableMaskMenu(position: PointerCoordinate): ContextMenuAction {
     return {
-      name: 'マップマスクを作成', action: () => {
+      name: '建立地圖遮罩', action: () => {
         this.createGameTableMask(position);
         SoundEffect.play(PresetSound.cardPut);
       }
@@ -345,7 +345,7 @@ export class TabletopActionService {
 
   private getCreateTerrainMenu(position: PointerCoordinate): ContextMenuAction {
     return {
-      name: '地形を作成', action: () => {
+      name: '建立地形', action: () => {
         this.createTerrain(position);
         SoundEffect.play(PresetSound.blockPut);
       }
@@ -354,7 +354,7 @@ export class TabletopActionService {
 
   private getCreateTextNoteMenu(position: PointerCoordinate): ContextMenuAction {
     return {
-      name: '共有メモを作成', action: () => {
+      name: '建立共用備注', action: () => {
         this.createTextNote(position);
         SoundEffect.play(PresetSound.cardPut);
       }
@@ -363,7 +363,7 @@ export class TabletopActionService {
 
   private getCreateBlankCardMenu(position: PointerCoordinate): ContextMenuAction {
     return {
-      name: 'ブランクカードを作成', action: () => {
+      name: '建立空白牌', action: () => {
         this.createBlankCard(position);
         SoundEffect.play(PresetSound.cardPut);
       }
@@ -372,7 +372,7 @@ export class TabletopActionService {
 
   private getCreateTrumpMenu(position: PointerCoordinate): ContextMenuAction {
     return {
-      name: 'トランプの山札を作成', action: () => {
+      name: '建立撲克牌堆', action: () => {
         this.createTrump(position);
         SoundEffect.play(PresetSound.cardPut);
       }
@@ -381,7 +381,7 @@ export class TabletopActionService {
 
   private getCreateDiceSymbolMenu(position: PointerCoordinate): ContextMenuAction {
     let dices: { menuName: string, diceName: string, type: DiceType, imagePathPrefix: string }[] = [
-      { menuName: 'コイン (表/裏)', diceName: 'コイン', type: DiceType.D2, imagePathPrefix: '2_coin' },
+      { menuName: '硬幣 (表/裏)', diceName: '硬幣', type: DiceType.D2, imagePathPrefix: '2_coin' },
       { menuName: 'D4', diceName: 'D4', type: DiceType.D4, imagePathPrefix: '4_dice' },
       { menuName: 'D6', diceName: 'D6', type: DiceType.D6, imagePathPrefix: '6_dice' },
       { menuName: 'D6 (Black)', diceName: 'D6', type: DiceType.D6, imagePathPrefix: '6_dice_black' },
@@ -401,7 +401,7 @@ export class TabletopActionService {
         }
       });
     });
-    return { name: 'コイン／ダイスを作成', action: null, subActions: subMenus };
+    return { name: '建立硬幣/骰子', action: null, subActions: subMenus };
   }
 
   private getCreateRangeMenu(position: PointerCoordinate): ContextMenuAction {
@@ -410,7 +410,7 @@ export class TabletopActionService {
       { menuName: '直線', typeName: 'LINE'},
       { menuName: '円', typeName: 'CIRCLE'},
       { menuName: '正方形', typeName: 'SQUARE'},
-      { menuName: 'ダイヤモンド', typeName: 'DIAMOND'},
+      { menuName: '菱形', typeName: 'DIAMOND'},
     ];
     let subMenus: ContextMenuAction[] = [];
 
@@ -422,7 +422,7 @@ export class TabletopActionService {
         }
       });
     });
-    return { name: '射程・範囲を作成', action: null, subActions: subMenus };
+    return { name: '建立射程・範圍', action: null, subActions: subMenus };
   }
 
   private getViewTable(): GameTable {

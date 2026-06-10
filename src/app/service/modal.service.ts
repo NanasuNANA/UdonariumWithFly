@@ -22,7 +22,7 @@ export class ModalService {
   private modalContext: ModalContext = null;
   private count = 0;
 
-  title: string = '無名のモーダル';
+  title: string = '無名對話框';
 
   /* Todo */
   static defaultParentViewContainerRef: ViewContainerRef;

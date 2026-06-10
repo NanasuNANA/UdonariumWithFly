@@ -138,7 +138,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
   };
 
   plainText(): string {
-    if (this.isSecret && !this.isSendFromSelf) return '（シークレットダイス）';
+    if (this.isSecret && !this.isSendFromSelf) return '（秘密擲骰）';
     let text = StringUtil.rubyToText(this.text);
     if (this.isDicebot) text = text.replace(/###(.+?)###/g, '*$1').replace(/\~\~\~(.+?)\~\~\~/g, '~$1');
     return text;
@@ -163,7 +163,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
       // 最終行の調整
       text += "\n";
     }
-    return `${ tabName }${ dateStr }${ this.name }${ this.toColor ? (' ➡ ' + this.toName) : '' }：${ (this.isSecret && !this.isSendFromSelf) ? '（シークレットダイス）' : text + lastUpdateStr }`
+    return `${ tabName }${ dateStr }${ this.name }${ this.toColor ? (' ➡ ' + this.toName) : '' }：${ (this.isSecret && !this.isSendFromSelf) ? '（秘密擲骰）' : text + lastUpdateStr }`
   }
 
   logFragmentHtml(tabName: string=null, dateFormat='HH:mm', imageDict?: {}): string {
@@ -198,7 +198,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
       if (this.isFumble) messageTextClassNames.push('is-fumble');
     }
 
-    let textAutoLinkedHtml = (this.isSecret && !this.isSendFromSelf) ? '<s>（シークレットダイス）</s>' 
+    let textAutoLinkedHtml = (this.isSecret && !this.isSendFromSelf) ? '<s>（秘密擲骰）</s>' 
       : Autolinker.link(this.isOperationLog ? StringUtil.escapeHtml(this.text) : StringUtil.rubyToHtml(StringUtil.escapeHtml(this.text)), {
         urls: {schemeMatches: true, wwwMatches: true, tldMatches: false}, 
         truncate: {length: 96, location: 'end'}, 

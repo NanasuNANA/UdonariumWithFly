@@ -87,7 +87,7 @@ export class DiceSymbol extends TabletopObject {
       case DiceType.D6:
         sided = 6;
         let identifier = identifierSuffix != null ? 'nothing_' + identifierSuffix : null;
-        faces.push(DataElement.create('なし', '', { type: 'image', currentValue: 'nothing' }, identifier));
+        faces.push(DataElement.create('無', '', { type: 'image', currentValue: 'nothing' }, identifier));
         break;
       case DiceType.D8:
         sided = 8;

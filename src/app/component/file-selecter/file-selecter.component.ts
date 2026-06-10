@@ -113,10 +113,10 @@ export class FileSelecterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    Promise.resolve().then(() => this.modalService.title = this.panelService.title = 'ファイル一覧');
+    Promise.resolve().then(() => this.modalService.title = this.panelService.title = '檔案列表');
     this.searchWords = this.allImagesOwnWords;
     //FileStorageComponent.sortOrder = [null].concat(this.searchWords);
-    // 非表示も含めた数
+    // 非顯示も含めた数
     //FileStorageComponent.imageCount = ImageStorage.instance.images.length;
   }
 
@@ -209,13 +209,13 @@ export class FileSelecterComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       $event.preventDefault();
       this.modalService.open(ConfirmationComponent, {
-        title: '非表示設定の画像を表示', 
-        text: '非表示設定の画像を表示しますか？',
-        help: 'ネタバレなどにご注意ください。',
+        title: '顯示隱藏圖片', 
+        text: '確定要顯示隱藏圖片嗎？',
+        help: '請注意劇透等問題。',
         type: ConfirmationType.OK_CANCEL,
         materialIcon: 'visibility',
         action: () => {
-          this.chatMessageService.sendOperationLog('ファイル一覧 から非表示設定の画像を表示した');
+          this.chatMessageService.sendOperationLog('從檔案列表顯示了隱藏圖片');
           this.isShowHideImages = true;
           (<HTMLInputElement>$event.target).checked = true;
           this.changeDetector.markForCheck();

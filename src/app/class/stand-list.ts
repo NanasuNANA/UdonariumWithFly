@@ -76,7 +76,7 @@ export class StandList extends DataElement {
     let isUseDfault = true;  
     let defautStands: DataElement[] = [];
     let matchStands: DataElement[] = [];
-    // 優先順位を「それ以外→デフォルト」から変更する過程の効率悪い処理
+    // 優先順位を「それ以外→預設」から変更する過程の効率悪い処理
     
     for (const standElement of this.standElements) {
       if (!standElement.getFirstElementByName('imageIdentifier') || !standElement.getFirstElementByName('conditionType')) continue;

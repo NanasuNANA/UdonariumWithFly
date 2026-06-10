@@ -20,7 +20,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   isReloading: boolean = false;
 
-  help: string = '「一覧を更新」ボタンを押すと接続可能なルーム一覧を表示します。';
+  help: string = '按下「重新整理列表」按鈕可顯示可連線的房間列表。';
 
   get currentRoom(): string { return Network.peer.roomId };
   get peerId(): string { return Network.peerId; }
@@ -44,7 +44,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   private changeTitle() {
-    this.modalService.title = this.panelService.title = 'ロビー';
+    this.modalService.title = this.panelService.title = '大廳';
     if (Network.peer.roomName.length) {
       this.modalService.title = this.panelService.title = '〈' + Network.peer.roomName + '/' + Network.peer.roomId + '〉'
     }
@@ -58,7 +58,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     this.isReloading = true;
     this.help = '検索中...';
     this.rooms = await Network.listAllRooms();
-    this.help = '接続可能なルームが見つかりませんでした。「新しいルームを作成する」で新規ルームを作成できます。';
+    this.help = '找不到可連線的房間。可點擊「建立新房間」新增房間。';
     this.isReloading = false;
   }
 
@@ -127,6 +127,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
   async showRoomSetting() {
     let isCreate = await this.modalService.open(RoomSettingComponent, { width: 700, height: 400, left: 0, top: 400 });
     if (isCreate) this.modalService.resolve();
-    this.help = '「一覧を更新」ボタンを押すと接続可能なルーム一覧を表示します。';
+    this.help = '按下「重新整理列表」按鈕可顯示可連線的房間列表。';
   }
 }

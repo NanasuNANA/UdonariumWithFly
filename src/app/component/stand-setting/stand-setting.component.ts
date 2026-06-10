@@ -121,7 +121,7 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updatePanelTitle() {
-    this.panelService.title = this.character.name + ' のスタンド設定';
+    this.panelService.title = this.character.name + ' 的立繪設定';
   }
 
   add() {
@@ -136,8 +136,8 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     if (!this.character || !this.character.standList) return;
     this.modalService.open(ConfirmationComponent, {
-      title: 'スタンド設定の削除', 
-      text: 'スタンド設定を削除しますか？',
+      title: '刪除立繪設定', 
+      text: '確定要刪除立繪設定嗎？',
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'person_off',
       action: () => {
@@ -195,29 +195,29 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     let coordinate = this.pointerDeviceService.pointers[0];
     let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 620 };
     let textView = this.panelService.open(TextViewComponent, option);
-    textView.title = 'スタンド設定ヘルプ';
+    textView.title = '立繪設定說明';
     textView.text = 
-`　キャラクターのスタンドの名前、位置と画像の高さ（それぞれ画面サイズに対する相対指定）、チャット送信時にスタンドが表示される条件を設定できます。
+`　角色のスタンドの名稱、位置と画像の高さ（それぞれ画面大小に対する相対指定）、チャット送信時にスタンドが顯示される条件を設定できます。
 
-　スタンドに名前を設定した場合、チャットウィンドウ、チャットパネルのリストに表示され、選択可能になります。また、タグを設定した場合、異なるタグでは同じキャラクターであっても登場、退去のアニメーションが行われます。
+　スタンドに名稱を設定した場合、チャットウィンドウ、チャットパネルのリストに顯示され、選択可能になります。また、タグを設定した場合、異なるタグでは同じ角色であっても登場、退去のアニメーションが行われます。
 
 　画像の位置と高さは個別指定も可能です、位置の個別指定はチェックなし、高さは0とした場合に全体の設定が使用されます。縦位置調整(AdjY)は、スタンド画像の高さに対する相対指定となります（例えば、-50%とすると画像の下半分が画面端より下に隠れます）。
 
-　条件の「指定画像」はチャット送信時のキャラクター画像あるいは顔ICです。また、特別な条件として常に、チャットテキストの末尾が"@退去"または"@farewell"の場合は、そのキャラクターのスタンドを退去させます。
+　条件の「指定圖片」はチャット送信時の角色画像あるいは顔ICです。また、特別な条件として常に、チャット文字の末尾が"@退去"または"@farewell"の場合は、その角色のスタンドを退去させます。
 
 　優先順位は高いものから
 
 　　１. "@退去"、"@farewell"による退去
-　　２. チャットウィンドウ、チャットパネルのリストで選択した名前
-　　３. 「指定画像 かつ チャット末尾」
-　　４. 「指定画像 または チャット末尾」
-　　５. 「チャット末尾」
-　　６. 「指定画像」
+　　２. チャットウィンドウ、チャットパネルのリストで選択した名稱
+　　３. 「指定圖片 かつ 聊天末尾」
+　　４. 「指定圖片 または 聊天末尾」
+　　５. 「聊天末尾」
+　　６. 「指定圖片」
 
-　どの条件も満たさない場合「デフォルト」のものが使用され、同じ優先順位の条件が複数ある場合はランダムで1つが選択されます。
+　どの条件も満たさない場合「預設」のものが使用され、同じ優先順位の条件が複数ある場合はランダムで1つが選択されます。
 
-　チャット末尾一致を判定する際、全角半角、アルファべットの大文字小文字は区別されません。また、他のBCDiceを利用するオンラインセッションツールとの互換性のため、チャット末尾一致を判定する際、両側にスペースが入った “ ＞ ” と “ → ” を同値とみなします。
-　また、"@退去"、"@farewell"による退去時、あるいは"@笑い"のように先頭が"@"で始まる条件を設定している場合、（スタンドの有効無効、条件を満たすかに関わらず）そのキャラクターでの送信時に、条件に一致するチャットテキスト末尾の@以下は切り落とされます。`;
+　聊天末尾一致を判定する際、全角半角、アルファべットの大文字小文字は区別されません。また、他のBCDiceを利用するオンラインセッションツールとの互換性のため、聊天末尾一致を判定する際、両側にスペースが入った “ ＞ ” と “ → ” を同値とみなします。
+　また、"@退去"、"@farewell"による退去時、あるいは"@笑い"のように先頭が"@"で始まる条件を設定している場合、（スタンドの有効無効、条件を満たすかに関わらず）その角色での送信時に、条件に一致するチャット文字末尾の@以下は切り落とされます。`;
   }
 
   private imageElementToFile(dataElm: DataElement): ImageFile {
