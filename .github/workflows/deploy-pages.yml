@@ -29,6 +29,7 @@ jobs:
 
       - name: Push to Double-Plus-Studio.github.io
         run: |
+          touch dist/udonarium/.nojekyll
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git clone https://x-access-token:${{ secrets.PAGES_DEPLOY_TOKEN }}@github.com/Double-Plus-Studio/Double-Plus-Studio.github.io.git pages-repo
