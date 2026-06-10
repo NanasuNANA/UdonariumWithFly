@@ -6,17 +6,12 @@ on:
       - zh-TW
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,19 +25,15 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build -- --base-href /UdonariumWithFly/
+        run: npm run build -- --base-href /
 
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/udonarium
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Push to Double-Plus-Studio.github.io
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git clone https://x-access-token:${{ secrets.PAGES_DEPLOY_TOKEN }}@github.com/Double-Plus-Studio/Double-Plus-Studio.github.io.git pages-repo
+          cp -r dist/udonarium/. pages-repo/
+          cd pages-repo
+          git add -A
+          git diff --cached --quiet || git commit -m "Deploy from UdonariumWithFly@${{ github.sha }}"
+          git push
