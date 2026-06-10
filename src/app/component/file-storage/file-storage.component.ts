@@ -298,8 +298,8 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
     const words = this.addingTagWord.trim().split(/\s+/);
     this.modalService.open(ConfirmationComponent, {
       title: '新增標籤至圖片', 
-      text: `画像にタグを追加しますか？`,
-      helpHtml: '將  + words.map(word => `<b class="word-tag">${ StringUtil.escapeHtml(word) }</b>`).join(' ') +  新增至選取的圖片。',
+      text: `確定要將標籤新增至圖片嗎？`,
+      helpHtml: '將 ' + words.map(word => `<b class="word-tag">${ StringUtil.escapeHtml(word) }</b>`).join(' ') + ' 新增至選取的圖片。',
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'sell',
       action: () => {
