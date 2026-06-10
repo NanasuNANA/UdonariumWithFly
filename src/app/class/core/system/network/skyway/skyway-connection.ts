@@ -370,22 +370,22 @@ export class SkyWayConnection implements Connection {
 
   private getSkyWayErrorMessage(errType: string): string {
     switch (errType) {
-      case 'room-error': return 'SkyWay Room API に問題が発生しました。';
-      case 'permission': return '該当の SkyWay Room の利用が許可されてません。';
-      case 'list-error': return 'SkyWay listAllPeers API が Disabled です。';
-      case 'disconnected': return 'SkyWay のシグナリングサーバに接続されていません。';
-      case 'socket-error': return 'SkyWay のシグナリングサーバとの通信で問題が発生しました。';
-      case 'invalid-id': return 'Peer ID が不正です。';
+      case 'room-error': return 'SkyWay Room API 發生問題。';
+      case 'permission': return '目前 SkyWay Room 的使用未獲許可。';
+      case 'list-error': return 'SkyWay listAllPeers API 已停用。';
+      case 'disconnected': return '未連線到 SkyWay 信令伺服器。';
+      case 'socket-error': return '與 SkyWay 信令伺服器通訊時發生問題。';
+      case 'invalid-id': return 'Peer ID 無效。';
       case 'unavailable-id': return 'その Peer ID すでに使用されています。';
-      case 'invalid-key': return 'SkyWay API キーが無効です。';
-      case 'invalid-domain': return 'SkyWay API キーには現在のドメインは登録されていません。';
+      case 'invalid-key': return 'SkyWay API 金鑰無效。';
+      case 'invalid-domain': return '目前網域未在 SkyWay API 金鑰中登錄。';
       case 'authentication': return '認証エラーです。';
-      case 'server-error': return 'SkyWay のシグナリングサーバとの接続中に問題がありました。 少し待って、リトライしてください。';
+      case 'server-error': return '連線 SkyWay 信令伺服器時發生問題，請稍後再試。';
       case 'sfu-client-not-supported': return 'このクライアントは SFU の使用をサポートしていません。最新の Google Chrome を使用してください';
       case 'peer-unavailable': return 'Peer へデータを送信できませんでした。Peer ID が正しいことを確認してください。';
-      case 'signaling-limited': return 'シグナリング回数が無償利用枠を超過しているため、全ての機能が利用できません。（SkyWay Community Edition のみ）';
-      case 'sfu-limited': return 'SFU サーバの利用量が無償利用枠を超過しているため、SFU の機能が利用できません。（SkyWay Community Edition のみ）';
-      case 'turn-limited': return 'TURN サーバの利用量が無償利用枠を超過しているため、TURN の機能が利用できません。（SkyWay Community Edition のみ）\nこの状態では、一部のユーザの接続に問題が発生する可能性があります。';
+      case 'signaling-limited': return '信令次數已超過免費使用額度，所有功能暫停使用。（僅限 SkyWay Community Edition）';
+      case 'sfu-limited': return 'SFU 伺服器使用量已超過免費額度，SFU 功能暫停使用。（僅限 SkyWay Community Edition）';
+      case 'turn-limited': return 'TURN 伺服器使用量已超過免費額度，TURN 功能暫停使用。（僅限 SkyWay Community Edition）\n此狀態下部分使用者的連線可能出現問題。';
       default: return 'SkyWayに関する不明な發生錯誤。';
     }
   }

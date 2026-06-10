@@ -167,15 +167,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     let soundEffect: SoundEffect = new SoundEffect('SoundEffect');
     soundEffect.initialize();
 
-    ChatTabList.instance.addChatTab('メインタブ', 'MainTab');
-    let subTab = ChatTabList.instance.addChatTab('サブタブ', 'SubTab');
+    ChatTabList.instance.addChatTab('主分頁', 'MainTab');
+    let subTab = ChatTabList.instance.addChatTab('副分頁', 'SubTab');
     subTab.recieveOperationLogLevel = 1;
 
     CutInList.instance.initialize();
 
     let sampleDiceRollTable = new DiceRollTable('SampleDiceRollTable');
     sampleDiceRollTable.initialize();
-    sampleDiceRollTable.name = 'サンプルダイスボット表'
+    sampleDiceRollTable.name = '範例骰子機器人表'
     sampleDiceRollTable.command = 'SAMPLE'
     sampleDiceRollTable.dice = '1d6';
     sampleDiceRollTable.value = "1:これはダイスボット表のサンプルです\n2:数字と対応する結果を1行に1つづつ:（コロン）で区切り\n3:数字:結果のように記述します\n4:\\\\n  \\nで改行します\n5-6:また、-（ハイフン）で区切って数字の範圍を指定可能です";
@@ -184,12 +184,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     let fileContext = ImageFile.createEmpty('none_icon').toContext();
     fileContext.url = './assets/images/ic_account_circle_black_24dp_2x.png';
     let noneIconImage = ImageStorage.instance.add(fileContext);
-    ImageTag.create(noneIconImage.identifier).tag = '*default アイコン';
+    ImageTag.create(noneIconImage.identifier).tag = '*default 圖示';
 
     fileContext = ImageFile.createEmpty('stand_no_image').toContext();
     fileContext.url = './assets/images/nc96424.png';
     let standNoIconImage = ImageStorage.instance.add(fileContext);
-    ImageTag.create(standNoIconImage.identifier).tag = '*default スタンド';
+    ImageTag.create(standNoIconImage.identifier).tag = '*default 立繪';
 
     try {
       localForage.getItem(AudioPlayer.MAIN_VOLUME_LOCAL_STORAGE_KEY).then(volume => { 
@@ -365,10 +365,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           let reconnectErrorTypes = ['disconnected', 'socket-error', 'unavailable-id', 'authentication', 'server-error'];
 
           if (quietErrorTypes.includes(errorType)) return;
-          await this.modalService.open(TextViewComponent, { title: 'ネットワークエラー', text: errorMessage });
+          await this.modalService.open(TextViewComponent, { title: '網路錯誤', text: errorMessage });
 
           if (!reconnectErrorTypes.includes(errorType)) return;
-          await this.modalService.open(TextViewComponent, { title: 'ネットワークエラー', text: 'このウィンドウを閉じると再接続を試みます。' });
+          await this.modalService.open(TextViewComponent, { title: '網路錯誤', text: '關閉此視窗將嘗試重新連線。' });
           Network.open();
           this.isLoggedin = false;
         });
@@ -378,7 +378,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.chatMessageService.calibrateTimeOffset();
           if (!this.isLoggedin) {
             this.isLoggedin = true;
-            chatMessageService.sendOperationLog((this.isRoom ? Network.peer.roomName + ' に': '他者と') + '接続した');
+            chatMessageService.sendOperationLog((this.isRoom ? Network.peer.roomName + ' ' : '') + '已連線');
           }
         }
         this.lazyNgZoneUpdate(event.isSendFromSelf);
@@ -476,7 +476,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           Notification.requestPermission().then((permission) => {
             if (permission === 'granted') {
               notification = new Notification('Udonarium with Fly', { 
-                body: 'Udonarium with Fly の新しい版本をダウンロード中です。',
+                body: '正在下載 Udonarium with Fly 的新版本。',
                 icon: 'card.png'
               });
               notification.addEventListener('click', function(e) {
@@ -496,9 +496,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log(`New app version ready for use: ${event.latestVersion.hash}`);
           if (!this.isUpdateCanceled) {
             this.modalService.open(ConfirmationComponent, {
-              title: 'Udonarium with Fly の更新', 
-              text: 'Udonarium with Fly の新しい版本をダウンロードしました。更新を行いますか？',
-              helpHtml: '<b style="color: red">更新の際にページを再読み込みします。</b>手動で再読み込みを行うことでも更新可能です。',
+              title: 'Udonarium with Fly 更新', 
+              text: '已下載 Udonarium with Fly 的新版本。是否立即更新？',
+              helpHtml: '<b style="color: red">更新時將重新載入頁面。</b>也可以手動重新整理頁面來進行更新。',
               type: ConfirmationType.OK_CANCEL,
               materialIcon: 'browser_updated',
               action: () => {
@@ -636,7 +636,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     menu.push({ name: '插圖再生', materialIcon: 'play_arrow',
       action: null, subActions: cunIns.length === 0 ? [
         {
-          name: '(插圖なし)',
+          name: '(無插圖)',
           disabled: true,
           center: true
         }
@@ -655,7 +655,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             }, ContextMenuSeparator, ...this.otherPeers.map(peer => {
             return {
-              name: peer.name + (peer === PeerCursor.myCursor ? ' (あなた)' : ''),
+              name: peer.name + (peer === PeerCursor.myCursor ? ' (你)' : ''),
               color: peer.color,
               default: true,
               action: () => {
@@ -680,7 +680,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     menu.push(ContextMenuSeparator);
     menu.push({ name: '插圖設定...', materialIcon: 'movie_creation', action: () => this.open('CutInSettingComponent') });
     menu.push({ name: '骰子機器人表設定...', materialIcon: 'table_rows', action: () => this.open('DiceRollTableSettingComponent') })
-    this.contextMenuService.open(position, menu, 'ツールボックス');
+    this.contextMenuService.open(position, menu, '工具箱');
   }
 
   resetPointOfView(event: Event) {
@@ -691,9 +691,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       y: window.pageYOffset + clientRect.top + (this.isHorizontal ? button.clientHeight * 0.9 : 0)
     };
     this.contextMenuService.open(position, [
-      { name: '初期視点に戻す', action: () => EventSystem.trigger('RESET_POINT_OF_VIEW', null) },
-      { name: '真上から視る', action: () => EventSystem.trigger('RESET_POINT_OF_VIEW', 'top') }
-    ], '視点リセット');
+      { name: '回到初始視角', action: () => EventSystem.trigger('RESET_POINT_OF_VIEW', null) },
+      { name: '從正上方俯視', action: () => EventSystem.trigger('RESET_POINT_OF_VIEW', 'top') }
+    ], '重置視角');
   }
 
   standSetteings(event: Event) {
@@ -707,28 +707,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const isShowNameTag = StandImageComponent.isShowNameTag;
     const isCanBeGone = StandImageComponent.isCanBeGone; 
     this.contextMenuService.open(position, [
-      { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }テーブルグリッドを常に顯示`, 
+      { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }常駐顯示桌面格線`, 
         action: () => {
           TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;
           EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelecter.instance.toContext()); 
         },
         checkBox: 'check'
       },
-      { name: `${ TableSelecter.instance.gridSnap ? '☑' : '☐' }オブジェクト移動時にスナップ`, 
+      { name: `${ TableSelecter.instance.gridSnap ? '☑' : '☐' }物件移動時吸附`, 
         action: () => {
           TableSelecter.instance.gridSnap = !TableSelecter.instance.gridSnap;
         },
         checkBox: 'check'
       },
       ContextMenuSeparator,
-      { name: `${ ChatWindowComponent.isNoticeOn ? '☑' : '☐' }チャット受信時に音で通知`, 
+      { name: `${ ChatWindowComponent.isNoticeOn ? '☑' : '☐' }收到聊天時發出聲音通知`, 
         action: () => {
           ChatWindowComponent.isNoticeOn = !ChatWindowComponent.isNoticeOn;
         },
         checkBox: 'check'
       },
       ContextMenuSeparator,
-      { name: `${ isShowStand ? '☑' : '☐' }スタンド顯示`, 
+      { name: `${ isShowStand ? '☑' : '☐' }顯示立繪`, 
         action: () => {
           StandImageComponent.isShowStand = !isShowStand;
         },
@@ -751,7 +751,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         checkBox: 'check'
       },
       ContextMenuSeparator,
-      { name: '顯示スタンド全消去', action: () => EventSystem.trigger('DESTORY_STAND_IMAGE_ALL', null) }
+      { name: '清除全部立繪', action: () => EventSystem.trigger('DESTORY_STAND_IMAGE_ALL', null) }
     ], '個人設定');
   }
 /*
@@ -761,9 +761,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 */
   diceAllOpne() {
     this.modalService.open(ConfirmationComponent, {
-      title: 'ダイス一斉公開', 
-      text: 'テーブル上のダイス、硬幣を公開しますか？',
-      help: '「一斉公開しない」設定のものは公開されません。',
+      title: '骰子全體公開', 
+      text: '確定要公開桌面上所有骰子與硬幣嗎？',
+      help: '設定「不同時公開」的骰子不會被公開。',
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'all_out',
       action: () => {
@@ -774,9 +774,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   logout() {
       this.modalService.open(ConfirmationComponent, {
-      title: '退出／切断', 
-      text: `他の参加者との接続を切断し${ this.isRoom ? '、ルームから退出し' : '' }ます。`,
-      helpHtml: '<b style="color: red">ページを再読み込みします。</b>データの保存が必要ならキャンセルしてください。',
+      title: '退出／斷線', 
+      text: `確定要與所有參加者斷線${ this.isRoom ? '並退出房間' : '' }嗎？`,
+      helpHtml: '<b style="color: red">將重新載入頁面。</b>如需儲存資料請先取消。',
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'logout',
       action: () => {

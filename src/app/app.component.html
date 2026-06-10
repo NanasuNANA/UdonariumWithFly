@@ -13,7 +13,7 @@
       <li (click)="open('ChatWindowComponent')">
         <a routerLink="/" routerLinkActive="active">
           <div><i class="material-icons icon-size">speaker_notes</i></div>
-          <div>チャット画面</div>
+          <div>聊天視窗</div>
         </a>
       </li>
       <li (click)="open('GameTableSettingComponent')">
@@ -25,19 +25,19 @@
       <li (click)="open('FileStorageComponent')">
         <a routerLink="/" routerLinkActive="active">
           <div><i class="material-icons icon-size">photo_library</i></div>
-          <div>画像</div>
+          <div>圖片</div>
         </a>
       </li>
       <li (click)="open('JukeboxComponent')">
         <a routerLink="/" routerLinkActive="active">
           <div><i class="material-icons">queue_music</i></div>
-          <div>音楽</div>
+          <div>音樂</div>
         </a>
       </li>
       <li (click)="toolBox($event)">
         <a routerLink="/" routerLinkActive="active" style="pointer-events: none">
           <div><i class="material-icons">build</i></div>
-          <div>ツールボックス</div>
+          <div>工具箱</div>
         </a>
       </li>
       <li (click)="open('GameObjectInventoryComponent')">
@@ -49,7 +49,7 @@
       <li (click)="diceAllOpne()">
         <a routerLink="/" routerLinkActive="active">
           <div><i class="material-icons icon-size">all_out</i></div>
-          <div>ダイス一斉公開</div>
+          <div>骰子全體公開</div>
         </a>
       </li>
       <li (click)="standSetteings($event)">
@@ -61,14 +61,14 @@
       <li (click)="resetPointOfView($event)">
         <a routerLink="/" routerLinkActive="active" style="pointer-events: none">
           <div><i class="material-icons icon-size">remove_red_eye</i></div>
-          <div>視点リセット<sup class="self-only">*</sup></div>
+          <div>重置視角<sup class="self-only">*</sup></div>
         </a>
       </li>
       <li>
         <a routerLink="/" routerLinkActive="active">
           <label>
             <div><i class="material-icons">open_in_browser</i></div>
-            <div>ZIP読込</div>
+            <div>讀取ZIP</div>
             <input type="file" style="display: none;" (change)="handleFileSelect($event)" multiple
               accept="application/xml,text/xml,application/zip" />
           </label>
@@ -90,12 +90,12 @@
         <a routerLink="/" routerLinkActive="active">
           <label>
             <div><i class="material-icons">logout</i></div>
-            <div>退出／切断</div>
+            <div>退出／斷線</div>
           </label>
         </a>
       </li>
     </ul>
-    <div class="self-only-indicater" style="font-size: 8px; text-align: center;"><b><sup class="self-only">*</sup>は自分のみ</b></div>
+    <div class="self-only-indicater" style="font-size: 8px; text-align: center;"><b><sup class="self-only">*</sup>僅限自己</b></div>
   </nav>
 </ui-panel>
 <div #modalLayer></div>
