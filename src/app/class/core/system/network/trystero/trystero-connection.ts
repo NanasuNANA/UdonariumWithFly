@@ -8,6 +8,7 @@ import { MessagePack } from '../../util/message-pack';
 import { setZeroTimeout } from '../../util/zero-timeout';
 import { Connection, ConnectionCallback } from '../connection';
 import { IPeerContext, PeerContext } from '../peer-context';
+import { PeerSessionGrade } from '../peer-session-state';
 import { IRoomInfo, RoomInfo } from '../room-info';
 import { TrysteroLobby } from './trystero-lobby';
 
@@ -46,6 +47,7 @@ export class TrysteroConnection implements Connection {
 
   private gameAction: MessageAction<ArrayBuffer> | null = null;
   private helloAction: MessageAction<HelloPayload> | null = null;
+  private pingInterval: ReturnType<typeof setInterval> | null = null;
 
   private outboundQueue: Promise<void> = Promise.resolve();
   private inboundQueue: Promise<void> = Promise.resolve();
@@ -70,6 +72,7 @@ export class TrysteroConnection implements Connection {
   }
 
   close(): void {
+    if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
     this.lobby?.unregister();
     this.room?.leave();
     this.room = null;
@@ -241,10 +244,34 @@ export class TrysteroConnection implements Connection {
     }
 
     context.isOpen = true;
+    context.session.health = 1.0;
+    context.session.grade = PeerSessionGrade.HIGH;
+    context.session.speed = 1.0;
+    context.session.description = 'WebRTC (Trystero)';
+
     this.trysteroToContext.set(trysteroId, context);
     this.udonariumToTrystero.set(payload.peerId, trysteroId);
 
     if (this.callback.onConnect) this.callback.onConnect(context);
+
+    // Start periodic ping if not already running
+    if (!this.pingInterval) {
+      this.pingInterval = setInterval(() => this.updatePingAll(), 30000);
+    }
+  }
+
+  private async updatePingAll(): Promise<void> {
+    if (!this.room) return;
+    for (const [trysteroId, context] of this.trysteroToContext) {
+      try {
+        const pingMs = await this.room.ping(trysteroId);
+        context.session.ping = pingMs;
+        // ping → health: <50ms=1.0, <100ms=0.98, <200ms=0.96, >=200ms=0.94
+        context.session.health = pingMs < 50 ? 1.0 : pingMs < 100 ? 0.98 : pingMs < 200 ? 0.96 : 0.94;
+      } catch {
+        // peer might have disconnected
+      }
+    }
   }
 
   private removePeer(trysteroId: TrysteroPeerId): void {
