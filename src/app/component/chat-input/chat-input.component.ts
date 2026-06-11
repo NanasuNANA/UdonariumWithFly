@@ -880,7 +880,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         }
         contextMenuActions.push(ContextMenuSeparator);
         contextMenuActions.push(
-          { name: '画像効果', action: null, subActions: [
+          { name: '圖片效果', action: null, subActions: [
             (this.character.isInverse
               ? {
                 name: '☑ 反転', action: () => {

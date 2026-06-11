@@ -148,7 +148,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       case Network.peerId:
         return '個人';
       case 'graveyard':
-        return '墓場';
+        return '墓地';
       default:
         return '共有';
     }
@@ -395,7 +395,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         checkBox: 'check'
       })
     );
-    actions.push({ name: '画像効果', action: null,
+    actions.push({ name: '圖片效果', action: null,
       subActions: [
       (gameObject.isInverse
         ? {
@@ -558,10 +558,10 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       { name: 'table', alias: '桌面' },
       { name: 'common', alias: '共有物品欄' },
       { name: Network.peerId, alias: '個人物品欄' },
-      { name: 'graveyard', alias: '墓場' }
+      { name: 'graveyard', alias: '墓地' }
     ];
     actions.push({
-      name: `${ (locations.find((location) => { return location.name == gameObject.location.name }) || locations[1]).alias }から移動`,
+      name: `從${ (locations.find((location) => { return location.name == gameObject.location.name }) || locations[1]).alias }移出`,
       action: null,
       subActions: locations
         .filter((location, i) => { return !(gameObject.location.name == location.name || (i == 1 && !locations.map(loc => loc.name).includes(gameObject.location.name))) })

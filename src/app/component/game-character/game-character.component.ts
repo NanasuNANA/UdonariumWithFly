@@ -696,7 +696,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           },
           checkBox: 'check'
         }),
-      { name: '画像効果', action: null, subActions: [
+      { name: '圖片效果', action: null, subActions: [
         (this.isInverse
           ? {
             name: '☑ 反転', action: () => {
@@ -865,7 +865,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           }
         },
         {
-          name: '墓場', action: () => {
+          name: '墓地', action: () => {
             EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
             this.gameCharacter.setLocation('graveyard');
             this.selectionService.remove(this.gameCharacter);
