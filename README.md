@@ -1,207 +1,119 @@
+# Udonarium with Fly 繁體中文版
 
-[ユドナリウム（Udonarium）](https://github.com/TK11235/udonarium)の私家改造版、高度とかチャットテキストの色とか立ち絵（ユドナリウムだとキャラクターの画像と紛らわしいのでスタンドと呼称）とか。
+[Udonarium with Fly](https://github.com/NanasuNANA/UdonariumWithFly)（由 [Udonarium](https://github.com/TK11235/udonarium) 改造而來的 TRPG 線上工具）的繁體中文版，由 [Double Plus Studio](https://github.com/Double-Plus-Studio) 維護。
 
-配布用ファイルは用意していないので、自分で配置したい場合はcloneしてbuildする必要があります。
+**試用頁面：[https://double-plus-studio.github.io/](https://double-plus-studio.github.io/)**
 
-本家ユドナリウムはバージョン1.16.0より推奨ブラウザにデスクトップ版Mozilla Firefoxが追加されましたが、Udonarium with Flyの推奨ブラウザは現状デスクトップ版Google Chromeのみです。
+---
 
-[お試しページ](https://nanasunana.github.io/)
+## 主要特色（繼承自 UdonariumWithFly）
 
-## ToDo的なもの（優先順位ではない）
+- 高度系統（棋子可設定立體高度）
+- 聊天文字顏色自訂
+- 立繪（Stand Image）支援
+- 插圖（Cut-In）功能
+- 多種圖片效果（透明、反轉、光環等）
+- BCDice 內建骰子機器人
+- BGM / 音效播放
 
-* ソースをきれいにする(特に高度、💭周り)
-* ~~ランダムチャート作成機能~~ ダイスボット表実装済
-* 管理パネル作ってキャラクター画像切り替えと顔ICの上限増やす
-* ~~カットイン的なもの~~ 実装済。ユドナリウム リリィと同様に音楽ファイルを別にアップすると再リンクする
-* 投票、効果音
-* ~~キャラクターコマの身長指定？~~ 実装済
-* ~~スタンドがダイスボット結果末尾に反応~~ 反応するように
-* サイコロ・フィクションの判定ヘルパ
-* 地形の4面に別の画像を設定
+## 與上游的差異
 
-## 実験的機能（ほとんどテストされていない、一部環境から利用できない不具合あり）
+| 項目 | 此版本 |
+|------|--------|
+| UI 語言 | 繁體中文 |
+| P2P 後端 | Trystero + Firebase（無需自建後端） |
+| 上游追蹤 | 自動每週偵測，有更新時開 Issue 通知 |
 
-### BCDice-API対応
+---
 
-下記のようにconfig.yamlにBCDice-APIのエンドポイントURLを記述するとBCDice-API経由でダイスボットが反応します。
+## 建置與開發
 
-デフォルトの対応APIバージョンは2です、バージョン1が必要の場合は下記のdice配下のapiキーの値に1と記述してください（APIバージョン1はBCDice-API 3.0.0で削除されました）。
+### 環境需求
 
-なお、判定結果の成功、失敗での色分けに対応するためにはAPIバージョンが2である必要があります。
+- Node.js 24+
+- npm 11+
 
+### 建置
+
+```bash
+git clone https://github.com/Double-Plus-Studio/UdonariumWithFly.git
+cd UdonariumWithFly
+git checkout zh-TW
+npm install
 ```
-backend:
-  mode: skyway2023 #'skyway2023' or 'skyway'
-  url: https://{your-backend-hostname} #Your Backend API URL
-webrtc: #非推奨（旧SkyWay）
-  key: aaaaaaaa-bbbb-ccccc-dddd-eeeeeeeeeeee #[deprecated] Your (old) SkyWay API key
-app: #未使用
-dice:
-  url: BCDice-APIのエンドポイントURL
-  api: APIバージョン
+
+建立 `src/assets/config.yaml`（參考下方設定），然後：
+
+```bash
+npm run build
 ```
 
-**↓↓↓↓　以下、ユドナリウム本家より　↓↓↓↓**
+產出在 `dist/udonarium/`。
 
+---
 
-# ユドナリウム
-
-[ユドナリウム（Udonarium）][udonarium-url]はWebブラウザで動作するボードゲームオンラインセッション支援ツールです。
-
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/TK11235/udonarium/blob/master/LICENSE)
-
-[![Udonarium](docs/images/ss.jpg "スクリーンショット")][udonarium-url]
-
-## クイックスタート
-
-今すぐ試して利用できる公開サーバを用意しています。  
-推奨ブラウザはデスクトップ版Google Chrome、またはデスクトップ版Mozilla Firefoxです。
-
-[**ユドナリウムをはじめる**][udonarium-url]
-
-## 目次
-
-- [機能](#機能)
-- [サーバ設置](#サーバ設置)
-- [開発者クイックスタート](#開発者クイックスタート)
-- [開発に寄与する](#開発に寄与する)
-- [今後の開発](#今後の開発)
-- [License](#license)
-
-## 機能
-
-- **オンラインセッション**
-  - ルーム機能
-  - 複数テーブル管理
-  - テーブルマスク、立体地形
-  - コマ、カード、共有メモ
-  - チャット送受信、チャットパレット
-  - ダイスボット（[BCDice](https://github.com/bcdice/bcdice-js)）
-  - 画像ファイル共有
-  - BGM再生
-  - セーブデータ生成（ZIP形式）
-
-- **ブラウザ間通信**
-  - WebRTCを利用したブラウザ間通信を実現しています。  
-    ユーザ間で通信接続した後の全ての処理をWebブラウザ上で完結させることを目指しています。
-
-- **軽量&リアルタイム**
-  - 軽量で快適に動作し、ユーザの操作は別のユーザにリアルタイムに反映されます。
-
-## サーバ設置
-
-ユーザ自身でWebサーバを用意してユドナリウムを利用することができます。
-
-#### 1. Webサーバにコンテンツを配置
-
-ユドナリウムの[リリース版（**udonarium.zip**）](../../releases/latest)をダウンロードして展開し、`index.html`などコンテンツ一式をWebサーバに配置します。  
-必ず**HTTPS環境のWebサーバ**に配置してください。
-
-#### 2. ユドナリウムバックエンドの配置
-
-[ユドナリウムバックエンド][udonarium-backend-repo]のサーバを準備します。  
-詳細はユドナリウムバックエンドのリポジトリの`README.md`を参照してください。
-
-#### 3. ユドナリウムの設定ファイル変更
-
-Webサーバに配置したユドナリウムの`assets/config.yaml`を編集して、`backend.url`にユドナリウムバックエンドのURLを記述します。
+## config.yaml 設定
 
 ```yaml
 backend:
-  mode: skyway2023
-  url: https://your-udonarium-backend-url/ #Your Backend API URL
-...
+  mode: trystero  # 'trystero' | 'skyway2023' | 'skyway'
+
+# --- Trystero + Firebase（推薦，無需自建後端）---
+trystero:
+  firebase:
+    apiKey: your-api-key
+    databaseURL: https://your-project-default-rtdb.firebaseio.com
+    projectId: your-project-id
+    appId: 1:xxx:web:xxx
+
+# --- SkyWay 2023（需自建 token 後端）---
+# backend:
+#   mode: skyway2023
+#   url: https://your-backend-hostname
+
+# --- BCDice-API（選填，使用外部 API）---
+# dice:
+#   url: https://bcdice-api-endpoint
 ```
 
-Webブラウザからユドナリウムの`index.html`にアクセスしてエラーが発生していなければ完了です。  
-上手く動作しない時は付属の`上手くサーバで動かない時Q&A.txt`を参照してください。
+### Firebase 設定步驟
 
-## 開発者クイックスタート
+1. 前往 [Firebase Console](https://console.firebase.google.com/) 建立專案
+2. 啟用 **Realtime Database**（選擇任一地區）
+3. 建立 Web App，取得設定物件填入 `config.yaml`
 
-開発環境を用意するとソースコードの修正や機能追加を行うことができます。
+---
 
-### 開発環境
+## Branch 結構
 
-[Node.js](https://nodejs.org/)と[npm](https://www.npmjs.com/)が必要です。
+| Branch | 用途 |
+|--------|------|
+| `withFly` | 追蹤上游（NanasuNANA/UdonariumWithFly） |
+| `zh-TW` | 繁體中文翻譯與客製化（主要開發分支） |
 
-開発言語はTypeScriptを使用し、[Angular](https://angular.jp/)のフレームワークを使用して実装されています。  
-環境構築の手順は[Angular公式ページのチュートリアル](https://angular.jp/tutorials/first-app)を参考にしてください。
+### 合入上游更新
 
-#### Angular CLI
-
-開発を効率化するCLIツールとして[Angular CLI](https://github.com/angular/angular-cli)を利用しています。  
-`ng`コマンドを使用するのに必要です。
-
-#### SkyWay
-
-ユドナリウムはWebRTCを使用しており、WebRTC向けのサービスとして[SkyWay][SkyWay-url]を利用しています。  
-SkyWayのアカウントとアプリケーション情報が必要です。
-
-#### ユドナリウムバックエンド
-
- [SkyWay][SkyWay-url]を利用するには認証トークン（SkyWay Auth Token）を都度作成する必要がありますが、Webブラウザ側で認証トークンを作成するのはセキュリティ上の観点から望ましくありません。  
-そこで、Webブラウザ側で実行できない処理は[ユドナリウムバックエンド][udonarium-backend-repo]のWeb APIとして実行します。
-
-ローカル環境で開発を行う際には、ユドナリウムバックエンドの開発用ローカルサーバを使用することをおすすめします。
-
-### ユドナリウムの実行
-
-リポジトリをダウンロードした後、初回はリポジトリのディレクトリで以下のコマンドを実行してください。
+當 GitHub Actions 偵測到上游有新 commit，會自動開 Issue。收到通知後：
 
 ```bash
-npm i
+git fetch upstream
+git checkout withFly
+git merge upstream/withFly
+git push origin withFly
+
+git checkout zh-TW
+git rebase withFly
+# 解決衝突（主要是新增的日文字串需補翻譯）
+git push origin zh-TW --force-with-lease
 ```
 
-#### 開発用ローカルサーバ
-
-開発作業を行う際には、`src/assets/config.yaml`を編集して`backend.url`にユドナリウムバックエンドのURLを記述してください。
-
-以下のコマンドを実行すると`https://localhost:4200/`でユドナリウムの開発用ローカルサーバが起動します。  
-必ず`--ssl`オプションを使用してHTTPSのサーバを起動してください。SkyWayの一部の機能はHTTPS環境でしか実行できません。
-
-```bash
-ng serve --ssl
-```
-
-開発用ローカルサーバが起動している状態でソースコードを変更すると、アプリケーション全体が自動的にホットリロードされます。
-
-#### 本番環境向けビルド
-
-以下のコマンドでソースコード全体のビルドを実行します。ビルド成果物は`dist`ディレクトリ配下に格納されます。
-
-```bash
-ng build
-```
-
-## 開発に寄与する
-
-バグを報告したり、ドキュメントを改善したり、開発の手助けをしたりしたいですか？
-
-報告や要望の窓口として[GitHubのIssue](https://github.com/TK11235/udonarium/issues)、または[X（Twitter）](https://x.com/TK11235)を利用できます。  
-コードの[Pull Request](https://github.com/TK11235/udonarium/pulls)も歓迎です。
-
-ただ、難易度や優先度の都合によりそっとしたままになる可能性があります。
-
-### 報告
-
-バグ報告では、バグを再現できる必要十分な条件について、分かっている範囲で詳しく書いてください。  
-基本的には「報告を受けて改修 → 次回更新時に反映」の流れで対応する予定です。
-
-### 要望
-
-機能要望では「何故それが必要なのか」について説明があると良いです。
-
-### Pull Request
-
-作成したコードやドキュメントをこのリポジトリに反映させたい時はPull Request（PR）を送ってください。
-
-PRのコードが完全ではない場合でも作業中PRとして送ることができます。  
-その場合、作業中である旨をPRタイトルか説明文に付け加えてください。
+---
 
 ## License
 
-[MIT License](https://github.com/TK11235/udonarium/blob/master/LICENSE)
+[MIT License](LICENSE)
 
-[udonarium-url]: https://udonarium.app/
-[udonarium-backend-repo]: https://github.com/TK11235/udonarium-backend
-[SkyWay-url]: https://skyway.ntt.com/
+上游專案版權：
+- [Udonarium](https://github.com/TK11235/udonarium) © TK11235
+- [UdonariumWithFly](https://github.com/NanasuNANA/UdonariumWithFly) © Nanasu
+- 部分程式碼來自 [Udonarium Lily](https://github.com/entyu/udonarium_lily) © entyu
