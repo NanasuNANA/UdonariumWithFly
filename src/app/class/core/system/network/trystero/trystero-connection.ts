@@ -219,12 +219,16 @@ export class TrysteroConnection implements Connection {
     }
   }
 
-  // Derive Trystero room ID from Udonarium room params
-  // All peers in the same room will compute the same ID
+  // Derive Trystero room ID from Udonarium room params.
+  // peerId format: digestUserId(6) + checksumedRoomId(3) + lzbase62(roomName) + '-' + digestPassword
+  // digestPassword incorporates userId so it differs per user — exclude it.
+  // Use only checksumedRoomId + lzbase62(roomName), which is the same for everyone in the room.
   private calcTrysteroRoomId(peer: PeerContext): string {
     if (!peer.isRoom) return `private-${peer.digestUserId}`;
-    // Use the non-userId part of peerId: roomId + encoded roomName + digestPassword
-    return `room-${peer.peerId.slice(6)}`;
+    const withoutUserId = peer.peerId.slice(6);
+    const dashIndex = withoutUserId.lastIndexOf('-');
+    const roomPart = dashIndex >= 0 ? withoutUserId.slice(0, dashIndex) : withoutUserId;
+    return `room-${roomPart}`;
   }
 
   private onHello(trysteroId: TrysteroPeerId, payload: HelloPayload): void {
