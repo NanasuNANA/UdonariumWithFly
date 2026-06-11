@@ -24,6 +24,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create config.yaml
+        run: |
+          cat > src/assets/config.yaml << EOF
+          backend:
+            mode: trystero
+          trystero:
+            firebase:
+              apiKey: ${{ secrets.FIREBASE_API_KEY }}
+              databaseURL: ${{ secrets.FIREBASE_DATABASE_URL }}
+              projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+              appId: ${{ secrets.FIREBASE_APP_ID }}
+          EOF
+
       - name: Build
         run: npm run build -- --base-href /
 
