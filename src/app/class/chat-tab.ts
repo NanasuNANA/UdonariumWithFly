@@ -84,7 +84,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
 <html lang="ja-JP">
 <head>
 <meta charset="UTF-8">
-<title>Udonarium with Fly：チャットログ：${ StringUtil.escapeHtml(this.name == '' ? '(無名のタブ)' : this.name) + (imageDict ? '（含圖片）' : '') }</title>
+<title>Udonarium with Fly：聊天日誌：${ StringUtil.escapeHtml(this.name == '' ? '(無名分頁)' : this.name) + (imageDict ? '（含圖片）' : '') }</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 ${ ChatMessage.logCss(imageDict) }

@@ -28,25 +28,25 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
   @Input('logging.loggingValue') showValue: boolean = true;
 
   private static LoggingValueMap = new Map<string, LoggingValue>(); 
-  type = 'オブジェクト';
+  type = '物件';
 
   ngAfterViewInit() {
     let elm = <ObjectNode>this.dataElement;
     while (elm = elm.parent) {
       if (elm instanceof Card) {
-        this.type = 'カード';
+        this.type = '牌';
       }
       if (elm instanceof CardStack) {
         this.type = '山札';
       }
       if (elm instanceof DiceSymbol) {
-        this.type = (elm.isCoin ? 'コイン' : 'ダイス');
+        this.type = (elm.isCoin ? '硬幣' : '骰子');
       }
       if (elm instanceof GameCharacter) {
-        this.type = 'キャラクター';
+        this.type = '角色';
       }
       if (elm instanceof GameTableMask) {
-        this.type = 'マップマスク';
+        this.type = '地圖遮罩';
       }
       if (elm instanceof Terrain) {
         this.type = '地形';
@@ -55,7 +55,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
         this.type = '共用備注';
       }
       if (elm instanceof RangeArea) {
-        this.type = '射程・範囲';
+        this.type = '射程・範圍';
       }
       if (!elm.parentIsAssigned || elm.parentIsUnknown) break;
     }
@@ -121,7 +121,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
     const value = this.dataElement.loggingValue;
     const dataElement = this.dataElement;
     if (sendMsssage && !this.isDisable && value != oldValue) {
-      let text = `${this.name == '' ? `(無名の${this.type})` : this.name} の ${dataElement.name == '' ? '(無名變數)' : dataElement.name} を変更`;
+      let text = `${this.name == '' ? `(無名${this.type})` : this.name} 的 ${dataElement.name == '' ? '(無名變數)' : dataElement.name} 變更`;
       if (this.showValue && (dataElement.isSimpleNumber || dataElement.isNumberResource || dataElement.isAbilityScore)) {
         text += ` ${oldValue} → ${value}`;
       } else if (dataElement.isCheckProperty) {

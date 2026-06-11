@@ -129,8 +129,8 @@ export class GameCharacter extends TabletopObject {
     //TEST
     let testElement: DataElement = DataElement.create('資訊', '', {}, '資訊' + this.identifier);
     this.detailDataElement.appendChild(testElement);
-    testElement.appendChild(DataElement.create('説明', 'ここに説明を書く\nあいうえお', { 'type': 'note' }, '説明' + this.identifier));
-    testElement.appendChild(DataElement.create('備注', '任意の文字列\n１\n２\n３\n４\n５', { 'type': 'note' }, '備注' + this.identifier));
+    testElement.appendChild(DataElement.create('說明', '在此撰寫說明', { 'type': 'note' }, '說明' + this.identifier));
+    testElement.appendChild(DataElement.create('備注', '任意文字', { 'type': 'note' }, '備注' + this.identifier));
     testElement.appendChild(DataElement.create('參考URL', 'https://www.example.com', { 'type': 'url' }, '參考URL' + this.identifier));
 
     //TEST
