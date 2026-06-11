@@ -607,11 +607,11 @@ export class DiceBot extends GameObject {
         .then(jsons => {
           return jsons.map(json => {
             if (DiceBot.apiVersion == 1 && json.systeminfo && json.systeminfo.info) {
-              return json.systeminfo.info.replace('部屋のシステム名', 'チャットパレットなどのシステム名');
+              return json.systeminfo.info.replace('部屋のシステム名', '聊天面板等的系統名稱');
             } else if (json.help_message) {
-              return json.help_message.replace('部屋のシステム名', 'チャットパレットなどのシステム名');
+              return json.help_message.replace('部屋のシステム名', '聊天面板等的系統名稱');
             } else {
-              return 'ダイスボット資訊がありません。';
+              return '找不到骰子機器人說明。';
             }
           })
         });
@@ -622,9 +622,9 @@ export class DiceBot extends GameObject {
         if (gameType && gameType != '' && gameType != 'DiceBot') {
           let gameSystem = await DiceBot.loadGameSystemAsync(gameType);
           if (gameSystem && gameSystem.ID != 'DiceBot' && gameSystem.HELP_MESSAGE) {
-            help.push(gameSystem.HELP_MESSAGE.replace('部屋のシステム名', 'チャットパレットなどのシステム名'));
+            help.push(gameSystem.HELP_MESSAGE.replace('部屋のシステム名', '聊天面板等的系統名稱'));
           } else {
-            help.push('ダイスボット資訊がありません。');
+            help.push('找不到骰子機器人說明。');
           }
         }
       } catch (e) {
