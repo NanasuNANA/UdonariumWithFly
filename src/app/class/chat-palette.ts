@@ -100,23 +100,23 @@ export class ChatPalette extends ObjectNode {
             if ((
               element = extendVariables.getFirstElementByNameUnsensitive(name, /^最大/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /^Max[\:\_\-\s]*/i)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /^初期/)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /初期値$/)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /最大値$/)
-            ) && (element.isNumberResource || element.isAbilityScore)) { // 互換のためにいったん残し、将来資源のみにするかも？
+              || extendVariables.getFirstElementByNameUnsensitive(name, /^初期|^初始/)
+              || extendVariables.getFirstElementByNameUnsensitive(name, /初期値$|初始值$/)
+              || extendVariables.getFirstElementByNameUnsensitive(name, /最大値$|最大值$/)
+            ) && (element.isNumberResource || element.isAbilityScore)) {
               ret = element.value;
             } else if ((
               element = extendVariables.getFirstElementByNameUnsensitive(name, /^基本/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /^原/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /\^$/)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /基本値$/)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /原点$/)
+              || extendVariables.getFirstElementByNameUnsensitive(name, /基本値$|基本值$/)
+              || extendVariables.getFirstElementByNameUnsensitive(name, /原点$|原點$/)
             ) && (element.isNumberResource || element.isAbilityScore)) {
               ret = element.value;
             } else if ((
-              element = extendVariables.getFirstElementByNameUnsensitive(name, /修正値?$/)
+              element = extendVariables.getFirstElementByNameUnsensitive(name, /修正値?$|修正值?$/)
               || extendVariables.getFirstElementByNameUnsensitive(name, /\s*Mod(ifier|\.)?$/i)
-              || extendVariables.getFirstElementByNameUnsensitive(name, /ボーナス$/)
+              || extendVariables.getFirstElementByNameUnsensitive(name, /ボーナス$|加值$/)
             ) && element.isAbilityScore) {
               ret = element.calcAbilityScore();
             }

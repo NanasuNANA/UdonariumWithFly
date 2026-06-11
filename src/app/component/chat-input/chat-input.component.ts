@@ -460,14 +460,14 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   } else if (
                     target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
                     || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期|^初始/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$|初始值$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$|最大值$/)
                     || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
                     || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
                     || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$|基本值$/)
+                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$|原點$/)
                   ) {
                     if (target.isNumberResource || target.isAbilityScore) {
                       isOperateNumber = true;
