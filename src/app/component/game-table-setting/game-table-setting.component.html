@@ -88,7 +88,7 @@
             <option value="2">六角（橫向）</option>
           </select>
         </div>
-        <div style="display: inline; margin-left: 1.2em" class="self-setting">顏顏顏色：
+        <div style="display: inline; margin-left: 1.2em" class="self-setting">顏色：
           <select [(ngModel)]="tableGridColor" name="tableGridColor" [disabled]="!isEditable || tableGridType == -1">
             <option value="#000000e6">黑</option>
             <option value="#0000dde6">藍</option>
@@ -111,8 +111,8 @@
         <div style="display: inline" class="self-setting">背景濾鏡：
           <select [(ngModel)]="tableDistanceviewFilter" name="tableDistanceviewFilter" [disabled]="!isEditable">
             <option value="">無</option>
-            <option value="white">白顏顏色</option>
-            <option value="black">黑顏顏色</option>
+            <option value="white">白色</option>
+            <option value="black">黑色</option>
           </select>
         </div>
       </div>

@@ -84,8 +84,13 @@ export class TrysteroConnection implements Connection {
   }
 
   connect(peer: IPeerContext): boolean {
-    // Trystero manages connections automatically within a room
-    return this.udonariumToTrystero.has(peer.peerId);
+    // Already connected
+    if (this.udonariumToTrystero.has(peer.peerId)) return true;
+    // Valid room peer — Trystero will connect automatically;
+    // return true so the lobby waits for the CONNECT_PEER event
+    // instead of treating it as an immediate failure.
+    if (this._peer?.isRoom && this._peer.verifyPeer(peer.peerId)) return true;
+    return false;
   }
 
   disconnect(peer: IPeerContext): boolean {

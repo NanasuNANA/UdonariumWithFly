@@ -339,7 +339,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
           this.modalService.open(ConfirmationComponent, {
             title: '進入GM模式', 
             text: '目前尚未進入GM模式。',
-            helpHtml: '要進入GM模式，請從聊天發送包含 <b>成為GM</b> 或 <b>GM模式</b> 的訊息。',
+            helpHtml: '要進入GM模式，請從聊天發送包含 <b>成為GM</b> 或 <b>GM Mode</b> 的訊息。',
             type: ConfirmationType.OK,
             materialIcon: 'person_add'
           });

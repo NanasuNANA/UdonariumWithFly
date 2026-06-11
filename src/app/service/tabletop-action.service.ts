@@ -27,7 +27,7 @@ export class TabletopActionService {
   constructor() { }
 
   createGameCharacter(position: PointerCoordinate): GameCharacter {
-    let character = GameCharacter.create('新角顏顏色', 1, '');
+    let character = GameCharacter.create('新角顏色', 1, '');
     character.location.x = position.x - 25;
     character.location.y = position.y - 25;
     character.posZ = position.z;
