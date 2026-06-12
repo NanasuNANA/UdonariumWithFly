@@ -7,7 +7,7 @@
   "scope": "./",
   "id": "/",
   "start_url": "./",
-  "lang": "ja",
+  "lang": "zh-TW",
   "icons": [
     {
       "src": "assets/icons/icon-72x72m.jpg",
@@ -120,5 +120,5 @@
        "form_factor": "narrow"
      }
   ],
-  "description": "改造版ユドナリウム（Udonarium）。高度、チャットテキストの個人カラー、立ち絵（ユドナリウムだとキャラクターの画像と紛らわしいのでスタンドと呼称）など。"
+  "description": "給繁體中文使用者的免費線上 VTT（虛擬桌遊桌）工具，支援多人 P2P 連線、跑團、骰子系統、角色立繪，無需安裝。"
 }

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://double-plus-studio.github.io/sitemap.xml
