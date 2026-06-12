@@ -157,10 +157,10 @@ export class GameCharacter extends TabletopObject {
     let gameCharacterXMLDocument: Document = domParser.parseFromString(this.rootDataElement.toXml(), 'application/xml');
 
     let palette: ChatPalette = new ChatPalette('ChatPalette_' + this.identifier);
-    palette.setPalette(`チャットパレット入力例：
-2d6+1 ダイス擲骰
-１ｄ２０＋{敏捷}＋｛格闘｝　{name}の格闘！
-:ｈｐ-3d6 2d20KH1+{靈巧}+2>=15 《{Lv1}》を使用　HP｛＄1｝
+    palette.setPalette(`聊天面板輸入範例：
+2d6+1 擲骰
+１ｄ２０＋{敏捷}＋｛格闘｝　{name}的格闘！
+:ｈｐ-3d6 2d20KH1+{靈巧}+2>=15 使用《{Lv1}》　HP｛＄1｝
 :HP={最大HP}:MP-10 HP全回復！ MP{$2}、HP{HP} → {$HP}（{$1}点回復）
 //敏捷=10+{敏捷A}
 //敏捷A=10

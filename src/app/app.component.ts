@@ -178,7 +178,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     sampleDiceRollTable.name = '範例骰子機器人表'
     sampleDiceRollTable.command = 'SAMPLE'
     sampleDiceRollTable.dice = '1d6';
-    sampleDiceRollTable.value = "1:これはダイスボット表のサンプルです\n2:数字と対応する結果を1行に1つづつ:（コロン）で区切り\n3:数字:結果のように記述します\n4:\\\\n  \\nで改行します\n5-6:また、-（ハイフン）で区切って数字の範圍を指定可能です";
+    sampleDiceRollTable.value = "1:這是骰子機器人表的範例\n2:每行填寫一個數字與結果，以:（冒號）分隔\n3:格式為 數字:結果\n4:\\\\n  \\n表示換行\n5-6:也可用-（連字號）分隔來指定數字範圍";
     DiceRollTableList.instance.addDiceRollTable(sampleDiceRollTable);
 
     let fileContext = ImageFile.createEmpty('none_icon').toContext();
