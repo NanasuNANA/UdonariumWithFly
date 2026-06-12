@@ -18,7 +18,7 @@
   </ng-container>
   <ng-container *ngSwitchCase="'character'">
     <button (click)="openModalReplaceImage(tabletopObject.imageFiles.length > 1 || 0 < tabletopObject.imageFile?.url.length)">圖片{{ (tabletopObject.imageFiles?.length > 1) ? '置換/刪除' : '設定' }}</button>
-    <button [disabled]="tabletopObject.faceIcons?.length >= MAX_IMAGE_ICON_COUNT" (click)="openModal('faceIcon')">臉部圖示{{ (tabletopObject.faceIcons?.length > 0) ? '新增' : '設定' }}</button>
+    <button [disabled]="tabletopObject.faceIcons?.length >= MAX_IMAGE_ICON_COUNT" (click)="openModal('faceIcon')">大頭照 icon{{ (tabletopObject.faceIcons?.length > 0) ? '新增' : '設定' }}</button>
   </ng-container>
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="tabletopObject.aliasName !== 'range'">
@@ -51,7 +51,7 @@
       <div *ngFor="let faceIconImage of tabletopObject.faceIcons; index as i; trackBy: identify" style="position: relative" [style.top.px]="-showIconOffset(i)">
         <span @bounceInOut *ngIf="0 < faceIconImage.url.length" class="icon-image-box" style="display: block" [ngClass]="{'current-icon': tabletopObject.currntIconIndex == i}">
           <img [src]="faceIconImage.url | safe: 'resourceUrl'" [style.cursor]="tabletopObject.currntIconIndex == i ? 'auto' : 'pointer'" [alt]="faceIconImage.name" (click)="selectIcon(i)" draggable="false" />
-          <button *ngIf="tabletopObject.currntIconIndex == i" class="button-delete-icon" title="臉部圖示刪除" (click)="deleteIcon(i, faceIconImage.identifier)">
+          <button *ngIf="tabletopObject.currntIconIndex == i" class="button-delete-icon" title="刪除大頭照 icon" (click)="deleteIcon(i, faceIconImage.identifier)">
             <b class="material-icons" style="font-size: 1rem;">close</b>
           </button>
         </span>

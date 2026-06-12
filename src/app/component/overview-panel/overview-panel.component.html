@@ -109,6 +109,11 @@
     <div class="void-area is-pointer-events-none"></div>
     <div class="dataElm-area component-background"
       [ngClass]="{ 'is-pointer-events-auto': !this.isPointerDragging, 'pointer-events-none': this.isPointerDragging }">
+      <div style="display: flex; gap: 4px; padding: 2px 4px;">
+        <button style="flex: 1; font-size: 0.75rem; padding: 1px 0;" (click)="moveToCommon()">共有</button>
+        <button style="flex: 1; font-size: 0.75rem; padding: 1px 0;" (click)="moveToPrivate()">個人</button>
+        <button style="flex: 1; font-size: 0.75rem; padding: 1px 0;" (click)="moveToGraveyard()">墓場</button>
+      </div>
       <div class="grid-container-root" *ngIf="hasDataElms">
         <!--<ng-container *ngFor="let dataElm of dataElms">-->
         <ng-container *ngFor="let dataElm of inventoryDataElms">
@@ -272,14 +277,14 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'simpleNumber'">
-        <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}</div>
+        <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}<button (click)="sendToChat(dataElm.name, dataElm.value, dataElm.currentValue)" style="float:right;padding:0 2px;font-size:0.7rem;line-height:1" title="送出至聊天室擲骰"><i class="material-icons" style="font-size:0.9rem">casino</i></button></div>
         <div class="value">
           <div class="hidden-spacer">{{dataElm.value}}</div>
           <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value == +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'numberResource'">
-        <div class="tag" style="min-width: 100px" [attr.title]="dataElm.name">{{dataElm.name}}</div>
+        <div class="tag" style="min-width: 100px" [attr.title]="dataElm.name">{{dataElm.name}}<button (click)="sendToChat(dataElm.name, dataElm.currentValue, dataElm.value)" style="float:right;padding:0 2px;font-size:0.7rem;line-height:1" title="送出至聊天室擲骰"><i class="material-icons" style="font-size:0.9rem">casino</i></button></div>
         <div class="value">
           <div style="display: inline-block; width: min-content;">
             <div class="hidden-spacer" style="margin-right: 2em;">{{dataElm.currentValue}}</div>
@@ -300,7 +305,7 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'abilityScore'">
-        <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}</div>
+        <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}<button (click)="sendToChat(dataElm.name, dataElm.value, dataElm.currentValue)" style="float:right;padding:0 2px;font-size:0.7rem;line-height:1" title="送出至聊天室擲骰"><i class="material-icons" style="font-size:0.9rem">casino</i></button></div>
         <div class="value">
           <div class="hidden-spacer">{{dataElm.value}}</div>
             <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value == +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
@@ -314,7 +319,7 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchDefault>
-        <div *ngIf="dataElm.name" class="tag" [attr.title]="dataElm.name">{{dataElm.name}}</div>
+        <div *ngIf="dataElm.name" class="tag" [attr.title]="dataElm.name">{{dataElm.name}}<button (click)="sendToChat(dataElm.name, dataElm.value, dataElm.currentValue)" style="float:right;padding:0 2px;font-size:0.7rem;line-height:1" title="送出至聊天室擲骰"><i class="material-icons" style="font-size:0.9rem">casino</i></button></div>
         <div class="value">
           <div *ngIf="dataElm.name" class="hidden-spacer">{{dataElm.value}}</div>
           <input class="input" [ngStyle]="{'min-width': dataElm.name ? '8em' : '100%'}" type="{{dataElm.name === 'size' || dataElm.name === 'altitude' ? 'number' : 'text'}}" min="{{dataElm.name === 'size' ? '0' : ''}}" size="1" [(ngModel)]="dataElm.value" />

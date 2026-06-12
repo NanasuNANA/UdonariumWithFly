@@ -656,13 +656,13 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       (this.gameCharacter.imageFiles.length <= 1 ? null : ContextMenuSeparator),
       (this.isUseIconToOverviewImage
         ? {
-          name: '☑ 在概覽中使用臉部圖示', action: () => {
+          name: '☑ 在概覽中使用大頭照 icon', action: () => {
             this.isUseIconToOverviewImage = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
         } : {
-          name: '☐ 在概覽中使用臉部圖示', action: () => {
+          name: '☐ 在概覽中使用大頭照 icon', action: () => {
             this.isUseIconToOverviewImage = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
@@ -758,13 +758,13 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       ContextMenuSeparator,
       (!this.isNotRide
         ? {
-          name: '☑ 騎乘其他角色', action: () => {
+          name: '☑ 搭乘其他角色', action: () => {
             this.isNotRide = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
         } : {
-          name: '☐ 騎乘其他角色', action: () => {
+          name: '☐ 搭乘其他角色', action: () => {
             this.isNotRide = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },

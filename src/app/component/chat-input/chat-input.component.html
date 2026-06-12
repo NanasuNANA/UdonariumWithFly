@@ -20,7 +20,7 @@
     <div class="ff-flex">
       <label style="margin-right: 2px">
         <input *ngIf="character" type="checkbox" [(ngModel)]="isUseFaceIcon" checked="{{isUseFaceIcon ? 'checked' : ''}}" (change)="isUseFaceIcon = (isUseFaceIcon ? true : false)" />
-        <b *ngIf="character" style="font-size: smaller">臉部圖示</b>
+        <b *ngIf="character" style="font-size: smaller">大頭照 icon</b>
       </label>
       <span style="white-space: nowrap">
         <select [style.max-width]="character ? '10em' : '13em'" [ngClass]="{'not-allow-chat': !isAllowsChat}" [(ngModel)]="sendFrom" (change)="onChangeSendFromList()" [ngStyle]="{'color': color, 'font-weight': (sendFrom != myPeer?.identifier ? 'normal' : 'bolder')}">

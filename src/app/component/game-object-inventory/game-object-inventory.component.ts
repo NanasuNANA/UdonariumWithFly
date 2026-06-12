@@ -353,13 +353,13 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     }
     actions.push((gameObject.isUseIconToOverviewImage
       ? {
-        name: '☑ 在概覽中使用臉部圖示', action: () => {
+        name: '☑ 在概覽中使用大頭照 icon', action: () => {
           gameObject.isUseIconToOverviewImage = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
         },
         checkBox: 'check'
       } : {
-        name: '☐ 在概覽中使用臉部圖示', action: () => {
+        name: '☐ 在概覽中使用大頭照 icon', action: () => {
           gameObject.isUseIconToOverviewImage = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
         },
@@ -458,13 +458,13 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     actions.push(ContextMenuSeparator);
     actions.push((!gameObject.isNotRide
       ? {
-        name: '☑ 騎乘其他角色', action: () => {
+        name: '☑ 搭乘其他角色', action: () => {
           gameObject.isNotRide = true;
           EventSystem.trigger('UPDATE_INVENTORY', null);
         },
         checkBox: 'check'
       } : {
-        name: '☐ 騎乘其他角色', action: () => {
+        name: '☐ 搭乘其他角色', action: () => {
           gameObject.isNotRide = false;
           EventSystem.trigger('UPDATE_INVENTORY', null);
         },

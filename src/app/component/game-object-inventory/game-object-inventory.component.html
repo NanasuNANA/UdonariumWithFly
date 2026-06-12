@@ -61,7 +61,7 @@
 <ng-template #gameObjectTags let-gameObject="gameObject">
   <div class="inventory-object">
     <div class="object-name">
-      <button class="indicate" [disabled]="selectedIdentifier !== gameObject.identifier" style="font-size: 0.8em; padding: 1px; width: 24px; height: 16px; margin-bottom: 1px" title="在概覽中使用臉部圖示" [ngClass]="{'is-active': gameObject.isUseIconToOverviewImage}" (click)="gameObject.isUseIconToOverviewImage = !gameObject.isUseIconToOverviewImage">
+      <button class="indicate" [disabled]="selectedIdentifier !== gameObject.identifier" style="font-size: 0.8em; padding: 1px; width: 24px; height: 16px; margin-bottom: 1px" title="在概覽中使用大頭照 icon" [ngClass]="{'is-active': gameObject.isUseIconToOverviewImage}" (click)="gameObject.isUseIconToOverviewImage = !gameObject.isUseIconToOverviewImage">
         <i *ngIf="gameObject.faceIcon && 0 < gameObject.faceIcon?.url.length; else altImage" class="face-icon"><img [src]="gameObject.faceIcon.url | safe: 'resourceUrl'" alt=""></i>
         <ng-template #altImage>
           <i class="material-icons" style="font-size: 1em;">emoji_emotions</i>
@@ -77,7 +77,7 @@
           <i class="material-icons" style="font-size: 1em;">{{ gameObject.isDropShadow ? 'star_half' : 'star_border'}}</i>
         </ng-template>      
       </button>
-      <button class="indicate" [disabled]="selectedIdentifier !== gameObject.identifier" style="font-size: 0.8em; padding: 2px 5px;" title="騎乘其他角色" [ngClass]="{'is-active': !gameObject.isNotRide}" (click)="gameObject.isNotRide = !gameObject.isNotRide">
+      <button class="indicate" [disabled]="selectedIdentifier !== gameObject.identifier" style="font-size: 0.8em; padding: 2px 5px;" title="搭乘其他角色" [ngClass]="{'is-active': !gameObject.isNotRide}" (click)="gameObject.isNotRide = !gameObject.isNotRide">
         <i class="material-icons" style="font-size: 1em;">{{ !gameObject.isNotRide ? 'directions_bike' : 'directions_run'}}</i>
       </button>
       <button class="indicate" [disabled]="selectedIdentifier !== gameObject.identifier" style="font-size: 0.8em; padding: 2px 5px;" title="顯示高度" [ngClass]="{'is-active': gameObject.isAltitudeIndicate}" (click)="gameObject.isAltitudeIndicate = !gameObject.isAltitudeIndicate">
