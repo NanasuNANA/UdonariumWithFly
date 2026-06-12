@@ -414,7 +414,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
                   card.owner = Network.peer.userId;
                 });
                 const messages = [...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}張`));
-                if (faceDownCount) messages.push(`(伏せた牌)×${faceDownCount}枚`);
+                if (faceDownCount) messages.push(`(面朝下的牌)×${faceDownCount}張`);
                 this.chatMessageService.sendOperationLog(messages.join('、') + ' 只有自己查看');
                 SoundEffect.play(PresetSound.cardDraw);
               }

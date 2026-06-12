@@ -17,7 +17,7 @@
     <button (click)="openModal(tabletopObject['face'])" [disabled]="!isVisible">變更骰面圖片</button>
   </ng-container>
   <ng-container *ngSwitchCase="'character'">
-    <button (click)="openModalReplaceImage(tabletopObject.imageFiles.length > 1 || 0 < tabletopObject.imageFile?.url.length)">画像{{ (tabletopObject.imageFiles?.length > 1) ? '置換/刪除' : '設定' }}</button>
+    <button (click)="openModalReplaceImage(tabletopObject.imageFiles.length > 1 || 0 < tabletopObject.imageFile?.url.length)">圖片{{ (tabletopObject.imageFiles?.length > 1) ? '置換/刪除' : '設定' }}</button>
     <button [disabled]="tabletopObject.faceIcons?.length >= MAX_IMAGE_ICON_COUNT" (click)="openModal('faceIcon')">臉部圖示{{ (tabletopObject.faceIcons?.length > 0) ? '新增' : '設定' }}</button>
   </ng-container>
   <ng-container *ngSwitchDefault>

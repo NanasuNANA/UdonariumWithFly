@@ -325,8 +325,8 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   removeTagWord(word: string) {
     this.modalService.open(ConfirmationComponent, {
       title: '從圖片刪除標籤', 
-      text: `画像からタグ刪除しますか？`,
-      helpHtml: `選択した画像から <b class="word-tag">${ StringUtil.escapeHtml(word) }</b> 刪除します。`,
+      text: `確定要從圖片刪除此標籤嗎？`,
+      helpHtml: `將從所選圖片中刪除標籤 <b class="word-tag">${ StringUtil.escapeHtml(word) }</b>。`,
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'sell',
       action: () => {

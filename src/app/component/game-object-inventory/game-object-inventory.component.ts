@@ -667,7 +667,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     this.modalService.open(ConfirmationComponent, {
       title: '清空墓地',
       text: '確定要完全刪除角色嗎？',
-      helpHtml: `<b>${ StringUtil.escapeHtml(tabTitle) }</b>に存在する <b>${ gameObjects.length }</b> 体の角色を完全に削除します。`,
+      helpHtml: `將完全刪除 <b>${ StringUtil.escapeHtml(tabTitle) }</b> 中的 <b>${ gameObjects.length }</b> 個角色。`,
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'delete_forever',
       action: () => {

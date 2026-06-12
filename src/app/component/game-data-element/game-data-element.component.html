@@ -15,7 +15,7 @@
     <div class="table-cell table-cell_solid">
       <ng-container *ngIf="isTagLocked">
         <span style="font-family: Cambria, Georgia; font-size: 0.9rem;">{{name}}</span>
-        <ng-container *ngIf="descriptionType === 'character' && name === 'height'"><br><span style="font-size: 0.4rem">0=画像依存</span></ng-container>
+        <ng-container *ngIf="descriptionType === 'character' && name === 'height'"><br><span style="font-size: 0.4rem">0=依圖片</span></ng-container>
         <button *ngIf="!isCommonValue" (click)="sendToChat(name, value, currentValue)"
           style="float: right; padding: 0 2px; line-height: 1; font-size: 0.7rem;" title="送出至聊天室擲骰">
           <i class="material-icons" style="font-size: 0.9rem;">casino</i>

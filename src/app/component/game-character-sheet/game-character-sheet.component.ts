@@ -124,19 +124,19 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
               } 
               break;
             case 'card-stack':
-              this.panelService.title = `山札設定 - ${this.tabletopObjectName}`;
+              this.panelService.title = `牌堆設定 - ${this.tabletopObjectName}`;
               break;
             case 'table-mask':
-              this.panelService.title = `マップマスク設定 - ${this.tabletopObjectName}`;
+              this.panelService.title = `地圖遮罩設定 - ${this.tabletopObjectName}`;
               break;
             case 'text-note':
-              this.panelService.title = `共有メモ設定 - ${this.tabletopObjectName}`;
+              this.panelService.title = `共用備注設定 - ${this.tabletopObjectName}`;
               break;
             case 'dice-symbol':
               this.panelService.title = `骰子符號設定 - ${this.tabletopObjectName}`;
               break;
             case 'character':
-              this.panelService.title = `角色シート - ${this.tabletopObjectName}`;
+              this.panelService.title = `角色卡 - ${this.tabletopObjectName}`;
               break;
             case 'range':
               this.panelService.title = `射程・範圍設定 - ${this.tabletopObjectName}`;
@@ -149,7 +149,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   ngAfterViewInit() {
     queueMicrotask(() => {
       const title = (this.tabletopObject instanceof Card && !this.tabletopObject.isFront) ? '牌設定 - 牌（裏面）' : this.panelService.title;
-      this.chatMessageService.sendOperationLog(`${title} を開いた`);
+      this.chatMessageService.sendOperationLog(`已開啟 ${title}`);
     });
   }
 

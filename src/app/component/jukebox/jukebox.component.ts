@@ -200,7 +200,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
         { name: '擲骰２', action: () => { this.playSETest(PresetSound.diceRoll2); }},
         { name: '拋擲硬幣', action: () => { this.playSETest(PresetSound.coinToss); }},
       ]},
-      { name: '牌・山札', subActions: [
+      { name: '牌・牌堆', subActions: [
         { name: '抽牌/翻面', action: () => { this.playSETest(PresetSound.cardDraw); }},
         { name: '取起牌/牌堆', action: () => { this.playSETest(PresetSound.cardPick); }},
         { name: '放置牌/牌堆', action: () => { this.playSETest(PresetSound.cardPut); }},
@@ -210,7 +210,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
         { name: '固定・鎖定／解除', action: () => { this.playSETest(PresetSound.lock); }},
         { name: '墜落/移除/刪除', action: () => { this.playSETest(PresetSound.sweep); }},
         { name: '選取物件', action: () => { this.playSETest(PresetSound.selectionStart); }},
-        { name: '変身！', action: () => { this.playSETest(PresetSound.surprise); }}
+        { name: '變身！', action: () => { this.playSETest(PresetSound.surprise); }}
       ]}
     ];
     this.contextMenuService.open(position, menu, 'SE測試');

@@ -532,7 +532,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
                   if (frontCards.length === cards.length) {
                     text += ' 抽出'
                   } else {
-                    text += ` を引き、${cards.length - frontCards.length}枚を伏せた`;
+                    text += `，翻面 ${cards.length - frontCards.length} 張`;
                   }
                   this.chatMessageService.sendOperationLog(text);
                 }
@@ -615,7 +615,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
           ContextMenuSeparator,
           ...[2, 3, 4, 5, 6].map(num => {
             return {
-              name: `${num}つに分割`,
+              name: `分割為 ${num} 份`,
               action: () => {
                 this.splitStack(num);
                 SoundEffect.play(PresetSound.cardDraw);
