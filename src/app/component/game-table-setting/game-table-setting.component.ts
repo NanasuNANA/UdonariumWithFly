@@ -4,6 +4,7 @@ import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ObjectSerializer } from '@udonarium/core/synchronize-object/object-serializer';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
+import { PeerCursor } from '@udonarium/peer-cursor';
 import { FilterType, GameTable, GridType } from '@udonarium/game-table';
 import { ImageTag } from '@udonarium/image-tag';
 import { TableSelecter } from '@udonarium/table-selecter';
@@ -84,8 +85,9 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     if (!this.selectedTable) return true;
     return ObjectStore.instance.get<GameTable>(this.selectedTable.identifier) == null;
   }
+  get isGMMode(): boolean { return PeerCursor.myCursor?.isGMMode ?? false; }
   get isEditable(): boolean {
-    return !this.isEmpty && !this.isDeleted;
+    return !this.isEmpty && !this.isDeleted && this.isGMMode;
   }
 
   isSaveing: boolean = false;
@@ -124,7 +126,10 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   }
 
   getGameTables(): GameTable[] {
-    return ObjectStore.instance.getObjects(GameTable);
+    const all = ObjectStore.instance.getObjects(GameTable);
+    if (this.isGMMode) return all;
+    const current = this.tableSelecter.viewTable;
+    return current ? [current] : [];
   }
 
   createGameTable() {
@@ -172,7 +177,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   }
   
   openBgImageModal() {
-    if (this.isDeleted) return;
+    if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedTable && this.selectedTable.imageIdentifier) currentImageIdentifires = [this.selectedTable.imageIdentifier];
     this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
@@ -182,7 +187,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   }
 
   openDistanceViewImageModal() {
-    if (this.isDeleted) return;
+    if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedTable && this.selectedTable.backgroundImageIdentifier) currentImageIdentifires = [this.selectedTable.backgroundImageIdentifier];
     this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
@@ -192,7 +197,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   }
 
   openDistanceViewImageModal2() {
-    if (this.isDeleted) return;
+    if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedTable && this.selectedTable.backgroundImageIdentifier2) currentImageIdentifires = [this.selectedTable.backgroundImageIdentifier2];
     this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {

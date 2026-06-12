@@ -1,6 +1,6 @@
 <div class="flex-container">
   <div class="flex-item no-grow">
-    <div>
+    <div *ngIf="isGMMode">
       <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="createGameTable()">建立新桌面</button>
     </div>
     <select #select style="width: 100%; max-width: 155px" size="19" (change)="selectGameTable(select.value)" [ngModel]="selectedTable?.identifier">
@@ -126,7 +126,7 @@
           <input type="checkbox" [(ngModel)]="tableGridSnap" name="tableGridSnap" />
           吸附<sup class="self-only">*</sup>
         </label>
-        <ng-container *ngIf="!isDeleted">
+        <ng-container *ngIf="isGMMode && !isDeleted">
           <button style="margin-left: 2em" [disabled]="isSaveing" (click)="save()">
             <div style="position: relative;">
               <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
@@ -135,9 +135,10 @@
           </button>
           <button class="danger" (click)="delete()" [disabled]="getGameTables().length <= 1">刪除</button>
         </ng-container>
-        <ng-container *ngIf="isDeleted">
+        <ng-container *ngIf="isGMMode && isDeleted">
           <button (click)="restore()">還原</button>
         </ng-container>
+        <span *ngIf="!isGMMode" style="font-size: 0.8em; color: #888; margin-left: 1em;">🔒 僅 GM 可編輯</span>
       </div>
     </ng-container>
   </div>
