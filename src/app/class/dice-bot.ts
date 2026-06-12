@@ -605,20 +605,22 @@ export class DiceBot extends GameObject {
       }
       return Promise.all(promisise)
         .then(jsons => {
-          return jsons.map(json => {
+          return jsons.map((json, i) => {
+            let msg: string;
             if (DiceBot.apiVersion == 1 && json.systeminfo && json.systeminfo.info) {
-              return json.systeminfo.info.replace('部屋のシステム名', '聊天面板等的系統名稱');
+              msg = json.systeminfo.info.replace('部屋のシステム名', '聊天面板等的系統名稱');
             } else if (json.help_message) {
-              return json.help_message.replace('部屋のシステム名', '聊天面板等的系統名稱');
+              msg = json.help_message.replace('部屋のシステム名', '聊天面板等的系統名稱');
             } else {
               return '找不到骰子機器人說明。';
             }
+            return i === 0 ? DiceBot.translateDiceBotHelp(msg) : msg;
           })
         });
     } else {
       let help = [''];
       try {
-        help = [(await DiceBot.loadGameSystemAsync('DiceBot')).HELP_MESSAGE];
+        help = [DiceBot.translateDiceBotHelp((await DiceBot.loadGameSystemAsync('DiceBot')).HELP_MESSAGE)];
         if (gameType && gameType != '' && gameType != 'DiceBot') {
           let gameSystem = await DiceBot.loadGameSystemAsync(gameType);
           if (gameSystem && gameSystem.ID != 'DiceBot' && gameSystem.HELP_MESSAGE) {
@@ -632,6 +634,23 @@ export class DiceBot extends GameObject {
       }
       return help;
     }
+  }
+
+  private static translateDiceBotHelp(msg: string): string {
+    return msg
+      .replace('3D6+1>=9 ：3d6+1で目標値9以上かの判定', '3D6+1>=9 ：3d6+1，判定是否達到目標值 9 以上')
+      .replace('1D100<=50 ：D100で50％目標の下方ロールの例', '1D100<=50 ：D100，下方擲骰，判定是否在 50% 目標以下')
+      .replace('3U6[5] ：3d6のダイス目が5以上の場合に振り足しして合計する(上方無限)', '3U6[5] ：3d6，點數達 5 以上時追加擲骰並加總（上方無限）')
+      .replace('3B6 ：3d6のダイス目をバラバラのまま出力する（合計しない）', '3B6 ：3d6，各骰子點數分開輸出（不加總）')
+      .replace('10B6>=4 ：10d6を振り4以上のダイス目の個数を数える', '10B6>=4 ：擲 10d6，計算點數達 4 以上的骰子數量')
+      .replace('2R6[>3]>=5 ：2D6のダイス目が3より大きい場合に振り足して、5以上のダイス目の個数を数える', '2R6[>3]>=5 ：2D6，點數大於 3 時追加擲骰，計算 5 以上的骰子數量')
+      .replace('(8/2)D(4+6)<=(5*3)：個数・ダイス・達成値には四則演算も使用可能', '(8/2)D(4+6)<=(5*3)：骰子數量、面數、達成值均可使用四則運算')
+      .replace('c(10-4*3/2+2)：c(計算式）で計算だけの実行も可能', 'c(10-4*3/2+2)：c(算式）僅執行計算')
+      .replace('choice[a,b,c]：列挙した要素から一つを選択表示。ランダム攻撃対象決定などに', 'choice[a,b,c]：從列舉選項中隨機選一個顯示，可用於決定隨機攻擊對象等')
+      .replace('S3d6 ： 各コマンドの先頭に「S」を付けると他人結果の見えないシークレットロール', 'S3d6 ：在指令前加「S」，結果只有自己可見（秘密擲骰）')
+      .replace('3d6/2 ： ダイス出目を割り算（端数処理はゲームシステム依存）。切り上げは /2C、四捨五入は /2R、切り捨ては /2F', '3d6/2 ：骰子結果除以 2（小數處理依遊戲系統）。/2C 進位、/2R 四捨五入、/2F 捨去')
+      .replace('D66 ： D66ダイス。順序はゲームに依存。D66N：そのまま、D66A：昇順、D66D：降順', 'D66 ：D66 骰。順序依遊戲而定。D66N：原樣、D66A：升序、D66D：降序')
+      .replace('詳細は下記URLのコマンドガイドを参照', '詳細指令指南請參照下方 URL');
   }
 
   static async loadGameSystemAsync(gameType: string): Promise<GameSystemClass> {
