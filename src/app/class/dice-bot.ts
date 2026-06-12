@@ -650,7 +650,8 @@ export class DiceBot extends GameObject {
       .replace('S3d6 ： 各コマンドの先頭に「S」を付けると他人結果の見えないシークレットロール', 'S3d6 ：在指令前加「S」，結果只有自己可見（秘密擲骰）')
       .replace('3d6/2 ： ダイス出目を割り算（端数処理はゲームシステム依存）。切り上げは /2C、四捨五入は /2R、切り捨ては /2F', '3d6/2 ：骰子結果除以 2（小數處理依遊戲系統）。/2C 進位、/2R 四捨五入、/2F 捨去')
       .replace('D66 ： D66ダイス。順序はゲームに依存。D66N：そのまま、D66A：昇順、D66D：降順', 'D66 ：D66 骰。順序依遊戲而定。D66N：原樣、D66A：升序、D66D：降序')
-      .replace('詳細は下記URLのコマンドガイドを参照', '詳細指令指南請參照下方 URL');
+      .replace('詳細は下記URLのコマンドガイドを参照', '詳細指令指南請參照下方 URL')
+      + '\n2D20KH1 ：優勢擲骰（擲 2 顆 D20，取較高值）\n2D20KH1+5 ：優勢擲骰加上修正值（取較高值後 +5）\n2D20KL1 ：劣勢擲骰（擲 2 顆 D20，取較低值）\n2D20KL1-3 ：劣勢擲骰加上修正值（取較低值後 -3）\nnDmKHx ：擲 n 顆 Dm，保留最高的 x 顆\nnDmKLx ：擲 n 顆 Dm，保留最低的 x 顆';
   }
 
   static async loadGameSystemAsync(gameType: string): Promise<GameSystemClass> {

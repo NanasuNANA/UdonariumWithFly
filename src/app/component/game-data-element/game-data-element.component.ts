@@ -6,7 +6,6 @@ import { GameCharacter } from '@udonarium/game-character';
 import { TabletopObject } from '@udonarium/tabletop-object';
 import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { ModalService } from 'service/modal.service';
-import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
   selector: 'game-data-element, [game-data-element]',
@@ -99,8 +98,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private modalService: ModalService,
-    private chatMessageService: ChatMessageService
+    private modalService: ModalService
   ) { }
 
   ngOnInit() {
@@ -167,16 +165,6 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
 
   isNum(n: any): boolean {
     return isFinite(n);
-  }
-
-  sendToChat(name: string, value: any, currentValue: any) {
-    const chatTabs = this.chatMessageService.chatTabs;
-    if (!chatTabs || chatTabs.length === 0) return;
-    const chatTab = chatTabs[0];
-    const gameType = (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette)
-      ? this.tabletopObject.chatPalette.dicebot : '';
-    const sendFrom = this.tabletopObject?.identifier ?? '';
-    this.chatMessageService.sendMessage(chatTab, `${value} ${name}`, gameType, sendFrom);
   }
 
   openUrl(url) {

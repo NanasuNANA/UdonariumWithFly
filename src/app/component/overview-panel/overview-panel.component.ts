@@ -16,7 +16,6 @@ import { DataElement } from '@udonarium/data-element';
 import { TabletopObject } from '@udonarium/tabletop-object';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { GameObjectInventoryService } from 'service/game-object-inventory.service';
-import { ChatMessageService } from 'service/chat-message.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 import { GameCharacter } from '@udonarium/game-character';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
@@ -198,8 +197,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
     private inventoryService: GameObjectInventoryService,
     private changeDetector: ChangeDetectorRef,
     private pointerDeviceService: PointerDeviceService,
-    private modalService: ModalService,
-    private chatMessageService: ChatMessageService
+    private modalService: ModalService
   ) { }
 
   moveToCommon() {
@@ -217,14 +215,6 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
     SoundEffect.play(PresetSound.sweep);
   }
 
-  sendToChat(name: string, value: any, currentValue: any) {
-    const chatTabs = this.chatMessageService.chatTabs;
-    if (!chatTabs || chatTabs.length === 0) return;
-    const chatTab = chatTabs[0];
-    const gameType = (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette)
-      ? this.tabletopObject.chatPalette.dicebot : '';
-    this.chatMessageService.sendMessage(chatTab, `${value} ${name}`, gameType, this.tabletopObject?.identifier ?? '');
-  }
 
   ngOnChanges(): void {
     EventSystem.unregister(this);
