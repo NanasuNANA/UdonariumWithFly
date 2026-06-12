@@ -256,7 +256,7 @@ export class DiceBot extends GameObject {
       if (isDiceRollTableMatch) {
         finalResult.isFailure = false;
         finalResult.isDiceRollTable = true;
-        finalResult.tableName = (diceRollTable.name && diceRollTable.name.length > 0) ? diceRollTable.name : '(無名のダイスボット表)';
+        finalResult.tableName = (diceRollTable.name && diceRollTable.name.length > 0) ? diceRollTable.name : '(無名骰子表)';
         finalResult.isSecret = isSecret || isRepSecret;
         const diceRollTableRows = diceRollTable.parseText();
         for (let i = 0; i < repeat && i < 32; i++) {
@@ -290,11 +290,11 @@ export class DiceBot extends GameObject {
           if (!isRowMatch) {
             if (rollResultNumber == null) {
               finalResult.isFailure = true;
-              finalResult.result += ('（エラー：ダイス擲骰から数字が取得できません）' + "\n" + '(結果なし)');
+              finalResult.result += ('（錯誤：無法從骰子取得數字）' + "\n" + '(無結果)');
             } else if (!isFixedRef) {
-              finalResult.result += (rollResult.result + modStr + (modStr ? ` → ${rollResultNumber + modifier}`: '') + "\n" + '(結果なし)');
+              finalResult.result += (rollResult.result + modStr + (modStr ? ` → ${rollResultNumber + modifier}`: '') + "\n" + '(無結果)');
             } else {
-              finalResult.result += ('指定=' + rollResultNumber + "\n" + '(結果なし)');
+              finalResult.result += ('指定=' + rollResultNumber + "\n" + '(無結果)');
             }
           }
           if (1 < repeat) finalResult.result += ` #${i + 1}`;

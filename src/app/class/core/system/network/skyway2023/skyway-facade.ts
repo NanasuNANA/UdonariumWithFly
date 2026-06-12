@@ -83,7 +83,7 @@ export class SkyWayFacade {
 
     let authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
     if (authToken.length < 1) {
-      let message = `APIバックエンド< ${backend.url} >にアクセスできませんでした。SkyWayの認証トークンを発行するサーバが必要です。`
+      let message = `無法連線到 API 後端伺服器 < ${backend.url} >，需要能發行 SkyWay 認証令牌的伺服器。`
       if (this.onFatalError) this.onFatalError(this.peer, 'server-error', message, new Error(message));
       return;
     }
@@ -93,7 +93,7 @@ export class SkyWayFacade {
       console.log(`skyWay onTokenUpdateReminder ${new Date().toISOString()}`);
       let authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
       if (authToken.length < 1) {
-        let message = `APIバックエンド< ${backend.url} >にアクセスできませんでした。`
+        let message = `無法連線到 API 後端伺服器 < ${backend.url} >。`
         if (this.onFatalError) this.onFatalError(this.peer, 'server-error', message, new Error(message));
         return;
       }
@@ -106,7 +106,7 @@ export class SkyWayFacade {
         this.close();
         if (this.onClose) this.onClose(this.peer);
       }
-      let message = 'SkyWayの認証トークンの有効期限が切れました。'
+      let message = 'SkyWay 認証令牌已過期。'
       if (this.onFatalError) this.onFatalError(this.peer, 'token-expired', message, new Error(message));
     });
 

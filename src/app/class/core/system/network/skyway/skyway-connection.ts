@@ -376,17 +376,17 @@ export class SkyWayConnection implements Connection {
       case 'disconnected': return '未連線到 SkyWay 信令伺服器。';
       case 'socket-error': return '與 SkyWay 信令伺服器通訊時發生問題。';
       case 'invalid-id': return 'Peer ID 無效。';
-      case 'unavailable-id': return 'その Peer ID すでに使用されています。';
+      case 'unavailable-id': return '此 Peer ID 已被使用。';
       case 'invalid-key': return 'SkyWay API 金鑰無效。';
       case 'invalid-domain': return '目前網域未在 SkyWay API 金鑰中登錄。';
-      case 'authentication': return '認証エラーです。';
+      case 'authentication': return '認証錯誤。';
       case 'server-error': return '連線 SkyWay 信令伺服器時發生問題，請稍後再試。';
-      case 'sfu-client-not-supported': return 'このクライアントは SFU の使用をサポートしていません。最新の Google Chrome を使用してください';
-      case 'peer-unavailable': return 'Peer へデータを送信できませんでした。Peer ID が正しいことを確認してください。';
+      case 'sfu-client-not-supported': return '此客戶端不支援 SFU。請使用最新版 Google Chrome。';
+      case 'peer-unavailable': return '無法向 Peer 傳送資料，請確認 Peer ID 是否正確。';
       case 'signaling-limited': return '信令次數已超過免費使用額度，所有功能暫停使用。（僅限 SkyWay Community Edition）';
       case 'sfu-limited': return 'SFU 伺服器使用量已超過免費額度，SFU 功能暫停使用。（僅限 SkyWay Community Edition）';
       case 'turn-limited': return 'TURN 伺服器使用量已超過免費額度，TURN 功能暫停使用。（僅限 SkyWay Community Edition）\n此狀態下部分使用者的連線可能出現問題。';
-      default: return 'SkyWayに関する不明な發生錯誤。';
+      default: return '發生未知的 SkyWay 錯誤。';
     }
   }
 }

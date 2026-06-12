@@ -161,7 +161,7 @@ export class TrysteroConnection implements Connection {
   private async openAsync(peer: PeerContext): Promise<void> {
     const firebaseConfig = this.config?.trystero?.firebase;
     if (!firebaseConfig?.databaseURL) {
-      const msg = 'Trystero: Firebase databaseURL が設定されていません。config.yaml を確認してください。';
+      const msg = 'Trystero：尚未設定 Firebase databaseURL，請確認 config.yaml。';
       console.error(msg);
       if (this.callback.onError) this.callback.onError(peer, 'trystero-config', msg, {});
       return;
