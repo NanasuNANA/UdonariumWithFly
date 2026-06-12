@@ -197,6 +197,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
 
   get isGMMode(): boolean { return this.gameTableMask.isGMMode; }
   get isScratching(): boolean { return !!this.gameTableMask.owner; }
+  get isGMLayerHidden(): boolean { return this.gameTableMask.isGMLayer && !this.gameTableMask.isGMLayerMine; }
 
   get hasOwner(): boolean { return this.gameTableMask.hasOwner; }
   get ownerIsOnline(): boolean { return this.gameTableMask.ownerIsOnline; }
@@ -536,6 +537,22 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
         }
       : null),
       (this.isGMMode ? ContextMenuSeparator : null),
+      ContextMenuSeparator,
+      (this.gameTableMask.isGMLayerMine
+        ? {
+          name: '☑ GM層（僅自己可見）', action: () => {
+            this.gameTableMask.gmOwner = '';
+            SoundEffect.play(PresetSound.unlock);
+          }, checkBox: 'check'
+        }
+        : {
+          name: '☐ GM層（僅自己可見）', action: () => {
+            this.gameTableMask.gmOwner = Network.peer.userId;
+            SoundEffect.play(PresetSound.lock);
+          }, checkBox: 'check'
+        }
+      ),
+      ContextMenuSeparator,
       (this.isLock
         ? {
           name: '☑ 固定', action: () => {

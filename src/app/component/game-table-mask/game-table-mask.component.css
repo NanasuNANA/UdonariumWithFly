@@ -298,3 +298,7 @@
 .selected-highlight.is-magnetic {
   background-color: hsla(60, 100%, 75%, 0.6);
 }
+
+.is-gm-layer-hidden {
+  display: none;
+}

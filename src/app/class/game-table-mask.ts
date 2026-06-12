@@ -9,6 +9,7 @@ export class GameTableMask extends TabletopObject {
   @SyncVar() isLock: boolean = false;
   @SyncVar() blendType: number = 0;
   @SyncVar() isTransparentOnGMMode: boolean = false;
+  @SyncVar() gmOwner: string = '';
 
   @SyncVar() owner: string = '';
   @SyncVar() scratchingGrids: string = '';
@@ -67,6 +68,9 @@ export class GameTableMask extends TabletopObject {
   get hasOwner(): boolean { return 0 < this.owner.length; }
   get ownerIsOnline(): boolean { return this.hasOwner && (this.isMine || Network.peers.some(peer => peer.userId === this.owner && peer.isOpen)); }
   get isMine(): boolean { return Network.peer.userId === this.owner; }
+
+  get isGMLayer(): boolean { return this.gmOwner.length > 0; }
+  get isGMLayerMine(): boolean { return Network.peer.userId === this.gmOwner; }
 
   complement(): void {
     let element = this.getElement('fontsize', this.commonDataElement);
