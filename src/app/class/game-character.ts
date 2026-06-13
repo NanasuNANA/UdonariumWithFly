@@ -34,6 +34,14 @@ export class GameCharacter extends TabletopObject {
   get name(): string { return this.getCommonValue('name', ''); }
   set name(name) { this.setCommonValue('name', name); }
   get size(): number { return this.getCommonValue('size', 1); }
+  get width(): number {
+    const w = this.getCommonValue('width', 0);
+    return w > 0 ? w : this.size;
+  }
+  get depth(): number {
+    const d = this.getCommonValue('depth', 0);
+    return d > 0 ? d : this.size;
+  }
   get height(): number {
     let element = this.getElement('height', this.commonDataElement);
     //if (!element && this.commonDataElement) {
@@ -99,6 +107,19 @@ export class GameCharacter extends TabletopObject {
     if (!element && this.commonDataElement) {
       this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement));
     }
+    element = this.getElement('width', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      const ref = this.getElement('height', this.commonDataElement) || this.getElement('altitude', this.commonDataElement);
+      this.commonDataElement.insertBefore(DataElement.create('width', 0, {}, 'width_' + this.identifier), ref);
+    }
+    element = this.getElement('depth', this.commonDataElement);
+    if (!element && this.commonDataElement) {
+      const widthEl = this.getElement('width', this.commonDataElement);
+      const ref = this.getElement('height', this.commonDataElement) || this.getElement('altitude', this.commonDataElement);
+      if (widthEl) {
+        this.commonDataElement.insertBefore(DataElement.create('depth', 0, {}, 'depth_' + this.identifier), ref);
+      }
+    }
   }
 
   createTestGameDataElement(name: string, size: number, imageIdentifier: string) {
@@ -106,6 +127,8 @@ export class GameCharacter extends TabletopObject {
 
     let nameElement: DataElement = DataElement.create('name', name, {}, 'name_' + this.identifier);
     let sizeElement: DataElement = DataElement.create('size', size, {}, 'size_' + this.identifier);
+    let widthElement: DataElement = DataElement.create('width', 0, {}, 'width_' + this.identifier);
+    let depthElement: DataElement = DataElement.create('depth', 0, {}, 'depth_' + this.identifier);
     let heightElement: DataElement = DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier);
     let altitudeElement: DataElement = DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier);
 
@@ -119,6 +142,8 @@ export class GameCharacter extends TabletopObject {
 
     this.commonDataElement.appendChild(nameElement);
     this.commonDataElement.appendChild(sizeElement);
+    this.commonDataElement.appendChild(widthElement);
+    this.commonDataElement.appendChild(depthElement);
     this.commonDataElement.appendChild(heightElement);
     this.commonDataElement.appendChild(altitudeElement);
 

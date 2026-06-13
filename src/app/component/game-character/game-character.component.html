@@ -1,5 +1,5 @@
-<div class="component is-3d is-grab is-pointer-events-none" [style.width.px]="size * gridSize"
-  [style.height.px]="gridSize" appMovable [movable.option]="movableOption" (movable.ondragstart)="onMove()"
+<div class="component is-3d is-grab is-pointer-events-none" [style.width.px]="width * gridSize"
+  [style.height.px]="depth * gridSize" appMovable [movable.option]="movableOption" (movable.ondragstart)="onMove()"
   (movable.ondragend)="onMoved()">
   <div class="component-content is-3d" [@bounceInOut]="'in'">
     <div class="component-content is-3d is-pointer-events-auto" appRotable [rotable.option]="rotableOption"
@@ -13,7 +13,7 @@
       <div [@switchImagePedestal]="gameCharacter.currntImageIndex" class="pedestal-inner" [ngClass]="{'selected': selected, 'not-inventory': !gameCharacter.isInventoryIndicate, 'is-hide-in-pedestal': isHideIn}"></div>
       <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
       <div [@switchImagePedestal]="gameCharacter.currntImageIndex" class="pedestal-outer"></div>
-      <div class="is-pointer-events-none is-3d" style="transform-origin: center bottom" [style.transform]="'translateX(' + ((size * gridSize - characterShadowImageWidth) / 2) + 'px) translateY(' + characterShadowOffset +'px) scale(1.0, 0.66)'">
+      <div class="is-pointer-events-none is-3d" style="transform-origin: center bottom" [style.transform]="'translateX(' + ((width * gridSize - characterShadowImageWidth) / 2) + 'px) translateY(' + characterShadowOffset +'px) scale(1.0, 0.66)'">
         <div class="image-box is-3d" [style.width.px]="characterShadowImageWidth" [style.height.px]="characterShadowImageHeight" style="pointer-events: none"
           style="transform-origin: center 66%" [style.transform]="'rotateZ(' + roll + 'deg)'">
           <div class="aura is-3d" style="pointer-events: none;" [ngClass]="{black: aura == 0, blue: aura == 1, green: aura == 2, cyan: aura == 3, red: aura == 4, magenta: aura == 5, yellow: aura == 6, white: aura == 7}">
@@ -32,19 +32,19 @@
           appRotable [rotable.option]="rollOption" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()">
           <div class="rotate-inner is-3d" [style.transform]="'translateZ(' + (-size * gridSize / 2) + 'px)'">
             <div *ngIf="isGMMode && isHideIn && 0 < ownerName.length" class="owner-tag is-nowrap is-black-background is-3d"
-              [ngStyle]="{'background-color': ownerColor + 'dd', 'transform': 'translateX(-50%) translateX(' + size * gridSize / 2 +'px) translateY(6px) rotateX(' + nameTagRotate + 'deg)'}">
+              [ngStyle]="{'background-color': ownerColor + 'dd', 'transform': 'translateX(-50%) translateX(' + width * gridSize / 2 +'px) translateY(6px) rotateX(' + nameTagRotate + 'deg)'}">
               <div class="fornt-tag is-3d" style="color: whitesmoke"><b>{{ownerName}}</b></div>
               <div class="back-tag is-3d" style="color: whitesmoke"><b>{{ownerName}}</b></div>
             </div>
             <div *ngIf="0 < name.length" class="name-tag is-nowrap is-black-background is-3d" [ngClass]="{'is-hide-in-tag': isHideIn}"
-              [ngStyle]="{'transform': 'translateX(-50%) translateX(' + size * gridSize / 2 +'px) rotateX(' + nameTagRotate + 'deg)'}">
+              [ngStyle]="{'transform': 'translateX(-50%) translateX(' + width * gridSize / 2 +'px) rotateX(' + nameTagRotate + 'deg)'}">
               <div class="fornt-tag has-length-limit is-3d">{{name}}</div>
               <div class="back-tag has-length-limit is-3d">{{name}}</div>
             </div>
             <div class="is-pointer-events-none is-3d aura" [@switchImage]="gameCharacter.currntImageIndex"
               [ngClass]="{black: aura == 0, blue: aura == 1, green: aura == 2, cyan: aura == 3, red: aura == 4, magenta: aura == 5, yellow: aura == 6, white: aura == 7}">
               <div class="inverser is-3d" [ngClass]="{inverse: isInverse, 'black-paint': isBlackPaint, 'hollow': isHollow}">
-                <span class="image-box is-3d" [style.width.px]="characterImageWidth" [style.height.px]="characterImageHeight" [style.transform]="'translateX(' + ((size * gridSize - characterImageWidth) / 2) + 'px)'">
+                <span class="image-box is-3d" [style.width.px]="characterImageWidth" [style.height.px]="characterImageHeight" [style.transform]="'translateX(' + ((width * gridSize - characterImageWidth) / 2) + 'px)'">
                   <img #characterImage *ngIf="0 < imageFile.url.length" class="image is-3d chrome-smooth-image-trick" [src]="imageFile.url | safe: 'resourceUrl'" [ngClass]="{'is-hide-in': isHideIn}"
                     [style.height.px]="characterImageHeight" (load)="onImageLoad()">
                 </span>
@@ -52,11 +52,11 @@
             </div>
             <div class="grab-group is-3d">
               <div class="rotate-grab rotate-grab-icon of-top is-3d"
-                [ngStyle]="{'transform': 'translateX(-50%) translateX(' + size * gridSize / 2 +'px) translateY(' + (-characterImageHeight - (isGMMode && isHideIn ? 20 : 0)) + 'px)'}">
+                [ngStyle]="{'transform': 'translateX(-50%) translateX(' + width * gridSize / 2 +'px) translateY(' + (-characterImageHeight - (isGMMode && isHideIn ? 20 : 0)) + 'px)'}">
                 <i class="material-icons">autorenew</i>
               </div>
               <div class="rotate-grab rotate-grab-icon of-bottom is-3d"
-                [ngStyle]="{'transform': 'translateX(-50%) translateX(' + size * gridSize / 2 +'px'}">
+                [ngStyle]="{'transform': 'translateX(-50%) translateX(' + width * gridSize / 2 +'px'}">
                 <i class="material-icons">autorenew</i>
               </div>
             </div>
@@ -64,7 +64,7 @@
         </div>
         <div #chatBubble class="chat-bubble is-3d"
           [ngStyle]="{'bottom': (chatBubbleAltitude - (isEmote ? gridSize / 2 : 0) - 4) + 'px',
-            'transform': 'translateZ(' + (-size * gridSize / 2) + 'px) translateX(-50%) translateX(' + (size * gridSize / 2) +'px) rotateY(' + (rotate + viewRotateZ) + 'deg) rotateX(' + (chatBubbleXDeg) + 'deg)',
+            'transform': 'translateZ(' + (-size * gridSize / 2) + 'px) translateX(-50%) translateX(' + (width * gridSize / 2) +'px) rotateY(' + (rotate + viewRotateZ) + 'deg) rotateX(' + (chatBubbleXDeg) + 'deg)',
             'visibility': gameCharacter.isShowChatBubble ? 'visible' : 'hidden'}">
           <div *ngIf="isListen" [@fadeAndScaleInOut]="isEmote" class="is-3d" style="transform-origin: center bottom;" [style.color]="!isEmote && isWhisper ? '#ccc' : dialogColor">
             <div class="is-3d">
@@ -86,7 +86,7 @@
     <div class="is-3d" *ngIf="isAltitudeIndicate && (altitude <= -0.5 || 0.5 <= altitude)"
       style="display: flex; flex-flow: column nowrap; justify-content: space-between; border-left: 2px dashed black; transform-origin: top left"
       [style.height.px]="math.abs(altitude * gridSize) - (altitude > 0 ? 0 : chatBubbleAltitude + 4)"
-      [ngStyle]="{transform: 'translateX(' + (size * gridSize / 2) + 'px) translateY(' + (-size * gridSize / 2) + 'px) rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
+      [ngStyle]="{transform: 'translateX(' + (width * gridSize / 2) + 'px) translateY(' + (-depth * gridSize / 2) + 'px) rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
       <div class="is-3d" [style.visibility]="altitude > 0 ? 'visible' : 'hidden'">
         <span class="elevation-indicator is-3d" style="position: absolute"><i>{{ elevation }}</i></span>
         <span class="elevation-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)"><i>{{ elevation }}</i></span>

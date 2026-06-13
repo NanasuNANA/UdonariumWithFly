@@ -106,6 +106,23 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   ngOnInit() {
     EventSystem.register(this)
+      .on('SEND_SKILL_TO_CHAT', event => {
+        if (!this.tabletopObject || !(this.tabletopObject instanceof GameCharacter)) return;
+        const character = this.tabletopObject;
+        const chatTabs = this.chatMessageService.chatTabs;
+        if (!chatTabs.length) return;
+        const text = character.chatPalette
+          ? character.chatPalette.evaluate(event.data.text, character.rootDataElement)
+          : event.data.text;
+        this.chatMessageService.sendMessage(
+          chatTabs[0], text,
+          character.chatPalette?.dicebot || 'DiceBot',
+          character.identifier, '',
+          character.chatPalette?.color || '',
+          character.isInverse, character.isHollow, character.isBlackPaint,
+          character.aura, true, character.identifier
+        );
+      })
       .on('DELETE_GAME_OBJECT', event => {
         if (this.tabletopObject && this.tabletopObject.identifier === event.data.identifier) {
           this.panelService.close();

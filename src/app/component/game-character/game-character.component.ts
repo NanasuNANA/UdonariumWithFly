@@ -98,6 +98,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
 
   get name(): string { return this.gameCharacter.name; }
   get size(): number { return MathUtil.clampMin(this.gameCharacter.size); }
+  get width(): number { return MathUtil.clampMin(this.gameCharacter.width); }
+  get depth(): number { return MathUtil.clampMin(this.gameCharacter.depth); }
   get altitude(): number { return this.gameCharacter.altitude; }
   set altitude(altitude: number) { this.gameCharacter.altitude = altitude; }
   get height(): number { return MathUtil.clampMin(this.gameCharacter.height); }
@@ -568,8 +570,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     let actions: ContextMenuAction[] = [];
 
     let objectPosition = {
-      x: this.gameCharacter.location.x + (this.gameCharacter.size * this.gridSize) / 2,
-      y: this.gameCharacter.location.y + (this.gameCharacter.size * this.gridSize) / 2,
+      x: this.gameCharacter.location.x + (this.gameCharacter.width * this.gridSize) / 2,
+      y: this.gameCharacter.location.y + (this.gameCharacter.depth * this.gridSize) / 2,
       z: this.gameCharacter.posZ
     };
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });

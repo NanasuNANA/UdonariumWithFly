@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { EventSystem } from '@udonarium/core/system';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { DataElement } from '@udonarium/data-element';
@@ -76,6 +76,23 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
 
   get isNotApplicable(): boolean {
     return this.isCommonValue && this.descriptionType === 'range-not-width' && this.gameDataElement.name === 'width';
+  }
+
+  @HostBinding('class.with-send-button')
+  get canSendToChat(): boolean {
+    if (this.isEdit || this.isTagLocked || this.isCommonValue || this.isHideText) return false;
+    if (!(this.tabletopObject instanceof GameCharacter)) return false;
+    if (this.gameDataElement.children.length > 0) return false;
+    return !!this.value?.toString()?.trim();
+  }
+
+  sendValueToChat() {
+    const text = (this.value?.toString()?.trim() + ' ' + this.name).trim();
+    if (!text) return;
+    EventSystem.call('SEND_SKILL_TO_CHAT', {
+      text: text,
+      characterIdentifier: this.tabletopObject?.identifier
+    });
   }
 
   get colorSampleTextShadowCss(): string {

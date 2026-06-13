@@ -1,6 +1,39 @@
 .game-data-element{
   margin-left: 10px;
 }
+
+:host.with-send-button {
+  display: block !important;
+  border-bottom: 1px dotted #888;
+  padding-top: 10px;
+}
+.send-button-row {
+  display: block;
+  padding: 2px 0.5em;
+}
+.content-row {
+  display: flex;
+  align-items: flex-start;
+}
+.content-row .name-part {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.3em 0.5em 0.2em 0.5em;
+}
+.content-row .value-part {
+  flex-grow: 1;
+  padding: 0.3em 0 0.2em 0.5em;
+}
+.send-button {
+  font-size: 0.85rem !important;
+  padding: 2px 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .table {
   display:table; 
   /*padding-left: 10px;*/
