@@ -9,9 +9,10 @@ import { PanelService } from 'service/panel.service';
 import { SaveDataService } from 'service/save-data.service';
 
 @Component({
-  selector: 'app-chat-log-output',
-  templateUrl: './chat-log-output.component.html',
-  styleUrls: ['./chat-log-output.component.css']
+    selector: 'app-chat-log-output',
+    templateUrl: './chat-log-output.component.html',
+    styleUrls: ['./chat-log-output.component.css'],
+    standalone: false
 })
 export class ChatLogOutputComponent implements OnInit, AfterViewInit {
   @ViewChild('select', { static: false }) select: ElementRef<HTMLSelectElement>;

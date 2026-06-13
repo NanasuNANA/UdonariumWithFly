@@ -12,7 +12,8 @@ interface BoxSize {
 }
 
 @Directive({
-  selector: '[appResizable]'
+    selector: '[appResizable]',
+    standalone: false
 })
 export class ResizableDirective implements AfterViewInit, OnDestroy {
   @Input('resizable.bounds') boundsSelector: string = 'body';

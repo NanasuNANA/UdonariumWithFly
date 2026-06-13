@@ -6,9 +6,10 @@ import { PeerCursor } from '@udonarium/peer-cursor';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 
 @Component({
-  selector: 'context-menu',
-  templateUrl: './context-menu.component.html',
-  styleUrls: ['./context-menu.component.css']
+    selector: 'context-menu',
+    templateUrl: './context-menu.component.html',
+    styleUrls: ['./context-menu.component.css'],
+    standalone: false
 })
 export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('root', { static: true }) rootElementRef: ElementRef<HTMLElement>;

@@ -31,7 +31,8 @@ export interface MovableOption {
 }
 
 @Directive({
-  selector: '[appMovable]'
+    selector: '[appMovable]',
+    standalone: false
 })
 export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   static readonly layerMap: Map<LayerName, Set<MovableDirective>> = new Map();

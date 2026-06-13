@@ -1,55 +1,57 @@
 <div class="flex-container">
   <div class="flex-item no-grow">
-    <div *ngIf="isGMMode">
-      <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="createGameTable()">建立新桌面</button>
-    </div>
+    @if (isGMMode) {
+      <div>
+        <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="createGameTable()">建立新桌面</button>
+      </div>
+    }
     <select #select style="width: 100%; max-width: 155px" size="19" (change)="selectGameTable(select.value)" [ngModel]="selectedTable?.identifier">
-      <option *ngFor="let gameTable of getGameTables()" value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name == '' ? 'gray' : ''">{{gameTable.name == '' ? '(無名桌面)' : gameTable.name}}</option>
+      @for (gameTable of getGameTables(); track gameTable) {
+        <option value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name == '' ? 'gray' : ''">{{gameTable.name == '' ? '(無名桌面)' : gameTable.name}}</option>
+      }
     </select>
   </div>
   <div class="flex-item">
-    <div style="float: right; margin-top: 3px; margin-right: 3px">
-      <label sytle="white-space: nowrap">
-        <input name="show-hide-images" type="checkbox" value="Show Hides" checked="{{isShowHideImages ? 'checked' : ''}}" (click)="onShowHiddenImages($event)">
-        <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': isShowHideImages}">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-      </label>
-    </div>
-    <ng-container *ngIf="!isEmpty || selectedTable">
+    @if (!isGMMode) {
+      <div style="float: right; margin-top: 3px; margin-right: 3px">
+        <span style="font-size: 0.8em; color: #888;">🔒 僅 GM 可編輯</span>
+      </div>
+    }
+    @if (!isEmpty || selectedTable) {
       <div class="images-select">
         <div>
           <b>圖片</b>
           <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">
-            <span *ngIf="getHidden(tableBackgroundImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-              <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-            </span>
-            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableBackgroundImage) }" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
+            <img height="120" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
           </span>
         </div>
       </div>
       <div class="images-select">
         <div>
           <b>背景1（前景）</b>
-          <div *ngIf="!tableDistanceviewImage.url">
-            <button (click)="openDistanceViewImageModal()" style="height: 120px; margin: 0px 1px 2px 0px" [disabled]="!isEditable">新增背景圖片1</button>
-          </div>
-          <span *ngIf="tableDistanceviewImage.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
-            <span *ngIf="getHidden(tableDistanceviewImage)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-              <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
+          @if (!tableDistanceviewImage.url) {
+            <div>
+              <button (click)="openDistanceViewImageModal()" style="height: 120px; margin: 0px 1px 2px 0px" [disabled]="!isEditable">新增背景圖片1</button>
+            </div>
+          }
+          @if (tableDistanceviewImage.url) {
+            <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
+              <img height="120" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
             </span>
-            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage) }" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
-          </span>
+          }
         </div>
         <div>
           <b>背景2（背面）</b>
-          <div *ngIf="!tableDistanceviewImage2.url">
-            <button (click)="openDistanceViewImageModal2()" style="height: 120px; margin: 0px 0px 2px 0px" [disabled]="!isEditable">新增背景圖片2</button>
-          </div>
-          <span *ngIf="tableDistanceviewImage2.url" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
-            <span *ngIf="getHidden(tableDistanceviewImage2)" style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-              <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
+          @if (!tableDistanceviewImage2.url) {
+            <div>
+              <button (click)="openDistanceViewImageModal2()" style="height: 120px; margin: 0px 0px 2px 0px" [disabled]="!isEditable">新增背景圖片2</button>
+            </div>
+          }
+          @if (tableDistanceviewImage2.url) {
+            <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
+              <img height="120" [src]="tableDistanceviewImage2.url | safe: 'resourceUrl'" draggable="false">
             </span>
-            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage2) }" [src]="tableDistanceviewImage2.url | safe: 'resourceUrl'" draggable="false">
-          </span>
+          }
         </div>
       </div>
       <div>
@@ -126,23 +128,24 @@
           <input type="checkbox" [(ngModel)]="tableGridSnap" name="tableGridSnap" />
           吸附<sup class="self-only">*</sup>
         </label>
-        <ng-container *ngIf="isGMMode && !isDeleted">
+        @if (isGMMode && !isDeleted) {
           <button style="margin-left: 2em" [disabled]="isSaveing" (click)="save()">
             <div style="position: relative;">
               <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
-              <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
+              @if (isSaveing) {
+                <div class="progress">{{progresPercent}}%</div>
+              }
             </div>
           </button>
           <button class="danger" (click)="delete()" [disabled]="getGameTables().length <= 1">刪除</button>
-        </ng-container>
-        <ng-container *ngIf="isGMMode && isDeleted">
+        }
+        @if (isGMMode && isDeleted) {
           <button (click)="restore()">還原</button>
-        </ng-container>
-        <span *ngIf="!isGMMode" style="font-size: 0.8em; color: #888; margin-left: 1em;">🔒 僅 GM 可編輯</span>
+        }
       </div>
-    </ng-container>
+    }
   </div>
 </div>
-<ng-container *ngIf="isEmpty">
+@if (isEmpty) {
   <div style="font-size: 12px;">※尚未建立任何桌面。請點擊「建立新桌面」來建立桌面。</div>
-</ng-container>
+}

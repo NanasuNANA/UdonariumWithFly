@@ -3,52 +3,74 @@
   appMovable [movable.option]="movableOption" [movable.disable]="isLocked" [movable.interact]="isInteract" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
   <div class="component-content is-3d is-pointer-events-auto" [ngClass]="{'is-grab': !isLocked}"
     appRotable [rotable.option]="rotableOption" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()" [rotable.disable]="isLocked">
-    <ng-container *ngIf="hasFloor && isVisibleFloor && 0 < floorImageUrl.length">
-      <div *ngIf="isDropShadow && (terreinAltitude != 0 || (isSlope && !hasWall))"
-        style="opacity: 0.7; filter: brightness(0) blur(1px); transform: translateZ(0.3px) scale(0.98); backface-visibility: visible"
-        class="is-3d texture chrome-smooth-image-trick" [ngClass]="{'blinking-animation': !isLocked}" [style.background-image]="'url(' + floorImageUrl + ')' | safe: 'style'">
-      </div>
-      <div *ngIf="isSelected && isDropShadow && (terreinAltitude != 0 || (isSlope && !hasWall))" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-    </ng-container>
+    @if (hasFloor && isVisibleFloor && 0 < floorImageUrl.length) {
+      @if (isDropShadow && (terreinAltitude != 0 || (isSlope && !hasWall))) {
+        <div
+          style="opacity: 0.7; filter: brightness(0) blur(1px); transform: translateZ(0.3px) scale(0.98); backface-visibility: visible"
+          class="is-3d texture chrome-smooth-image-trick" [ngClass]="{'blinking-animation': !isLocked}" [style.background-image]="'url(' + floorImageUrl + ')' | safe: 'style'">
+        </div>
+      }
+      @if (isSelected && isDropShadow && (terreinAltitude != 0 || (isSlope && !hasWall))) {
+        <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+      }
+    }
     <div class="is-3d texture" style="z-index: 1" [ngClass]="{'upright-transform': (height < 0.5 && altitude == 0), 'fall': (height >= 0.5 && altitude == 0)}" [ngStyle]="{transform: 'translateZ(' + (altitude * gridSize) + 'px)'}">
-      <ng-container *ngIf="hasFloor && isVisibleFloor && 0 < floorImageUrl.length">
+      @if (hasFloor && isVisibleFloor && 0 < floorImageUrl.length) {
         <div class="is-3d texture chrome-smooth-image-trick" [ngClass]="{'blinking-animation': !isLocked}" [ngStyle]="{'backface-visibility': isSlope ? 'visible' : 'hidden', 'transform': 'translateZ(' + ((height / (isSlope ? 2 : 1)) * gridSize) + 'px)' + floorModCss, filter: 'brightness(' + floorBrightness + ') sharpen(1)'}"
           [style.background-image]="'url(' + floorImageUrl + ')' | safe: 'style'">
-          <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+          @if (isSelected) {
+            <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+          }
         </div>
-      </ng-container>
-      <ng-container *ngIf="isWallExist">
-        <ng-container *ngIf="slopeDirection != slopeDirectionState.TOP">
-          <div *ngIf="isVisibleWallTopBottom" [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.LEFT, 'is-inverse-slope': slopeDirection == slopeDirectionState.RIGHT}" class="is-3d texture of-wall-top chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
-            [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
-            style="transform: translateY(-100%) rotateX(90deg) rotateZ(180deg) scaleX(-1.0)">
-            <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="slopeDirection != slopeDirectionState.BOTTOM">
-          <div *ngIf="isVisibleWallTopBottom" [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.LEFT, 'is-inverse-slope': slopeDirection == slopeDirectionState.RIGHT}" class="is-3d texture of-wall-bottom chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
-            [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
-            style="transform: rotateX(-90deg)">
-            <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="slopeDirection != slopeDirectionState.LEFT">
-          <div *ngIf="isVisibleWallLeftRight" [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.BOTTOM, 'is-inverse-slope': slopeDirection == slopeDirectionState.TOP}" class="is-3d texture of-wall-left chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
-            [style.width.px]="depth * gridSize" [style.height.px]="height * gridSize" 
-            style="transform: rotateZ(90deg) rotateX(-90deg) scaleX(-1.0) translateX(-100%) translateY(-100%)">
-            <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="slopeDirection != slopeDirectionState.RIGHT">
-          <div *ngIf="isVisibleWallLeftRight" [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.BOTTOM, 'is-inverse-slope': slopeDirection == slopeDirectionState.TOP}" class="is-3d texture of-wall-right chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
-            [style.width.px]="depth * gridSize" [style.height.px]="height * gridSize"
-            style="transform: rotateZ(-90deg) rotateX(-90deg) translateY(-100%)">
-            <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
-          </div>
-        </ng-container>
-      </ng-container>
+      }
+      @if (isWallExist) {
+        @if (slopeDirection != slopeDirectionState.TOP) {
+          @if (isVisibleWallTopBottom) {
+            <div [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.LEFT, 'is-inverse-slope': slopeDirection == slopeDirectionState.RIGHT}" class="is-3d texture of-wall-top chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
+              [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
+              style="transform: translateY(-100%) rotateX(90deg) rotateZ(180deg) scaleX(-1.0)">
+              @if (isSelected) {
+                <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+              }
+            </div>
+          }
+        }
+        @if (slopeDirection != slopeDirectionState.BOTTOM) {
+          @if (isVisibleWallTopBottom) {
+            <div [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.LEFT, 'is-inverse-slope': slopeDirection == slopeDirectionState.RIGHT}" class="is-3d texture of-wall-bottom chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
+              [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
+              style="transform: rotateX(-90deg)">
+              @if (isSelected) {
+                <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+              }
+            </div>
+          }
+        }
+        @if (slopeDirection != slopeDirectionState.LEFT) {
+          @if (isVisibleWallLeftRight) {
+            <div [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.BOTTOM, 'is-inverse-slope': slopeDirection == slopeDirectionState.TOP}" class="is-3d texture of-wall-left chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
+              [style.width.px]="depth * gridSize" [style.height.px]="height * gridSize"
+              style="transform: rotateZ(90deg) rotateX(-90deg) scaleX(-1.0) translateX(-100%) translateY(-100%)">
+              @if (isSelected) {
+                <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+              }
+            </div>
+          }
+        }
+        @if (slopeDirection != slopeDirectionState.RIGHT) {
+          @if (isVisibleWallLeftRight) {
+            <div [ngClass]="{'blinking-animation': !isLocked, 'no-shadow': !isSurfaceShading, 'is-slope': slopeDirection == slopeDirectionState.BOTTOM, 'is-inverse-slope': slopeDirection == slopeDirectionState.TOP}" class="is-3d texture of-wall-right chrome-smooth-image-trick" [style.background-image]="'url(' + wallImageUrl + ')' | safe: 'style'"
+              [style.width.px]="depth * gridSize" [style.height.px]="height * gridSize"
+              style="transform: rotateZ(-90deg) rotateX(-90deg) translateY(-100%)">
+              @if (isSelected) {
+                <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+              }
+            </div>
+          }
+        }
+      }
     </div>
-    <ng-container *ngIf="!isLocked">
+    @if (!isLocked) {
       <div class="is-3d" style="z-index: 0" [style.opacity]="isInteract ? '1.0': '0.5'" [style.height.px]="depth * gridSize">
         <div class="pedestal-grab rotate-grab is-3d"></div>
         <div class="rotate-grab of-left-top rotate-grab-icon is-3d">
@@ -64,12 +86,14 @@
           <i class="material-icons">autorenew</i>
         </div>
       </div>
-    </ng-container>
+    }
   </div>
-  <div class="is-3d" *ngIf="isAltitudeIndicate && !((isSlope || isWallExist) && -height < altitude && altitude < 0) && (terreinAltitude <= -0.5 || 0.5 <= terreinAltitude)" style="display:flex; align-items: center; border-left: 2px dashed blanchedalmond; position: absolute; transform-origin: top left"
-    [style.height.px]="math.abs(terreinAltitude * gridSize)"
-    [ngStyle]="{transform: 'translateX(' + (width * gridSize / 2) + 'px) translateY(' + (-depth * gridSize / 2) + 'px) rotateX(-90deg) translateY(' + (terreinAltitude > 0 ? -(altitude + ((isSlope || isWallExist) ? 0 : height)) * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
-    <div class="altitude-indicator is-3d" style="position: absolute">{{ math.abs(terreinAltitude) }}</div>
-    <div class="altitude-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)">{{ math.abs(terreinAltitude) }}</div>
-  </div>
+  @if (isAltitudeIndicate && !((isSlope || isWallExist) && -height < altitude && altitude < 0) && (terreinAltitude <= -0.5 || 0.5 <= terreinAltitude)) {
+    <div class="is-3d" style="display:flex; align-items: center; border-left: 2px dashed blanchedalmond; position: absolute; transform-origin: top left"
+      [style.height.px]="math.abs(terreinAltitude * gridSize)"
+      [ngStyle]="{transform: 'translateX(' + (width * gridSize / 2) + 'px) translateY(' + (-depth * gridSize / 2) + 'px) rotateX(-90deg) translateY(' + (terreinAltitude > 0 ? -(altitude + ((isSlope || isWallExist) ? 0 : height)) * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
+      <div class="altitude-indicator is-3d" style="position: absolute">{{ math.abs(terreinAltitude) }}</div>
+      <div class="altitude-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)">{{ math.abs(terreinAltitude) }}</div>
+    </div>
+  }
 </div>

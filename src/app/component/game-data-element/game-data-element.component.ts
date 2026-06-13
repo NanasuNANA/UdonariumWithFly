@@ -8,10 +8,11 @@ import { OpenUrlComponent } from 'component/open-url/open-url.component';
 import { ModalService } from 'service/modal.service';
 
 @Component({
-  selector: 'game-data-element, [game-data-element]',
-  templateUrl: './game-data-element.component.html',
-  styleUrls: ['./game-data-element.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'game-data-element, [game-data-element]',
+    templateUrl: './game-data-element.component.html',
+    styleUrls: ['./game-data-element.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GameDataElementComponent implements OnInit, OnDestroy {
   @Input() tabletopObject: TabletopObject = null;

@@ -4,36 +4,37 @@ import { Card, CardState } from '@udonarium/card';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 
 @Component({
-  selector: 'card-list-image',
-  templateUrl: './card-list-image.component.html',
-  styleUrls: ['./card-list-image.component.css'],
-  animations: [
-    trigger('reverseCard', [
-      transition(':increment', [
-        animate('132ms ease-in-out', keyframes([
-          style({ transform: 'rotateZ(0deg)', offset: 0 }),
-          style({ transform: 'rotateZ(90deg)', offset: 0.5 }),
-          style({ transform: 'rotateZ(180deg)', offset: 1.0 })
-        ]))
-      ]),
-      transition(':decrement', [
-        animate('132ms ease-in-out', keyframes([
-          style({ transform: 'rotateZ(180deg)', offset: 0 }),
-          style({ transform: 'rotateZ(270deg)', offset: 0.5 }),
-          style({ transform: 'rotateZ(360deg)', offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('flipCard', [
-      transition(':increment,:decrement', [
-        animate('132ms ease-in-out', keyframes([
-          style({ transform: 'scaleX(1.0)', offset: 0 }),
-          style({ transform: 'scaleX(0.1)', offset: 0.5 }),
-          style({ transform: 'scaleX(1.0)', offset: 1.0 })
-        ]))
-      ])
-    ])
-  ]
+    selector: 'card-list-image',
+    templateUrl: './card-list-image.component.html',
+    styleUrls: ['./card-list-image.component.css'],
+    animations: [
+        trigger('reverseCard', [
+            transition(':increment', [
+                animate('132ms ease-in-out', keyframes([
+                    style({ transform: 'rotateZ(0deg)', offset: 0 }),
+                    style({ transform: 'rotateZ(90deg)', offset: 0.5 }),
+                    style({ transform: 'rotateZ(180deg)', offset: 1.0 })
+                ]))
+            ]),
+            transition(':decrement', [
+                animate('132ms ease-in-out', keyframes([
+                    style({ transform: 'rotateZ(180deg)', offset: 0 }),
+                    style({ transform: 'rotateZ(270deg)', offset: 0.5 }),
+                    style({ transform: 'rotateZ(360deg)', offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('flipCard', [
+            transition(':increment,:decrement', [
+                animate('132ms ease-in-out', keyframes([
+                    style({ transform: 'scaleX(1.0)', offset: 0 }),
+                    style({ transform: 'scaleX(0.1)', offset: 0.5 }),
+                    style({ transform: 'scaleX(1.0)', offset: 1.0 })
+                ]))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class CardListImageComponent implements OnInit {
   @Input() card: Card = null;

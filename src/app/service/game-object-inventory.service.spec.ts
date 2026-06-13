@@ -6,7 +6,7 @@ describe('GameObjectInventoryService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: GameObjectInventoryService = TestBed.get(GameObjectInventoryService);
+    const service: GameObjectInventoryService = TestBed.inject(GameObjectInventoryService);
     expect(service).toBeTruthy();
   });
 });

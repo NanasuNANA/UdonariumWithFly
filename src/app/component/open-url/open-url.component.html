@@ -1,10 +1,18 @@
 <div>
-  <div *ngIf="isValid" class="url"><small><small>{{urlObj.protocol}}//</small></small><span [ngClass]="{'outer': isOuter}">{{urlObj.host}}</span><small>{{urlObj.pathname}}<span class="opt">{{urlObj.search}}{{urlObj.hash}}</span></small></div>
-  <div *ngIf="!isValid" class="url">{{url}}</div>
+  @if (isValid) {
+    <div class="url"><small><small>{{urlObj.protocol}}//</small></small><span [ngClass]="{'outer': isOuter}">{{urlObj.host}}</span><small>{{urlObj.pathname}}<span class="opt">{{urlObj.search}}{{urlObj.hash}}</span></small></div>
+  }
+  @if (!isValid) {
+    <div class="url">{{url}}</div>
+  }
   <hr />
   <div class="help">
-    <div *ngIf="isValid">確定開啟此URL？（將在新視窗開啟，請允許彈出視窗）</div>
-    <div *ngIf="!isValid">⚠️URL無效。</div>
+    @if (isValid) {
+      <div>確定開啟此URL？（將在新視窗開啟，請允許彈出視窗）</div>
+    }
+    @if (!isValid) {
+      <div>⚠️URL無效。</div>
+    }
   </div>
 </div>
 <button type="submit" (click)="openUrl()" [disabled]="!isValid">開啟</button>

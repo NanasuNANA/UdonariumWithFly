@@ -1,6 +1,14 @@
-<div class="text"><i *ngIf="materialIcon" class="material-icons icon">{{ materialIcon }}</i>{{text}}</div>
+<div class="text">@if (materialIcon) {
+  <i class="material-icons icon">{{ materialIcon }}</i>
+}{{text}}</div>
 <hr />
-<div class="help" *ngIf="help && !helpHtml">{{help}}</div>
-<div class="help" *ngIf="helpHtml" [innerHTML]="helpHtml | safe: 'html'"></div>
+@if (help && !helpHtml) {
+  <div class="help">{{help}}</div>
+}
+@if (helpHtml) {
+  <div class="help" [innerHTML]="helpHtml | safe: 'html'"></div>
+}
 <button type="submit" (click)="ok()">OK</button>
-<button *ngIf="type > 1" type="button" (click)="cancel()">取消</button>
+@if (type > 1) {
+  <button type="button" (click)="cancel()">取消</button>
+}

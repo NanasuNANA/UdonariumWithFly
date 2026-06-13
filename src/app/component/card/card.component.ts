@@ -36,46 +36,47 @@ import { ModalService } from 'service/modal.service';
 import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
-  selector: 'card',
-  templateUrl: './card.component.html',
-  styleUrls: ['./card.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('inverse', [
-      state('inverse', style({ transform: '' })),
-      transition(':increment, :decrement', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 0 }),
-          style({ transform: 'scale3d(0.6, 1.2, 1.2)', offset: 0.5 }),
-          style({ transform: 'scale3d(0, 0.75, 0.75)', offset: 0.75 }),
-          style({ transform: 'scale3d(0.5, 1.125, 1.125)', offset: 0.875 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('flipOpen', [
-      transition(':enter', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(0, 1.0, 1.0)', offset: 0 }),
-          style({ transform: 'scale3d(0, 1.2, 1.2)', offset: 0.5 }),
-          style({ transform: 'scale3d(0, 0.75, 0.75)', offset: 0.75 }),
-          style({ transform: 'scale3d(0.5, 1.125, 1.125)', offset: 0.875 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('slidInOut', [
-      transition('void => *', [
-        animate('200ms ease', keyframes([
-          style({ 'transform-origin': 'left center', transform: 'scale3d(0, 1.0, 1.0)', offset: 0 }),
-          style({ 'transform-origin': 'left center', transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ 'transform-origin': 'left center', transform: 'scale3d(0, 1.0, 1.0)' }))
-      ])
-    ])
-  ]
+    selector: 'card',
+    templateUrl: './card.component.html',
+    styleUrls: ['./card.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('inverse', [
+            state('inverse', style({ transform: '' })),
+            transition(':increment, :decrement', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 0 }),
+                    style({ transform: 'scale3d(0.6, 1.2, 1.2)', offset: 0.5 }),
+                    style({ transform: 'scale3d(0, 0.75, 0.75)', offset: 0.75 }),
+                    style({ transform: 'scale3d(0.5, 1.125, 1.125)', offset: 0.875 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('flipOpen', [
+            transition(':enter', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 1.0, 1.0)', offset: 0 }),
+                    style({ transform: 'scale3d(0, 1.2, 1.2)', offset: 0.5 }),
+                    style({ transform: 'scale3d(0, 0.75, 0.75)', offset: 0.75 }),
+                    style({ transform: 'scale3d(0.5, 1.125, 1.125)', offset: 0.875 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('slidInOut', [
+            transition('void => *', [
+                animate('200ms ease', keyframes([
+                    style({ 'transform-origin': 'left center', transform: 'scale3d(0, 1.0, 1.0)', offset: 0 }),
+                    style({ 'transform-origin': 'left center', transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ 'transform-origin': 'left center', transform: 'scale3d(0, 1.0, 1.0)' }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   @Input() card: Card = null;

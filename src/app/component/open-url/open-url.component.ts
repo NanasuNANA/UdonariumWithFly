@@ -5,9 +5,10 @@ import { PanelService } from 'service/panel.service';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 
 @Component({
-  selector: 'open-url',
-  templateUrl: './open-url.component.html',
-  styleUrls: ['./open-url.component.css']
+    selector: 'open-url',
+    templateUrl: './open-url.component.html',
+    styleUrls: ['./open-url.component.css'],
+    standalone: false
 })
 export class OpenUrlComponent implements OnInit, OnDestroy {
   url: string = '';

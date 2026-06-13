@@ -4,9 +4,10 @@ import { PanelService } from 'service/panel.service';
 import { EventSystem } from '@udonarium/core/system';
 
 @Component({
-  selector: 'app-confirmation',
-  templateUrl: './confirmation.component.html',
-  styleUrls: ['./confirmation.component.css']
+    selector: 'app-confirmation',
+    templateUrl: './confirmation.component.html',
+    styleUrls: ['./confirmation.component.css'],
+    standalone: false
 })
 export class ConfirmationComponent implements OnInit, OnDestroy {
   title: string = '';

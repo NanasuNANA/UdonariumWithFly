@@ -6,9 +6,7 @@ import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { FilterType, GameTable, GridType } from '@udonarium/game-table';
-import { ImageTag } from '@udonarium/image-tag';
 import { TableSelecter } from '@udonarium/table-selecter';
-import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/confirmation.component';
 
 import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
 import { ChatMessageService } from 'service/chat-message.service';
@@ -18,15 +16,15 @@ import { PanelService } from 'service/panel.service';
 import { SaveDataService } from 'service/save-data.service';
 
 @Component({
-  selector: 'game-table-setting',
-  templateUrl: './game-table-setting.component.html',
-  styleUrls: ['./game-table-setting.component.css']
+    selector: 'game-table-setting',
+    templateUrl: './game-table-setting.component.html',
+    styleUrls: ['./game-table-setting.component.css'],
+    standalone: false
 })
 export class GameTableSettingComponent implements OnInit, OnDestroy {
   minSize: number = 1;
   maxSize: number = 100;
 
-  isShowHideImages = false;
 
   get tableBackgroundImage(): ImageFile {
     return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.imageIdentifier : null);
@@ -171,11 +169,6 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     }
   }
 
-  getHidden(image: ImageFile): boolean {
-    const imageTag = ImageTag.get(image.identifier);
-    return imageTag ? imageTag.hide : false;
-  }
-  
   openBgImageModal() {
     if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
@@ -206,24 +199,4 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     });
   }
 
-  onShowHiddenImages($event: Event) {
-    if (this.isShowHideImages) {
-      this.isShowHideImages = false;
-    } else {
-      $event.preventDefault();
-      this.modalService.open(ConfirmationComponent, {
-        title: '顯示隱藏圖片', 
-        text: '確定要顯示隱藏圖片嗎？',
-        help: '請注意劇透等問題。',
-        type: ConfirmationType.OK_CANCEL,
-        materialIcon: 'visibility',
-        action: () => {
-          this.chatMessageService.sendOperationLog('從桌面設定顯示了隱藏圖片');
-          this.isShowHideImages = true;
-          (<HTMLInputElement>$event.target).checked = true;
-          this.changeDetector.markForCheck();
-        } 
-      });
-    }
-  }
 }

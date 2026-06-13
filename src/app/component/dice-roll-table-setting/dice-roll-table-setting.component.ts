@@ -11,9 +11,10 @@ import { PointerDeviceService } from 'service/pointer-device.service';
 import { SaveDataService } from 'service/save-data.service';
 
 @Component({
-  selector: 'dice-roll-table-setting',
-  templateUrl: './dice-roll-table-setting.component.html',
-  styleUrls: ['./dice-roll-table-setting.component.css']
+    selector: 'dice-roll-table-setting',
+    templateUrl: './dice-roll-table-setting.component.html',
+    styleUrls: ['./dice-roll-table-setting.component.css'],
+    standalone: false
 })
 export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('diceRollTableSelecter') diceRollTableSelecter: ElementRef<HTMLSelectElement>;

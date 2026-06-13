@@ -7,9 +7,10 @@ import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
 
 @Component({
-  selector: 'text-view',
-  templateUrl: './text-view.component.html',
-  styleUrls: ['./text-view.component.css']
+    selector: 'text-view',
+    templateUrl: './text-view.component.html',
+    styleUrls: ['./text-view.component.css'],
+    standalone: false
 })
 export class TextViewComponent implements OnInit {
   @ViewChild('message') messageElm: ElementRef;

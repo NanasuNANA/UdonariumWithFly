@@ -6,7 +6,8 @@ import { PointerCoordinate } from 'service/pointer-device.service';
 import { InputHandler } from './input-handler';
 
 @Directive({
-  selector: '[appDraggable]'
+    selector: '[appDraggable]',
+    standalone: false
 })
 export class DraggableDirective implements AfterViewInit, OnDestroy {
   @Input('draggable.disable') isDisable: boolean = false;

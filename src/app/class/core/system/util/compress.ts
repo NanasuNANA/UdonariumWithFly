@@ -7,6 +7,6 @@ export async function decompressAsync(data: Uint8Array): Promise<Uint8Array> {
 }
 
 async function processAsync(transform: ReadableWritablePair, data: Uint8Array): Promise<Uint8Array> {
-  const stream = new Blob([data]).stream().pipeThrough(transform);
+  const stream = new Blob([data as BlobPart]).stream().pipeThrough(transform);
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }

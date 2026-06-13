@@ -5,25 +5,26 @@ import { PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 
 @Component({
-  selector: 'ui-panel',
-  templateUrl: './ui-panel.component.html',
-  styleUrls: ['./ui-panel.component.css'],
-  providers: [
-    PanelService,
-  ],
-  animations: [
-    trigger('flyInOut', [
-      transition('void => *', [
-        animate('100ms ease-out', keyframes([
-          style({ transform: 'scale(0.8, 0.8)', opacity: '0', offset: 0 }),
-          style({ transform: 'scale(1.0, 1.0)', opacity: '1', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ transform: 'scale(0, 0)' }))
-      ])
-    ])
-  ]
+    selector: 'ui-panel',
+    templateUrl: './ui-panel.component.html',
+    styleUrls: ['./ui-panel.component.css'],
+    providers: [
+        PanelService,
+    ],
+    animations: [
+        trigger('flyInOut', [
+            transition('void => *', [
+                animate('100ms ease-out', keyframes([
+                    style({ transform: 'scale(0.8, 0.8)', opacity: '0', offset: 0 }),
+                    style({ transform: 'scale(1.0, 1.0)', opacity: '1', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ transform: 'scale(0, 0)' }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class UIPanelComponent implements OnInit {
   @ViewChild('draggablePanel', { static: true }) draggablePanel: ElementRef<HTMLElement>;

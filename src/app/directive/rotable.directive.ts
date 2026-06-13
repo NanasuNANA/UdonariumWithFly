@@ -19,7 +19,8 @@ export interface RotableOption {
 }
 
 @Directive({
-  selector: '[appRotable]'
+    selector: '[appRotable]',
+    standalone: false
 })
 export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
   private _tabletopObject: TabletopObject;

@@ -58,25 +58,26 @@ import * as localForage from 'localforage';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  animations: [
-    trigger('fadeInOut', [
-      transition('void => *', [
-        animate('100ms ease-out', keyframes([
-          style({ opacity: 0, offset: 0 }),
-          style({ opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('100ms ease-in', keyframes([
-          style({ opacity: 1, offset: 0 }),
-          style({ opacity: 0, offset: 1.0 })
-        ]))
-      ])
-    ])
-  ]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    animations: [
+        trigger('fadeInOut', [
+            transition('void => *', [
+                animate('100ms ease-out', keyframes([
+                    style({ opacity: 0, offset: 0 }),
+                    style({ opacity: 1, offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('100ms ease-in', keyframes([
+                    style({ opacity: 1, offset: 0 }),
+                    style({ opacity: 0, offset: 1.0 })
+                ]))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 

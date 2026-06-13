@@ -1,17 +1,19 @@
 <div>
   <button (click)="close(true)">洗牌並關閉視窗</button>
   <hr/>
-  <div *ngFor="let card of cardStack.cards; trackBy: trackByCard" class="box">
-    <card-list-image [card]="card"></card-list-image>
-    <div style="display: inline-block; margin-left: 2px">
-      <button type="submit" (click)="drawCard(card)">從牌堆取出</button>
-      <button (click)="showDetail(card)"><i class="material-icons" style="font-size: 1.1em; vertical-align: text-bottom;">settings</i> 編集</button>
-      <br>
-      <button (click)="up(card)">↑</button>
-      <button (click)="down(card)">↓</button>
-      <button (click)="card.rotate = (card.rotate == 180 ? 0 : 180)" style="margin-left: 5px">旋轉</button>
-      <button (click)="card.state = (card.state == CardStateFront ? CardStateBack : CardStateFront)">翻面</button>
-      <br>
+  @for (card of cardStack.cards; track trackByCard($index, card)) {
+    <div class="box">
+      <card-list-image [card]="card"></card-list-image>
+      <div style="display: inline-block; margin-left: 2px">
+        <button type="submit" (click)="drawCard(card)">從牌堆取出</button>
+        <button (click)="showDetail(card)"><i class="material-icons" style="font-size: 1.1em; vertical-align: text-bottom;">settings</i> 編集</button>
+        <br>
+          <button (click)="up(card)">↑</button>
+          <button (click)="down(card)">↓</button>
+          <button (click)="card.rotate = (card.rotate == 180 ? 0 : 180)" style="margin-left: 5px">旋轉</button>
+          <button (click)="card.state = (card.state == CardStateFront ? CardStateBack : CardStateFront)">翻面</button>
+          <br>
+          </div>
+        </div>
+      }
     </div>
-  </div>
-</div>

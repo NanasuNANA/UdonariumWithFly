@@ -14,9 +14,10 @@ import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 
 @Component({
-  selector: 'chat-palette',
-  templateUrl: './chat-palette.component.html',
-  styleUrls: ['./chat-palette.component.css']
+    selector: 'chat-palette',
+    templateUrl: './chat-palette.component.html',
+    styleUrls: ['./chat-palette.component.css'],
+    standalone: false
 })
 export class ChatPaletteComponent implements OnInit, OnDestroy {
   @ViewChild('chatInput', { static: true }) chatInputComponent: ChatInputComponent;

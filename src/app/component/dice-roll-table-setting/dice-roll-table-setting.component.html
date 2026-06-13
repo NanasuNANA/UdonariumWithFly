@@ -4,15 +4,17 @@
       <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="add()">新增骰子機器人表</button>
     </div>
     <select #diceRollTableSelecter style="width: 14em;" size="15" (change)="onChangeDiceRollTable(diceRollTableSelecter.value)">
-      <option *ngFor="let diceRollTable of diceRollTables" value="{{ diceRollTable.identifier }}" title="{{diceRollTable.name}}" [style.color]="diceRollTable.name == '' ? 'gray' : ''">{{ diceRollTable.name == '' ? '(無名骰子機器人表)' : diceRollTable.name }}</option>
+      @for (diceRollTable of diceRollTables; track diceRollTable) {
+        <option value="{{ diceRollTable.identifier }}" title="{{diceRollTable.name}}" [style.color]="diceRollTable.name == '' ? 'gray' : ''">{{ diceRollTable.name == '' ? '(無名骰子機器人表)' : diceRollTable.name }}</option>
+      }
     </select>
   </div>
   <div class="flex-item">
     <button style="float: right; cursor: help" (click)="helpDiceRollTable()">?</button>
-    <ng-container *ngIf="!isEmpty && selectedDiceRollTable">
+    @if (!isEmpty && selectedDiceRollTable) {
       <div style="font-size: smaller;">
         <div style="margin-bottom: 3px;">
-          <b>name: </b> 
+          <b>name: </b>
           <input style="width: 60%; min-width: 5em" [(ngModel)]="diceRollTableName" placeholder="Name" [attr.disabled]="!isEditable ? '' : null" />
         </div>
         <div>
@@ -20,7 +22,7 @@
             <b>command: </b>
             <input style="width: 7em" [(ngModel)]="diceRollTableCommand" placeholder="Command" [attr.disabled]="!isEditable ? '' : null" />
           </span>
-          <span style="white-space: nowrap; margin-left: 1em">  
+          <span style="white-space: nowrap; margin-left: 1em">
             <b>dice: </b>
             <input style="width: 3.3em; text-align: center" [(ngModel)]="diceRollTableDice" placeholder="Dice" [attr.disabled]="!isEditable ? '' : null" />
           </span>
@@ -31,7 +33,7 @@
       </div>
       <hr/>
       <div>
-        <ng-container *ngIf="!isDeleted">
+        @if (!isDeleted) {
           <button (click)="upTabIndex()">↑</button>
           <button (click)="downTabIndex()">↓</button>
           <div style="float: right">
@@ -46,24 +48,26 @@
             <button [disabled]="isSaveing" (click)="save()">
               <div style="position: relative;">
                 <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
-                <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
+                @if (isSaveing) {
+                  <div class="progress">{{progresPercent}}%</div>
+                }
               </div>
             </button>
             <button class="danger" (click)="delete()">刪除</button>
           </div>
-        </ng-container>
-        <ng-container *ngIf="isDeleted && selectedDiceRollTableXml">
+        }
+        @if (isDeleted && selectedDiceRollTableXml) {
           <button (click)="restore()">還原</button>
-        </ng-container>
+        }
       </div>
-    </ng-container>
+    }
   </div>
 </div>
-<ng-container *ngIf="isEmpty">
+@if (isEmpty) {
   <div style="font-size: 12px;">
     ※目前沒有骰子機器人表。
-    <ng-container *ngIf="isDeleted && selectedDiceRollTableXml">
+    @if (isDeleted && selectedDiceRollTableXml) {
       <button (click)="restore()">還原</button>
-    </ng-container>
+    }
   </div>
-</ng-container>
+}

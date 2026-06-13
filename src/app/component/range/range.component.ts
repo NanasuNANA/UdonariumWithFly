@@ -46,10 +46,11 @@ import { GameCharacter } from '@udonarium/game-character';
 import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
-  selector: 'range',
-  templateUrl: './range.component.html',
-  styleUrls: ['./range.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'range',
+    templateUrl: './range.component.html',
+    styleUrls: ['./range.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() range: RangeArea = null;

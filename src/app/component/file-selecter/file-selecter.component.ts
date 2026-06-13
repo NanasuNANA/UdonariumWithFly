@@ -21,23 +21,24 @@ import { AppComponent } from 'src/app/app.component';
 import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
-  selector: 'file-selector',
-  templateUrl: './file-selecter.component.html',
-  styleUrls: ['./file-selecter.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('scaleInOut', [
-      transition('void => *', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('180ms ease', style({ transform: 'scale3d(0, 0, 0)' }))
-      ])
-    ])
-  ]
+    selector: 'file-selector',
+    templateUrl: './file-selecter.component.html',
+    styleUrls: ['./file-selecter.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('scaleInOut', [
+            transition('void => *', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('180ms ease', style({ transform: 'scale3d(0, 0, 0)' }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class FileSelecterComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() isAllowedEmpty: boolean = false;

@@ -2,35 +2,55 @@
   <div style="flex-grow: 0;">
     <form>
       <div class="chat-tab">
-        <label *ngFor="let chatTab of chatMessageService.chatTabs">
-          <input name="chat-tab" type="radio" value="{{chatTab.identifier}}" ng-control="options" [(ngModel)]="chatTabidentifier">
-          <div><span [style.cursor]="chatTabidentifier != chatTab.identifier ? 'pointer' : ''" [style.color]="chatTab.name == '' && chatTabidentifier != chatTab.identifier ? 'gray' : ''">{{chatTab.name == '' ? '(無名分頁)' : chatTab.name}}</span><i *ngIf="chatTab.isUseStandImage" class="material-icons small-font">how_to_reg</i><i *ngIf="chatTab.recieveOperationLogLevel > 0" class="material-icons small-font">history_edu</i><badge *ngIf="chatTab.hasUnread" class="badge" [count]="chatTab.unreadLength"></badge></div>
+        @for (chatTab of chatMessageService.chatTabs; track chatTab) {
+          <label>
+            <input name="chat-tab" type="radio" value="{{chatTab.identifier}}" ng-control="options" [(ngModel)]="chatTabidentifier">
+            <div><span [style.cursor]="chatTabidentifier != chatTab.identifier ? 'pointer' : ''" [style.color]="chatTab.name == '' && chatTabidentifier != chatTab.identifier ? 'gray' : ''">{{chatTab.name == '' ? '(無名分頁)' : chatTab.name}}</span>@if (chatTab.isUseStandImage) {
+            <i class="material-icons small-font">how_to_reg</i>
+            }@if (chatTab.recieveOperationLogLevel > 0) {
+            <i class="material-icons small-font">history_edu</i>
+            }@if (chatTab.hasUnread) {
+            <badge class="badge" [count]="chatTab.unreadLength"></badge>
+          }</div>
         </label>
-      </div>
-    </form>
-    <chat-input [onlyCharacters]="true" [chatTabidentifier]="chatTabidentifier" (moveToPalette)="moveToPalette($event)"
-    [(gameType)]="gameType" [(sendFrom)]="sendFrom" [(text)]="text" [(filterText)]="filterText" (chat)="sendChat($event)" #chatInput></chat-input>
-    <div *ngIf="isEdit" class="edit-info" style="display: flex">
+      }
+    </div>
+  </form>
+  <chat-input [onlyCharacters]="true" [chatTabidentifier]="chatTabidentifier" (moveToPalette)="moveToPalette($event)"
+  [(gameType)]="gameType" [(sendFrom)]="sendFrom" [(text)]="text" [(filterText)]="filterText" (chat)="sendChat($event)" #chatInput></chat-input>
+  @if (isEdit) {
+    <div class="edit-info" style="display: flex">
       <div style="width: calc(100% - 1.6em); text-align: center"><i class="material-icons" style="vertical-align: middle; font-size: 1.05rem">info_outline</i> 聊天面板編輯中</div>
       <div style="width: 1.6em; text-align: right"><button style="padding: 2px 6px; vertical-align: baseline; font-size: x-small; height: 1.24rem; cursor: help" (click)="helpChatPallet()">?</button></div>
     </div>
-  </div>
-  <div *ngIf="!isEdit" style="flex-grow: 1; height: 0; min-height: 100px;">
+  }
+</div>
+@if (!isEdit) {
+  <div style="flex-grow: 1; height: 0; min-height: 100px;">
     <select #chatPlette class="palette" style="overflow-y: auto;" size="5" (focus)="arrowPalette()" (keydown.arrowUp)="moveToInput($event)" (keyup.arrowUp)="arrowPalette()" (keyup.arrowDown)="arrowPalette()" (keydown.enter)="enterPalette(chatPlette.value, $event)" (click)="clickPalette(chatPlette.value)">
-      <ng-container *ngIf="palette">
-        <ng-container *ngFor="let palette of filteredPaletteStrings">
-          <option *ngIf="filter(palette)" value="{{palette}}" [style.color]="color" title="{{palette}}">{{palette}}</option>
-        </ng-container>
-      </ng-container>
+      @if (palette) {
+        @for (palette of filteredPaletteStrings; track palette) {
+          @if (filter(palette)) {
+            <option value="{{palette}}" [style.color]="color" title="{{palette}}">{{palette}}</option>
+          }
+        }
+      }
     </select>
   </div>
-  <div *ngIf="isEdit" style="flex-grow: 1; height: 0; min-height: 100px;">
+}
+@if (isEdit) {
+  <div style="flex-grow: 1; height: 0; min-height: 100px;">
     <textarea class="palette" style="resize: none;" [(ngModel)]="editPalette" placeholder="聊天面板"></textarea>
   </div>
-  <div style="flex-grow: 0; padding-left: 0px; padding-top: 1px">
-    <button type="submit" style="margin: 0px" (click)="toggleEditMode()">
-      <span *ngIf="!isEdit">聊天面板編集</span>
-      <span *ngIf="isEdit">聊天面板確定</span>
-    </button>
-  </div>
+}
+<div style="flex-grow: 0; padding-left: 0px; padding-top: 1px">
+  <button type="submit" style="margin: 0px" (click)="toggleEditMode()">
+    @if (!isEdit) {
+      <span>聊天面板編集</span>
+    }
+    @if (isEdit) {
+      <span>聊天面板確定</span>
+    }
+  </button>
+</div>
 </div>

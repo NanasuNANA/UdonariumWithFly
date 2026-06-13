@@ -7,9 +7,10 @@ import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
 
 @Component({
-  selector: 'password-check',
-  templateUrl: './password-check.component.html',
-  styleUrls: ['./password-check.component.css']
+    selector: 'password-check',
+    templateUrl: './password-check.component.html',
+    styleUrls: ['./password-check.component.css'],
+    standalone: false
 })
 export class PasswordCheckComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('passwordInput', { static: true }) passwordInputElementRef: ElementRef<HTMLInputElement>;

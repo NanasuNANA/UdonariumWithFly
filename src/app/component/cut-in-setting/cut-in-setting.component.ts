@@ -25,9 +25,10 @@ import { ChatMessageService } from 'service/chat-message.service';
 
 
 @Component({
-  selector: 'app-cut-in-setting',
-  templateUrl: './cut-in-setting.component.html',
-  styleUrls: ['./cut-in-setting.component.css']
+    selector: 'app-cut-in-setting',
+    templateUrl: './cut-in-setting.component.html',
+    styleUrls: ['./cut-in-setting.component.css'],
+    standalone: false
 })
 export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('cutInSelecter') cutInSelecter: ElementRef<HTMLSelectElement>;

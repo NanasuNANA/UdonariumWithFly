@@ -34,9 +34,10 @@ interface StandGroup {
 }
 
 @Component({
-  selector: 'chat-input',
-  templateUrl: './chat-input.component.html',
-  styleUrls: ['./chat-input.component.css']
+    selector: 'chat-input',
+    templateUrl: './chat-input.component.html',
+    styleUrls: ['./chat-input.component.css'],
+    standalone: false
 })
 export class ChatInputComponent implements OnInit, OnDestroy {
   @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef<HTMLTextAreaElement>;
@@ -321,6 +322,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   //}
 
   onInput() {
+    this.currentHistoryIndex = -1;
     if (this.writingEventInterval === null && this.previousWritingLength <= this.text.length) {
       let sendTo: string = null;
       if (this.isDirect) {
@@ -365,6 +367,26 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
     textArea.value = histText;
     this.calcFitHeight();
+  }
+
+  onChatKeydown(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'Enter':
+        this.sendChat(event);
+        break;
+      case 'ArrowUp':
+        if (!this.text || this.currentHistoryIndex >= 0) {
+          this.moveHistory(event, 1);
+        }
+        break;
+      case 'ArrowDown':
+        if (!this.text || this.currentHistoryIndex >= 0) {
+          this.moveHistory(event, -1);
+        } else {
+          this.moveTo(event);
+        }
+        break;
+    }
   }
 
   moveTo(e: Event) {

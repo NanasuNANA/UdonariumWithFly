@@ -32,9 +32,10 @@ import { TablePickGesture } from './table-pick-gesture';
 import { TableTouchGesture } from './table-touch-gesture';
 
 @Component({
-  selector: 'game-table',
-  templateUrl: './game-table.component.html',
-  styleUrls: ['./game-table.component.css'],
+    selector: 'game-table',
+    templateUrl: './game-table.component.html',
+    styleUrls: ['./game-table.component.css'],
+    standalone: false
 })
 export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('root', { static: true }) rootElementRef: ElementRef<HTMLElement>;

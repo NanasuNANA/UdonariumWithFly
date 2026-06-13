@@ -12,9 +12,10 @@ import { PanelOption, PanelService } from 'service/panel.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 
 @Component({
-  selector: 'chat-window',
-  templateUrl: './chat-window.component.html',
-  styleUrls: ['./chat-window.component.css']
+    selector: 'chat-window',
+    templateUrl: './chat-window.component.html',
+    styleUrls: ['./chat-window.component.css'],
+    standalone: false
 })
 export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('chatTabComponemt', { static: false }) chatTabComponemt: ChatTabComponent;

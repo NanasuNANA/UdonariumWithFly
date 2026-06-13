@@ -4,24 +4,34 @@
       <button style="margin: 0px 0px 2px 0px; font-size: smaller" (click)="add()">新增插圖</button>
     </div>
     <select #cutInSelecter style="width: 12em;" size="15" (change)="onChangeCutIn(cutInSelecter.value)">
-      <option *ngFor="let cutIn of cutIns" value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name == '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name == '' ? '(無名插圖)' : cutIn.name) }}</option>
+      @for (cutIn of cutIns; track cutIn) {
+        <option value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name == '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name == '' ? '(無名插圖)' : cutIn.name) }}</option>
+      }
     </select>
   </div>
   <div class="flex-item">
     <div style="float: right; margin-top: 3px; margin-right: 3px">
       <button style="cursor: help" (click)="helpCutIn()">?</button>
     </div>
-    <ng-container *ngIf="!isEmpty && selectedCutIn">
+    @if (!isEmpty && selectedCutIn) {
       <div style="display: flex">
         <div>
           <div (dblclick)="isEditable && (!cutInVideoId || cutInisSoundOnly) ? openModal() : false" style="position: relative; overflow: hidden">
-            <div *ngIf="(!cutInVideoId || cutInisSoundOnly) && getHidden(cutInImage)" style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-              <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-            </div>
-            <div *ngIf="isEditable" style="position: absolute; top: 1px; left: -1px; z-index: 5">
-              <button *ngIf="!cutInVideoId || cutInisSoundOnly" (click)="openModal()"><b>變更圖片</b></button>
-            </div>
-            <div *ngIf="cutInVideoId && !cutInisSoundOnly" class="grow" style="opacity: 0.8; position: absolute; bottom: 1px; right: -1px; z-index: 5"><i style="font-size: 32px" class="material-icons">{{ cutInPlayListId ? 'featured_play_list' : 'movie' }}</i></div>
+            @if ((!cutInVideoId || cutInisSoundOnly) && getHidden(cutInImage)) {
+              <div style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
+                <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
+              </div>
+            }
+            @if (isEditable) {
+              <div style="position: absolute; top: 1px; left: -1px; z-index: 5">
+                @if (!cutInVideoId || cutInisSoundOnly) {
+                  <button (click)="openModal()"><b>變更圖片</b></button>
+                }
+              </div>
+            }
+            @if (cutInVideoId && !cutInisSoundOnly) {
+              <div class="grow" style="opacity: 0.8; position: absolute; bottom: 1px; right: -1px; z-index: 5"><i style="font-size: 32px" class="material-icons">{{ cutInPlayListId ? 'featured_play_list' : 'movie' }}</i></div>
+            }
             <img style="width: 160px; height: 160px; object-fit: contain" [ngClass]="{ blackout: (!cutInVideoId || cutInisSoundOnly) && !isShowHideImages && getHidden(cutInImage) }" [src]="cutInImageUrl | safe: 'resourceUrl'" draggable="false">
           </div>
         </div>
@@ -67,9 +77,13 @@
             <span style="white-space: nowrap"> ➡
               <select style="max-width: 10em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo == ''}" [ngStyle]="{'color': (sendTo == '' ? null : sendToColor), 'font-weight': (sendTo == '' ? 'normal' : 'bolder')}">
                 <option value="" class="not-specified">全體</option>
-                <option *ngFor="let peer of otherPeers" value="{{peer.identifier}}" [style.color]="peer.color" style="font-weight: bolder;">{{peer.name}}
-                  <ng-container *ngIf="peer === myPeer">（你）</ng-container>
-                </option>
+                @for (peer of otherPeers; track peer) {
+                  <option value="{{peer.identifier}}" [style.color]="peer.color" style="font-weight: bolder;">{{peer.name}}
+                    @if (peer === myPeer) {
+                      （你）
+                    }
+                  </option>
+                }
               </select>
             </span>
           </span>
@@ -153,20 +167,26 @@
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-sound" [(ngModel)]="cutInIsVideo" [checked]="!cutInIsVideo" [value]="false" [attr.disabled]="!isEditable || isPlaying ? '' : null">
             <label for="{{panelId}}-media-sound" [style.cursor]="isEditable ? 'pointer' : 'default'"><b>音樂檔案: </b></label>
-            <select #audioSelect 
+            <select #audioSelect
               [style.min-width.em]="isValidAudio ? 10 : 5"
               [style.max-width.em]="isValidAudio ? 20 : 5"
-              [(ngModel)]="cutInAudioIdentifier" 
-              [ngClass]="{'not-specified': cutInAudioIdentifier == ''}" 
+              [(ngModel)]="cutInAudioIdentifier"
+              [ngClass]="{'not-specified': cutInAudioIdentifier == ''}"
               [attr.disabled]="cutInIsVideo || !isEditable || isPlaying ? '' : null"
               (change)="onAudioFileChange(audioSelect.value)">
               <option value="" class="not-specified">効果音無</option>
-              <option style="color: black" *ngFor="let audio of audios" value="{{audio.identifier}}">{{ audio.name }}</option>
+              @for (audio of audios; track audio) {
+                <option style="color: black" value="{{audio.identifier}}">{{ audio.name }}</option>
+              }
             </select>
-            <ng-container *ngIf="isEditable && this.cutInAudioFileName.length > 0">
-              <span *ngIf="isValidAudio" style="margin-left: 0.6em"><i class="material-icons" style="font-size: 14px">check</i> <span style="color: blue">Link OK</span></span>
-              <span *ngIf="!isValidAudio" style="margin-left: 0.6em; color: red; display:inline-block; white-space: nowrap; max-width: 20em; overflow: hidden; text-overflow: ellipsis"><i class="material-icons"></i><span style="font-weight: bolder">⚠️Link NG:</span> {{ this.cutInAudioFileName }}</span>
-            </ng-container>
+            @if (isEditable && this.cutInAudioFileName.length > 0) {
+              @if (isValidAudio) {
+                <span style="margin-left: 0.6em"><i class="material-icons" style="font-size: 14px">check</i> <span style="color: blue">Link OK</span></span>
+              }
+              @if (!isValidAudio) {
+                <span style="margin-left: 0.6em; color: red; display:inline-block; white-space: nowrap; max-width: 20em; overflow: hidden; text-overflow: ellipsis"><i class="material-icons"></i><span style="font-weight: bolder">⚠️Link NG:</span> {{ this.cutInAudioFileName }}</span>
+              }
+            }
           </div>
           <div style="padding-left: 1em">
             <input type="radio" name="{{panelId}}-media" id="{{panelId}}-media-video" [(ngModel)]="cutInIsVideo" [checked]="cutInIsVideo" [value]="true" [disabled]="!isEditable || isPlaying ? '' : null">
@@ -179,31 +199,33 @@
       </div>
       <hr/>
       <div>
-        <ng-container *ngIf="!isDeleted">
+        @if (!isDeleted) {
           <button (click)="upTabIndex()">↑</button>
           <button (click)="downTabIndex()">↓</button>
           <div style="float: right">
             <button [disabled]="isSaveing" (click)="save()">
               <div style="position: relative;">
                 <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
-                <div *ngIf="isSaveing" class="progress">{{progresPercent}}%</div>
+                @if (isSaveing) {
+                  <div class="progress">{{progresPercent}}%</div>
+                }
               </div>
             </button>
             <button class="danger" (click)="delete()">刪除</button>
           </div>
-        </ng-container>
-        <ng-container *ngIf="isDeleted && selectedCutInXml">
+        }
+        @if (isDeleted && selectedCutInXml) {
           <button (click)="restore()">還原</button>
-        </ng-container>
+        }
       </div>
-    </ng-container>
+    }
   </div>
 </div>
-<ng-container *ngIf="isEmpty">
+@if (isEmpty) {
   <div style="font-size: 12px;">
     ※目前沒有插圖。
-    <ng-container *ngIf="isDeleted && selectedCutInXml">
+    @if (isDeleted && selectedCutInXml) {
       <button (click)="restore()">還原</button>
-    </ng-container>
+    }
   </div>
-</ng-container>
+}

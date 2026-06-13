@@ -5,16 +5,22 @@
   <div @slidInOut class="is-3d">
     <div class="component-content is-pointer-events-auto is-3d"
       appRotable [rotable.option]="rotableOption" [rotable.disable]="isLocked" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()">
-      <img #cardImage [@inverse]="state" *ngIf="imageFile" (load)="onImageLoad()" class="card-image is-3d chrome-smooth-image-trick" [src]="(isFront ? frontImage.url : backImage.url) | safe: 'resourceUrl'">
+      @if (imageFile) {
+        <img #cardImage [@inverse]="state" (load)="onImageLoad()" class="card-image is-3d chrome-smooth-image-trick" [src]="(isFront ? frontImage.url : backImage.url) | safe: 'resourceUrl'">
+      }
       <div [style.opacity]="!isFront ? 0.8 : 1.0" [style.transform]="!isFront ? 'scale(0.9)' : ''" class="is-3d is-pointer-events-none" style="position: absolute"
         [style.top.px]="textDivTopPixcel" [style.width.px]="size * gridSize" [style.height]="textDivHeightCss">
-        <img #translucentImage *ngIf="!isFront && (isHand || isGMMode) && frontImage" @flipOpen (load)="onImageLoad()" 
-          class="card-image is-3d chrome-smooth-image-trick" [src]="frontImage.url | safe: 'resourceUrl'">
-        <div *ngIf="isFront || isHand || isGMMode" @flipOpen style="position: absolute" class="card-image text is-3d">
-          <div [@inverse]="state" [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" class="is-3d" [innerHTML]="rubiedText | safe: 'html'"></div>
-        </div>
+        @if (!isFront && (isHand || isGMMode) && frontImage) {
+          <img #translucentImage @flipOpen (load)="onImageLoad()"
+            class="card-image is-3d chrome-smooth-image-trick" [src]="frontImage.url | safe: 'resourceUrl'">
+        }
+        @if (isFront || isHand || isGMMode) {
+          <div @flipOpen style="position: absolute" class="card-image text is-3d">
+            <div [@inverse]="state" [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" class="is-3d" [innerHTML]="rubiedText | safe: 'html'"></div>
+          </div>
+        }
       </div>
-      <ng-container *ngIf="!isIconHidden">
+      @if (!isIconHidden) {
         <div class="rotate-grab of-left-top is-3d">
           <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
         </div>
@@ -28,11 +34,15 @@
           <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
         </div>
         <div class="border-bg is-pointer-events-none is-3d"></div>
-      </ng-container>
-      <div *ngIf="!isFront && ownerIsOnline && 0 < ownerName.length" class="name-tag is-nowrap has-length-limit is-pointer-events-none is-black-background is-3d" [ngStyle]="{'background-color': ownerColor, 'transform': 'translateY(' + (isHand ? 'calc(' + -backImageClientHeight / 2 + 'px - 75%)' : '-50%') + ') translateX(-50%) translateX(' + size * gridSize / 2 +'px)'}">
-        <span class="is-3d" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}"><b>{{ownerName}}</b></span>
-      </div>
-      <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+      }
+      @if (!isFront && ownerIsOnline && 0 < ownerName.length) {
+        <div class="name-tag is-nowrap has-length-limit is-pointer-events-none is-black-background is-3d" [ngStyle]="{'background-color': ownerColor, 'transform': 'translateY(' + (isHand ? 'calc(' + -backImageClientHeight / 2 + 'px - 75%)' : '-50%') + ') translateX(-50%) translateX(' + size * gridSize / 2 +'px)'}">
+          <span class="is-3d" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}"><b>{{ownerName}}</b></span>
+        </div>
+      }
+      @if (isSelected) {
+        <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+      }
     </div>
   </div>
 </div>

@@ -29,26 +29,27 @@ import { DiceSymbol } from '@udonarium/dice-symbol';
 import { RangeArea } from '@udonarium/range';
 
 @Component({
-  selector: 'overview-panel',
-  templateUrl: './overview-panel.component.html',
-  styleUrls: ['./overview-panel.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('fadeInOut', [
-      transition('void => *', [
-        animate('100ms ease-out', keyframes([
-          style({ opacity: 0, offset: 0 }),
-          style({ opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('100ms ease-in', keyframes([
-          style({ opacity: 1, offset: 0 }),
-          style({ opacity: 0, offset: 1.0 })
-        ]))
-      ])
-    ])
-  ]
+    selector: 'overview-panel',
+    templateUrl: './overview-panel.component.html',
+    styleUrls: ['./overview-panel.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('fadeInOut', [
+            transition('void => *', [
+                animate('100ms ease-out', keyframes([
+                    style({ opacity: 0, offset: 0 }),
+                    style({ opacity: 1, offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('100ms ease-in', keyframes([
+                    style({ opacity: 1, offset: 0 }),
+                    style({ opacity: 0, offset: 1.0 })
+                ]))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('draggablePanel', { static: true }) draggablePanel: ElementRef<HTMLElement>;

@@ -74,18 +74,22 @@
           </label>
         </a>
       </li>
-      <li *ngIf="!isSaveing" (click)="save()">
-        <a routerLink="/" routerLinkActive="active">
-          <div><i class="material-icons">sd_storage</i></div>
-          <div>儲存</div>
-        </a>
-      </li>
-      <li *ngIf="isSaveing" style="pointer-events: none;">
-        <a>
-          <div><i class="material-icons vibration-amine">sd_storage</i></div>
-          <div>{{progresPercent}}%</div>
-        </a>
-      </li>
+      @if (!isSaveing) {
+        <li (click)="save()">
+          <a routerLink="/" routerLinkActive="active">
+            <div><i class="material-icons">sd_storage</i></div>
+            <div>儲存</div>
+          </a>
+        </li>
+      }
+      @if (isSaveing) {
+        <li style="pointer-events: none;">
+          <a>
+            <div><i class="material-icons vibration-amine">sd_storage</i></div>
+            <div>{{progresPercent}}%</div>
+          </a>
+        </li>
+      }
       <li (click)="logout()">
         <a routerLink="/" routerLinkActive="active">
           <label>
@@ -100,7 +104,9 @@
 </ui-panel>
 <div #modalLayer></div>
 <network-indicator class="networkIndicator"></network-indicator>
-<div *ngIf="imageUrl" class="image-view-background is-fill" (click)="closeImagePreview()" [@fadeInOut]="'in'">
-  <div class="close-button is-pointer-events-none" style="z-index: 10"><i class="material-icons">close</i></div>
-  <img class="contain-image" [src]="imageUrl | safe: 'resourceUrl'" draggable="false" />
-</div>
+@if (imageUrl) {
+  <div class="image-view-background is-fill" (click)="closeImagePreview()" [@fadeInOut]="'in'">
+    <div class="close-button is-pointer-events-none" style="z-index: 10"><i class="material-icons">close</i></div>
+    <img class="contain-image" [src]="imageUrl | safe: 'resourceUrl'" draggable="false" />
+  </div>
+}

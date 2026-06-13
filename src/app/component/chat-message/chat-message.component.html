@@ -4,83 +4,129 @@
     [style.border-right-color]="chatMessage.isSystem && !(chatMessage.isDicebot || chatMessage.isCalculate) ? '#444444' : chatMessage.color"
     [ngClass]="{'is-left': isLeft, 'is-right': !isLeft, 'direct-message': (chatMessage.isDirect || chatMessage.isSecret), 'system-message': chatMessage.isSystem, 'dicebot-message': (chatMessage.isDicebot || chatMessage.isCalculate), 'operation-log': chatMessage.isOperationLog}"
     [@flyInOut]="isLeft ? null : 'active'" [@flyInOutMe]="!isLeft ? null : 'active'">
-    <ng-container *ngIf="!isCompact && isLeft">
+    @if (!isCompact && isLeft) {
       <ng-container *ngTemplateOutlet="image"></ng-container>
-    </ng-container>
+    }
     <div class="body" [style.justify-content]="isCompact && !isLeft ? 'flex-end' : 'flex-start'">
-      <ng-container *ngIf="!isCompact || isLeft">
+      @if (!isCompact || isLeft) {
         <ng-container *ngTemplateOutlet="title"></ng-container>
-      </ng-container>
+      }
       <div class="text msg-text" [style.flex-grow]="isCompact && !isEditing ? 0 : 1" [ngClass]="{ 'is-success': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isSuccess, 'is-failure': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isFailure, 'is-critical': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isCritical, 'is-fumble': (!chatMessage.isSecret || chatMessage.isSendFromSelf) && chatMessage.isFumble }">
-        <ng-container *ngIf="!chatMessage.isSecret || chatMessage.isSendFromSelf || isGMMode; then visible; else secret"></ng-container>
+        @if (!chatMessage.isSecret || chatMessage.isSendFromSelf || isGMMode) {
+          @if (isEditing) {
+            <div style="position: relative">
+              <span aria-hidden="true" style="visibility: hidden; display: inline-block">{{ lastNewLineAdjust(editingText) }}</span>
+              <textarea #edit [(ngModel)]="editingText" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%" (keydown.enter)="editEnd($event)" (keydown.escape)="editCancel()"></textarea>
+            </div>
+          }
+          <div [style.display]="isEditing ? 'none' : 'block'">
+            <span style="display: inline-block">
+              <span [style.color]="!chatMessage.isSpecialColor && chatMessage.color && chatMessage.color != '#ffffff' ? chatMessage.color : ''"
+              [innerHTML]="htmlEscapedText | safe: 'html'" (click)="onLinkClick($event)"></span>
+              @if (!isEditing && chatMessage.isEdited) {
+                <span class="is-edited"><b style="white-space: nowrap">編集済</b> {{chatMessage.lastUpdate | date:'M/d H:mm'}}</span>
+              }
+              @if (chatMessage.isSecret) {
+                <button (click)="discloseMessage()" style="padding-top: 1px; padding-bottom: 1px; margin-left: 3px;">公開結果</button>
+              }
+            </span>
+          </div>
+        } @else {
+          <span><s>（秘密擲骰）</s></span>
+        }
       </div>
-      <div *ngIf="isEditable && isCompact">
-        <ng-container *ngTemplateOutlet="editor"></ng-container>
-      </div>
-      <ng-container *ngIf="isCompact && !isLeft">
+      @if (isEditable && isCompact) {
+        <div>
+          <ng-container *ngTemplateOutlet="editor"></ng-container>
+        </div>
+      }
+      @if (isCompact && !isLeft) {
         <ng-container *ngTemplateOutlet="title"></ng-container>
-      </ng-container>
+      }
     </div>
-    <ng-container *ngIf="!isCompact && !isLeft">
+    @if (!isCompact && !isLeft) {
       <ng-container *ngTemplateOutlet="image"></ng-container>
-    </ng-container>
+    }
   </div>
 </div>
 <ng-template #image>
   <div class="image" [ngClass]="{inverse: chatMessage.isInverseIcon == 1, hollow: chatMessage.isHollowIcon == 1}">
     <span class="aura" [ngClass]="{black: chatMessage.aura == 0, blue: chatMessage.aura == 1, green: chatMessage.aura == 2, cyan: chatMessage.aura == 3, red: chatMessage.aura == 4, magenta: chatMessage.aura == 5, yellow: chatMessage.aura == 6, white: chatMessage.aura == 7}">
-      <img draggable="false" *ngIf="0 < imageFile?.url?.length" [src]="imageFile?.url | safe: 'resourceUrl'" [ngClass]="{'black-paint': chatMessage.isBlackPaint == 1, 'face-icon': chatMessage.isFaceIcon }" />
+      @if (0 < imageFile?.url?.length) {
+        <img draggable="false" [src]="imageFile?.url | safe: 'resourceUrl'" [ngClass]="{'black-paint': chatMessage.isBlackPaint == 1, 'face-icon': chatMessage.isFaceIcon }" />
+      }
     </span>
   </div>
 </ng-template>
 <ng-template #title>
   <div class="title">
-    <ng-container *ngIf="isCompact && !isLeft && chatMessage.timestamp">
+    @if (isCompact && !isLeft && chatMessage.timestamp) {
       <span class='tip msg-timestamp'>{{chatMessage.timestamp | date:'H:mm'}}</span>
-    </ng-container>
+    }
     <span class="msg-name">
-      <ng-container *ngIf="!isMine && chatMessage.toColor && isGMMode"> 
-        <img draggable="false" class="mini-icon" *ngIf="0 < toImageFile?.url?.length" [src]="toImageFile?.url | safe: 'resourceUrl'" 
-        /><span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}<ng-container *ngIf="chatMessage.isSendToMe">（你）</ng-container></span>
+      @if (!isMine && chatMessage.toColor && isGMMode) {
+        @if (0 < toImageFile?.url?.length) {
+          <img draggable="false" class="mini-icon" [src]="toImageFile?.url | safe: 'resourceUrl'"
+            />
+          }<span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}@if (chatMessage.isSendToMe) {
+          （你）
+        }</span>
         <span style="display: inline-block; margin: 0px 6px; user-select: none; transform: rotateY(180deg)">➡</span>
-      </ng-container>
+      }
       <span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.color && chatMessage.color != '#ffffff' ? chatMessage.color : ''">{{chatMessage.name}}</span>
-      <ng-container *ngIf="isMine && chatMessage.toColor">
+      @if (isMine && chatMessage.toColor) {
         <span style="display: inline-block; margin: 0px 6px; user-select: none">➡</span>
-        <img draggable="false" class="mini-icon" *ngIf="0 < toImageFile?.url?.length" [src]="toImageFile?.url | safe: 'resourceUrl'" 
-        /><span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}<ng-container *ngIf="chatMessage.isSendToMe">（你）</ng-container></span>
-      </ng-container>
+        @if (0 < toImageFile?.url?.length) {
+          <img draggable="false" class="mini-icon" [src]="toImageFile?.url | safe: 'resourceUrl'"
+            />
+          }<span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}@if (chatMessage.isSendToMe) {
+          （你）
+        }</span>
+      }
     </span>
-    <ng-container *ngIf="!isCompact || isLeft">
-      <span *ngIf="!isCompact" class='tip msg-from' [innerHTML]="htmlEscapedFrom | safe: 'html'" (click)="onLinkClick($event)"></span>
-      <span *ngIf="!isCompact && chatMessage.timestamp" class='tip msg-timestamp'>{{chatMessage.timestamp | date:'y/M/d H:mm'}}</span>
-      <span *ngIf="isCompact && chatMessage.timestamp" class='tip msg-timestamp'>{{chatMessage.timestamp | date:'H:mm'}}</span>
-      <ng-container *ngIf="!(isEditable && !isCompact); else editor"></ng-container>
-    </ng-container>
+    @if (!isCompact || isLeft) {
+      @if (!isCompact) {
+        <span class='tip msg-from' [innerHTML]="htmlEscapedFrom | safe: 'html'" (click)="onLinkClick($event)"></span>
+      }
+      @if (!isCompact && chatMessage.timestamp) {
+        <span class='tip msg-timestamp'>{{chatMessage.timestamp | date:'y/M/d H:mm'}}</span>
+      }
+      @if (isCompact && chatMessage.timestamp) {
+        <span class='tip msg-timestamp'>{{chatMessage.timestamp | date:'H:mm'}}</span>
+      }
+      @if (!(isEditable && !isCompact)) {
+      } @else {
+        <span class="edit-buttons" style="margin-left: 4px; white-space: nowrap">
+          @if (!isEditing) {
+            <button class="edit-button" (click)="editStart()" title="編集"><i class="material-icons small-font">edit</i></button>
+          }
+          @if (!isEditing) {
+            <button class="edit-button" aria-hidden="true" style="visibility: hidden"><i class="material-icons small-font">clear</i></button>
+          }
+          @if (isEditing) {
+            <button class="edit-button" [disabled]="editingText.trim().length == 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
+          }
+          @if (isEditing) {
+            <button class="edit-button" (click)="editCancel()" title="取消"><i class="material-icons small-font">clear</i></button>
+          }
+        </span>
+      }
+    }
   </div>
-</ng-template>
-<ng-template #visible>
-  <div *ngIf="isEditing" style="position: relative">
-    <span aria-hidden="true" style="visibility: hidden; display: inline-block">{{ lastNewLineAdjust(editingText) }}</span>
-    <textarea #edit [(ngModel)]="editingText" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%" (keydown.enter)="editEnd($event)" (keydown.escape)="editCancel()"></textarea>
-  </div>
-  <div [style.display]="isEditing ? 'none' : 'block'">
-    <span style="display: inline-block">
-      <span [style.color]="!chatMessage.isSpecialColor && chatMessage.color && chatMessage.color != '#ffffff' ? chatMessage.color : ''" 
-        [innerHTML]="htmlEscapedText | safe: 'html'" (click)="onLinkClick($event)"></span>
-      <span *ngIf="!isEditing && chatMessage.isEdited" class="is-edited"><b style="white-space: nowrap">編集済</b> {{chatMessage.lastUpdate | date:'M/d H:mm'}}</span>
-      <button *ngIf="chatMessage.isSecret" (click)="discloseMessage()" style="padding-top: 1px; padding-bottom: 1px; margin-left: 3px;">公開結果</button>
-    </span>
-  </div>
-</ng-template>
-<ng-template #secret>
-  <span><s>（秘密擲骰）</s></span>
 </ng-template>
 <ng-template #editor>
   <span class="edit-buttons" style="margin-left: 4px; white-space: nowrap">
-    <button *ngIf="!isEditing" class="edit-button" (click)="editStart()" title="編集"><i class="material-icons small-font">edit</i></button>
-    <button *ngIf="!isEditing" class="edit-button" aria-hidden="true" style="visibility: hidden"><i class="material-icons small-font">clear</i></button>
-    <button *ngIf="isEditing" class="edit-button" [disabled]="editingText.trim().length == 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
-    <button *ngIf="isEditing" class="edit-button" (click)="editCancel()" title="取消"><i class="material-icons small-font">clear</i></button>
+    @if (!isEditing) {
+      <button class="edit-button" (click)="editStart()" title="編集"><i class="material-icons small-font">edit</i></button>
+    }
+    @if (!isEditing) {
+      <button class="edit-button" aria-hidden="true" style="visibility: hidden"><i class="material-icons small-font">clear</i></button>
+    }
+    @if (isEditing) {
+      <button class="edit-button" [disabled]="editingText.trim().length == 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
+    }
+    @if (isEditing) {
+      <button class="edit-button" (click)="editCancel()" title="取消"><i class="material-icons small-font">clear</i></button>
+    }
   </span>
 </ng-template>

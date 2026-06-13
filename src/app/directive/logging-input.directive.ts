@@ -18,7 +18,8 @@ interface LoggingValue {
 };
 
 @Directive({
-  selector: '[appLogging]'
+    selector: '[appLogging]',
+    standalone: false
 })
 export class LoggingInputDirective implements AfterViewInit, OnDestroy {
   @Input('logging.disable') isDisable: boolean = false;

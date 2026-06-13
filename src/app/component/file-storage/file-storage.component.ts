@@ -17,35 +17,36 @@ import { AppComponent } from 'src/app/app.component';
 import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
-  selector: 'file-storage',
-  templateUrl: './file-storage.component.html',
-  styleUrls: ['./file-storage.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('scaleInOut', [
-      transition('void => *', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('180ms ease', style({ transform: 'scale3d(0, 0, 0)' }))
-      ])
-    ]),
-    trigger('fadeAndUpInOut', [
-      transition('void => *', [
-        animate('100ms ease-in-out', keyframes([
-          style({ 'transform-origin': 'center bottom', transform: 'translateY(8px) scaleY(0)', opacity: 0.6 }),
-          style({ 'transform-origin': 'center bottom', transform: 'translateY(0px) scaleY(1.0)', opacity: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('100ms ease-in-out', style({ 'transform-origin': 'center bottom', transform: 'translateY(0px) scaleY(1.0)', opacity: 1.0 })),
-        animate('100ms ease-in-out', style({ 'transform-origin': 'center bottom', transform: 'translateY(8px) scaleY(0)', opacity: 0.6 }))
-      ])
-    ])
-  ]
+    selector: 'file-storage',
+    templateUrl: './file-storage.component.html',
+    styleUrls: ['./file-storage.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('scaleInOut', [
+            transition('void => *', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('180ms ease', style({ transform: 'scale3d(0, 0, 0)' }))
+            ])
+        ]),
+        trigger('fadeAndUpInOut', [
+            transition('void => *', [
+                animate('100ms ease-in-out', keyframes([
+                    style({ 'transform-origin': 'center bottom', transform: 'translateY(8px) scaleY(0)', opacity: 0.6 }),
+                    style({ 'transform-origin': 'center bottom', transform: 'translateY(0px) scaleY(1.0)', opacity: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('100ms ease-in-out', style({ 'transform-origin': 'center bottom', transform: 'translateY(0px) scaleY(1.0)', opacity: 1.0 })),
+                animate('100ms ease-in-out', style({ 'transform-origin': 'center bottom', transform: 'translateY(8px) scaleY(0)', opacity: 0.6 }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   panelId;

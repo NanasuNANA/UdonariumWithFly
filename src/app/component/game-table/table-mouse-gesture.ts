@@ -146,7 +146,7 @@ export class TableMouseGesture {
       case Keyboard.ArrowUp:
         if (ev.shiftKey) {
           rotateX = -2;
-        } else if (ev.ctrlKey) {
+        } else if (ev.ctrlKey || ev.altKey) {
           transformZ = 150;
         } else {
           transformY = 10;
@@ -162,7 +162,7 @@ export class TableMouseGesture {
       case Keyboard.ArrowDown:
         if (ev.shiftKey) {
           rotateX = 2;
-        } else if (ev.ctrlKey) {
+        } else if (ev.ctrlKey || ev.altKey) {
           transformZ = -150;
         } else {
           transformY = -10;

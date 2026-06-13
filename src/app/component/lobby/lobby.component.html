@@ -1,32 +1,43 @@
-<div *ngIf="!isConnected;else other_content">
-  <button (click)="reload()" [disabled]="isReloading"><i class="material-icons" style="display: inline-block; margin-right: 2px">refresh</i>重新整理列表</button>
-  <button (click)="showRoomSetting()"><i class="material-icons" style="display: inline-block; margin-right: 2px">room_preferences</i>建立新房間</button>
-  <hr/>
-  <ng-container *ngIf="rooms.length">
-    <table class="room-list">
-      <tr>
-        <th class="is-0-width is-small-font">房間ID</th>
-        <th class="is-small-font">房間名稱</th>
-        <th class="is-0-width is-small-font">密碼</th>
-        <th class="is-0-width is-small-font">參加者</th>
-        <th class="is-0-width is-small-font"></th>
-      </tr>
-      <ng-container *ngFor="let room of rooms">
+@if (!isConnected) {
+  <div>
+    <button (click)="reload()" [disabled]="isReloading"><i class="material-icons" style="display: inline-block; margin-right: 2px">refresh</i>重新整理列表</button>
+    <button (click)="showRoomSetting()"><i class="material-icons" style="display: inline-block; margin-right: 2px">room_preferences</i>建立新房間</button>
+    <hr/>
+    @if (rooms.length) {
+      <table class="room-list">
         <tr>
-          <td class="room-id">{{room.id}}</td>
-          <td class="room-name"><div class="room-name-text">{{room.name}}</div></td>
-          <td *ngIf="room.hasPassword">
-            <i class="material-icons" style="vertical-align: middle; font-size:0.9rem;">lock</i>
-          </td>
-          <td *ngIf="!room.hasPassword">-</td>
-          <td>{{room.peers.length}}人</td>
-          <td>
-            <button [disabled]="room.id === currentRoom" *ngIf="0 < room.id.length" type="submit" (click)="connect(room)">連線</button>
-          </td>
+          <th class="is-0-width is-small-font">房間ID</th>
+          <th class="is-small-font">房間名稱</th>
+          <th class="is-0-width is-small-font">密碼</th>
+          <th class="is-0-width is-small-font">參加者</th>
+          <th class="is-0-width is-small-font"></th>
         </tr>
-      </ng-container>
-    </table>
-  </ng-container>
-  <span *ngIf="rooms.length < 1" style="font-size: 12px;">{{help}}</span>
-</div>
-<ng-template #other_content><span style="font-size: 12px;">如需連線其他房間，請先與所有參加者斷線。<br>（※可從選單退出/斷線。）</span></ng-template>
+        @for (room of rooms; track room) {
+          <tr>
+            <td class="room-id">{{room.id}}</td>
+            <td class="room-name"><div class="room-name-text">{{room.name}}</div></td>
+            @if (room.hasPassword) {
+              <td>
+                <i class="material-icons" style="vertical-align: middle; font-size:0.9rem;">lock</i>
+              </td>
+            }
+            @if (!room.hasPassword) {
+              <td>-</td>
+            }
+            <td>{{room.peers.length}}人</td>
+            <td>
+              @if (0 < room.id.length) {
+                <button [disabled]="room.id === currentRoom" type="submit" (click)="connect(room)">連線</button>
+              }
+            </td>
+          </tr>
+        }
+      </table>
+    }
+    @if (rooms.length < 1) {
+      <span style="font-size: 12px;">{{help}}</span>
+    }
+  </div>
+} @else {
+  <span style="font-size: 12px;">如需連線其他房間，請先與所有參加者斷線。<br>（※可從選單退出/斷線。）</span>
+}

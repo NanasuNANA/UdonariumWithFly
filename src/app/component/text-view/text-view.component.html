@@ -1,3 +1,11 @@
-<span *ngIf="!isObj(text)"><pre class="text">{{text}}</pre></span>
-<span *ngIf="isObj(text)"><pre class="text" *ngFor="let t of text; let l = last"><span #message 
-    [innerHTML]="textShadwing(htmlEscapeLinking(t)) | safe: 'html'" (click)="onLinkClick($event)"></span><hr *ngIf="!l"></pre></span>
+@if (!isObj(text)) {
+  <span><pre class="text">{{text}}</pre></span>
+}
+@if (isObj(text)) {
+  <span>@for (t of text; track t; let l = $last) {
+    <pre class="text"><span #message
+    [innerHTML]="textShadwing(htmlEscapeLinking(t)) | safe: 'html'" (click)="onLinkClick($event)"></span>@if (!l) {
+    <hr>
+    }</pre>
+  }</span>
+}

@@ -33,64 +33,65 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 
 @Component({
-  selector: 'game-character',
-  templateUrl: './game-character.component.html',
-  styleUrls: ['./game-character.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('switchImage', [
-      transition(':increment, :decrement', [
-        animate('400ms ease', keyframes([
-          style({ transform: 'scale3d(0.8, 0.8, 0.8) rotateY(0deg)' }),
-          style({ transform: 'scale3d(1.2, 1.2, 1.2) rotateY(180deg)' }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0) rotateY(360deg)' })
-        ]))
-      ])
-    ]),
-    trigger('switchImageShadow', [
-      transition(':increment, :decrement', [
-        animate('400ms ease', keyframes([
-          style({ transform: 'scale3d(0.8, 0.8, 0.8)' }),
-          style({ transform: 'scale3d(0, 1.2, 1.2)' }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
-        ]))
-      ])
-    ]),
-    trigger('switchImagePedestal', [
-      transition(':increment, :decrement', [
-        animate('400ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)' }),
-          style({ transform: 'scale3d(1.2, 1.2, 1.2)' }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
-        ]))
-      ])
-    ]),
-    trigger('bounceInOut', [
-      transition('void => *', [
-        animate('600ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
-          style({ transform: 'scale3d(1.5, 1.5, 1.5)', offset: 0.5 }),
-          style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.75 }),
-          style({ transform: 'scale3d(1.125, 1.125, 1.125)', offset: 0.875 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ transform: 'scale3d(0, 0, 0)' }))
-      ])
-    ]),
-    trigger('fadeAndScaleInOut', [
-      transition('void => *, true => false', [
-        animate('200ms ease-in-out', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', opacity: 0  }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', opacity: 0.8 }),
-        ]))
-      ]),
-      transition('* => void, true => false', [
-        animate('100ms ease-in-out', style({ transform: 'scale3d(0, 0, 0)', opacity: 0 }))
-      ])
-    ])
-  ]
+    selector: 'game-character',
+    templateUrl: './game-character.component.html',
+    styleUrls: ['./game-character.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('switchImage', [
+            transition(':increment, :decrement', [
+                animate('400ms ease', keyframes([
+                    style({ transform: 'scale3d(0.8, 0.8, 0.8) rotateY(0deg)' }),
+                    style({ transform: 'scale3d(1.2, 1.2, 1.2) rotateY(180deg)' }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0) rotateY(360deg)' })
+                ]))
+            ])
+        ]),
+        trigger('switchImageShadow', [
+            transition(':increment, :decrement', [
+                animate('400ms ease', keyframes([
+                    style({ transform: 'scale3d(0.8, 0.8, 0.8)' }),
+                    style({ transform: 'scale3d(0, 1.2, 1.2)' }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
+                ]))
+            ])
+        ]),
+        trigger('switchImagePedestal', [
+            transition(':increment, :decrement', [
+                animate('400ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)' }),
+                    style({ transform: 'scale3d(1.2, 1.2, 1.2)' }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
+                ]))
+            ])
+        ]),
+        trigger('bounceInOut', [
+            transition('void => *', [
+                animate('600ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
+                    style({ transform: 'scale3d(1.5, 1.5, 1.5)', offset: 0.5 }),
+                    style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.75 }),
+                    style({ transform: 'scale3d(1.125, 1.125, 1.125)', offset: 0.875 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ transform: 'scale3d(0, 0, 0)' }))
+            ])
+        ]),
+        trigger('fadeAndScaleInOut', [
+            transition('void => *, true => false', [
+                animate('200ms ease-in-out', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', opacity: 0 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', opacity: 0.8 }),
+                ]))
+            ]),
+            transition('* => void, true => false', [
+                animate('100ms ease-in-out', style({ transform: 'scale3d(0, 0, 0)', opacity: 0 }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() gameCharacter: GameCharacter = null;

@@ -26,40 +26,41 @@ import { PointerDeviceService } from 'service/pointer-device.service';
 import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
-  selector: 'game-object-inventory',
-  templateUrl: './game-object-inventory.component.html',
-  styleUrls: ['./game-object-inventory.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('SlideInOut', [
-      transition('void => *', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'translateX(60px)', opacity: 0, offset: 0 }),
-          style({ transform: 'translateX(0px)', opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'translateX(0px)', opacity: 1, offset: 0 }),
-          style({ transform: 'translateX(60px)', opacity: 0, offset: 1.0 })
-        ]))
-      ]),
-      /*
-      transition(':increment', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'translateY(-150px)', opacity: 0, offset: 0 }),
-          style({ transform: 'translateY(0px)', opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      transition(':decrement', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'translateY(150px)', opacity: 0, offset: 0 }),
-          style({ transform: 'translateY(0px)', opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      */
-    ])
-  ]
+    selector: 'game-object-inventory',
+    templateUrl: './game-object-inventory.component.html',
+    styleUrls: ['./game-object-inventory.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('SlideInOut', [
+            transition('void => *', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'translateX(60px)', opacity: 0, offset: 0 }),
+                    style({ transform: 'translateX(0px)', opacity: 1, offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'translateX(0px)', opacity: 1, offset: 0 }),
+                    style({ transform: 'translateX(60px)', opacity: 0, offset: 1.0 })
+                ]))
+            ]),
+            /*
+            transition(':increment', [
+              animate('200ms ease', keyframes([
+                style({ transform: 'translateY(-150px)', opacity: 0, offset: 0 }),
+                style({ transform: 'translateY(0px)', opacity: 1, offset: 1.0 })
+              ]))
+            ]),
+            transition(':decrement', [
+              animate('200ms ease', keyframes([
+                style({ transform: 'translateY(150px)', opacity: 0, offset: 0 }),
+                style({ transform: 'translateY(0px)', opacity: 1, offset: 1.0 })
+              ]))
+            ]),
+            */
+        ])
+    ],
+    standalone: false
 })
 export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   inventoryTypes: string[] = ['table', 'common', 'graveyard'];

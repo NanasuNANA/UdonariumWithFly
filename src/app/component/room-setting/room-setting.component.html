@@ -1,33 +1,40 @@
-<div *ngIf="!isConnected;else other_content">
-  <div>房間名稱 : <input #input class="input" (input)="calcPeerId(input.value, password)" [(ngModel)]="roomName" required minlength="1" maxlength="128" #roomNameValidation="ngModel"
-      placeholder="房間名稱為必填" /></div>
-  <div>密碼: <input #input class="input" (input)="calcPeerId(roomName, input.value)" [(ngModel)]="password" maxlength="12" #passwordValidation="ngModel" placeholder="留空表示無密碼"
-    /></div>
-  <hr/>
-  <div *ngIf="roomNameValidation.errors && (roomNameValidation.dirty || roomNameValidation.touched)">
-    <div [hidden]="!roomNameValidation.errors.required">
-      房間名稱為必填。
-    </div>
-    <div [hidden]="!roomNameValidation.errors.minlength">
-      房間名稱為必填。
-    </div>
-    <div [hidden]="!roomNameValidation.errors.maxlength">
-      房間名稱長度請在128個字元以內。
-    </div>
-  </div>
-  <div *ngIf="passwordValidation.errors && (passwordValidation.dirty || passwordValidation.touched)">
-    <div [hidden]="!passwordValidation.errors.maxlength">
-      密碼長度請在12個字元以內。
-    </div>
-  </div>
-  <div *ngIf="!validateLength">
-    房間名稱與密碼的總長度過長，請縮短其中一項。
-  </div>
+@if (!isConnected) {
   <div>
-    <button [disabled]="!roomNameValidation.valid || !passwordValidation.valid || !validateLength" (click)="createRoom()">建立新房間</button>
+    <div>房間名稱 : <input #input class="input" (input)="calcPeerId(input.value, password)" [(ngModel)]="roomName" required minlength="1" maxlength="128" #roomNameValidation="ngModel"
+    placeholder="房間名稱為必填" /></div>
+    <div>密碼: <input #input class="input" (input)="calcPeerId(roomName, input.value)" [(ngModel)]="password" maxlength="12" #passwordValidation="ngModel" placeholder="留空表示無密碼"
+    /></div>
+    <hr/>
+    @if (roomNameValidation.errors && (roomNameValidation.dirty || roomNameValidation.touched)) {
+      <div>
+        <div [hidden]="!roomNameValidation.errors.required">
+          房間名稱為必填。
+        </div>
+        <div [hidden]="!roomNameValidation.errors.minlength">
+          房間名稱為必填。
+        </div>
+        <div [hidden]="!roomNameValidation.errors.maxlength">
+          房間名稱長度請在128個字元以內。
+        </div>
+      </div>
+    }
+    @if (passwordValidation.errors && (passwordValidation.dirty || passwordValidation.touched)) {
+      <div>
+        <div [hidden]="!passwordValidation.errors.maxlength">
+          密碼長度請在12個字元以內。
+        </div>
+      </div>
+    }
+    @if (!validateLength) {
+      <div>
+        房間名稱與密碼的總長度過長，請縮短其中一項。
+      </div>
+    }
+    <div>
+      <button [disabled]="!roomNameValidation.valid || !passwordValidation.valid || !validateLength" (click)="createRoom()">建立新房間</button>
+    </div>
   </div>
-</div>
-<div><span style="font-size: 12px;">※房間在參加者歸零時自動解散。如需保留房間狀態，請務必執行「儲存」。</span></div>
-<ng-template #other_content>
+} @else {
   <span style="font-size: 12px;">在與他人連線的狀態下無法建立房間。<br>如需連線其他房間，請先與所有參加者斷線。<br>（※可從選單退出/斷線。）</span>
-</ng-template>
+}
+<div><span style="font-size: 12px;">※房間在參加者歸零時自動解散。如需保留房間狀態，請務必執行「儲存」。</span></div>

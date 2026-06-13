@@ -1,16 +1,28 @@
 <!--<h2>チャットシステム</h2>-->
 <div class="component">
-<div class="log">
-  <chat-tab #chatTabComponemt *ngIf="chatTab" [chatTab]="chatTab" [compact]="isCompact" (onAddMessage)="scrollToBottom()"></chat-tab>
-  <div *ngIf="!chatTab">※聊天分頁內容已更新。請重新選擇聊天分頁或重新開啟此聊天視窗。</div>
-</div>
-<div class="sticky-bottom">
-  <form>
-    <div class="chat-tab">
-      <label *ngFor="let chatTab of chatMessageService.chatTabs; trackBy: trackByChatTab" class="tab">
-        <input name="chat-tab" type="radio" value="{{chatTab.identifier}}" ng-control="options" [(ngModel)]="chatTabidentifier">
-        <div><span [style.cursor]="chatTabidentifier != chatTab.identifier ? 'pointer' : ''" [style.color]="chatTab.name == '' && chatTabidentifier != chatTab.identifier ? 'gray' : ''">{{chatTab.name == '' ? '(無名分頁)' : chatTab.name}}</span><i *ngIf="chatTab.isUseStandImage" class="material-icons small-font">how_to_reg</i><i *ngIf="chatTab.recieveOperationLogLevel > 0" class="material-icons small-font">history_edu</i><badge *ngIf="chatTab.hasUnread" class="badge" [count]="chatTab.unreadLength"></badge></div>
-      </label>
+  <div class="log">
+    @if (chatTab) {
+      <chat-tab #chatTabComponemt [chatTab]="chatTab" [compact]="isCompact" (onAddMessage)="scrollToBottom()"></chat-tab>
+    }
+    @if (!chatTab) {
+      <div>※聊天分頁內容已更新。請重新選擇聊天分頁或重新開啟此聊天視窗。</div>
+    }
+  </div>
+  <div class="sticky-bottom">
+    <form>
+      <div class="chat-tab">
+        @for (chatTab of chatMessageService.chatTabs; track trackByChatTab($index, chatTab)) {
+          <label class="tab">
+            <input name="chat-tab" type="radio" value="{{chatTab.identifier}}" ng-control="options" [(ngModel)]="chatTabidentifier">
+            <div><span [style.cursor]="chatTabidentifier != chatTab.identifier ? 'pointer' : ''" [style.color]="chatTab.name == '' && chatTabidentifier != chatTab.identifier ? 'gray' : ''">{{chatTab.name == '' ? '(無名分頁)' : chatTab.name}}</span>@if (chatTab.isUseStandImage) {
+            <i class="material-icons small-font">how_to_reg</i>
+            }@if (chatTab.recieveOperationLogLevel > 0) {
+            <i class="material-icons small-font">history_edu</i>
+            }@if (chatTab.hasUnread) {
+            <badge class="badge" [count]="chatTab.unreadLength"></badge>
+          }</div>
+        </label>
+      }
       <button class="tab-setting small-font" (click)="showTabSetting()"><i class="material-icons small-font">settings</i>分頁</button>
       <button class="tab-setting small-font" (click)="showLogOutput()"><i class="material-icons small-font">history_edu</i>日誌</button>
       <!--

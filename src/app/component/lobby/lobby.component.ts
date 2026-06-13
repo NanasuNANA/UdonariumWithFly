@@ -11,9 +11,10 @@ import { ModalService } from 'service/modal.service';
 import { PanelService } from 'service/panel.service';
 
 @Component({
-  selector: 'lobby',
-  templateUrl: './lobby.component.html',
-  styleUrls: ['./lobby.component.css'],
+    selector: 'lobby',
+    templateUrl: './lobby.component.html',
+    styleUrls: ['./lobby.component.css'],
+    standalone: false
 })
 export class LobbyComponent implements OnInit, OnDestroy {
   rooms: IRoomInfo[] = [];

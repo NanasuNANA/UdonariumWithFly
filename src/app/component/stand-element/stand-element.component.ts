@@ -10,9 +10,10 @@ import { FileSelecterComponent } from 'component/file-selecter/file-selecter.com
 import { ModalService } from 'service/modal.service';
 
 @Component({
-  selector: 'stand-element',
-  templateUrl: './stand-element.component.html',
-  styleUrls: ['./stand-element.component.css']
+    selector: 'stand-element',
+    templateUrl: './stand-element.component.html',
+    styleUrls: ['./stand-element.component.css'],
+    standalone: false
 })
 export class StandElementComponent implements OnInit {
   @Input() standElement: DataElement = null;

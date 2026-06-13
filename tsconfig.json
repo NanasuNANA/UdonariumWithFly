@@ -8,18 +8,15 @@
     "declaration": false,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
     "noImplicitAny": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
     "paths": {
       "@udonarium/*": [
         "src/app/class/*"

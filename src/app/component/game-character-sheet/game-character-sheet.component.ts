@@ -26,56 +26,57 @@ import { RangeArea } from '@udonarium/range';
 import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
-  selector: 'game-character-sheet',
-  templateUrl: './game-character-sheet.component.html',
-  styleUrls: ['./game-character-sheet.component.css'],
-  animations: [
-    trigger('switchImage', [
-      transition(':increment, :decrement', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)' }),
-          style({ transform: 'scale3d(0, 1.2, 1.2)' }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
-        ]))
-      ])
-    ]),
-    trigger('showcase', [
-      transition(':increment, :decrement', [
-        animate('200ms 200ms ease-in', keyframes([
-          style({ transform: 'scale3d(0, 1.0, 1.0)' }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
-        ]))
-      ])
-    ]),
-    trigger('showcaseItem', [
-      transition(':enter', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)' }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
-        ]))
-      ]),
-      transition(':leave', [
-        animate('200ms ease', keyframes([
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)' }),
-          style({ transform: 'scale3d(0, 0, 0)' })
-        ]))
-      ]),
-    ]),
-    trigger('bounceInOut', [
-      transition('void => *', [
-        animate('600ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
-          style({ transform: 'scale3d(1.5, 1.5, 1.5)', offset: 0.5 }),
-          style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.75 }),
-          style({ transform: 'scale3d(1.125, 1.125, 1.125)', offset: 0.875 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ transform: 'scale3d(0, 0, 0)' }))
-      ])
-    ]),
-  ]
+    selector: 'game-character-sheet',
+    templateUrl: './game-character-sheet.component.html',
+    styleUrls: ['./game-character-sheet.component.css'],
+    animations: [
+        trigger('switchImage', [
+            transition(':increment, :decrement', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)' }),
+                    style({ transform: 'scale3d(0, 1.2, 1.2)' }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
+                ]))
+            ])
+        ]),
+        trigger('showcase', [
+            transition(':increment, :decrement', [
+                animate('200ms 200ms ease-in', keyframes([
+                    style({ transform: 'scale3d(0, 1.0, 1.0)' }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
+                ]))
+            ])
+        ]),
+        trigger('showcaseItem', [
+            transition(':enter', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)' }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)' })
+                ]))
+            ]),
+            transition(':leave', [
+                animate('200ms ease', keyframes([
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)' }),
+                    style({ transform: 'scale3d(0, 0, 0)' })
+                ]))
+            ]),
+        ]),
+        trigger('bounceInOut', [
+            transition('void => *', [
+                animate('600ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
+                    style({ transform: 'scale3d(1.5, 1.5, 1.5)', offset: 0.5 }),
+                    style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.75 }),
+                    style({ transform: 'scale3d(1.125, 1.125, 1.125)', offset: 0.875 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ transform: 'scale3d(0, 0, 0)' }))
+            ])
+        ]),
+    ],
+    standalone: false
 })
 export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('mainImage', { static: false }) mainImageElement: ElementRef;

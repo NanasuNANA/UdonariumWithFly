@@ -2,67 +2,99 @@
   [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
   appMovable [movable.option]="movableOption" [movable.disable]="isLock || isScratching" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
   <div class="is-fit-full is-3d" style="pointer-events: none"  [ngClass]="{fall: altitude == 0}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px)'}">
-    <div *ngIf="!isScratching" class="is-3d text" style="left: 2px; top: 2px; backface-visibility: hidden"
-      [style.width.px]="width * gridSize - 4" [style.height.px]="height * gridSize - 4">
-      <div class="is-3d" [ngClass]="{'is-inverse': isInverse}" [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" style="z-index: 5; pointer-events: none" [innerHtml]="rubiedText"></div>
-    </div>
+    @if (!isScratching) {
+      <div class="is-3d text" style="left: 2px; top: 2px; backface-visibility: hidden"
+        [style.width.px]="width * gridSize - 4" [style.height.px]="height * gridSize - 4">
+        <div class="is-3d" [ngClass]="{'is-inverse': isInverse}" [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" style="z-index: 5; pointer-events: none" [innerHtml]="rubiedText"></div>
+      </div>
+    }
     <div class="is-fit-full is-3d">
       <div class="is-fit-full is-3d chrome-smooth-image-trick" style="pointer-events: auto; position: absolute; backface-visibility: hidden"
         [ngStyle]="{'opacity': operateOpacity, 'background-color': imageFileUrl.length < 1 || blendType > 0 ? bgcolor : null, '-webkit-mask': masksCss, mask: masksCss}"
         [ngClass]="{image: imageFileUrl.length >= 1}">
-        <img *ngIf="imageFileUrl.length >= 1" class="is-fit-full is-3d chrome-smooth-image-trick" style="pointer-events: none; position: absolute;" [style.mix-blend-mode]="blendType == 1 ? null : 'hard-light'" [src]="imageFileUrl | safe: 'resourceUrl'">
+        @if (imageFileUrl.length >= 1) {
+          <img class="is-fit-full is-3d chrome-smooth-image-trick" style="pointer-events: none; position: absolute;" [style.mix-blend-mode]="blendType == 1 ? null : 'hard-light'" [src]="imageFileUrl | safe: 'resourceUrl'">
+        }
       </div>
       <div class="is-fit-full is-3d scratching-area border" style="pointer-events: none; backface-visibility: hidden">
-        <svg *ngIf="isScratching" @fadeInOut [attr.width]="width * gridSize" [attr.height]="height * gridSize" [attr.viewBox]="'0, 0, ' + (width * gridSize) + ', ' + (height * gridSize)">
-          <g *ngFor="let gridInfo of scratchingGridInfos; trackBy: identify" [@rotateInOut]="gridInfo.state" [style.transform-origin]="((gridInfo.x + 0.5) * gridSize) + 'px ' + ((gridInfo.y + 0.5) * gridSize) + 'px'">
-            <desc>{{ gridInfo.state }}</desc>
-            <ng-container [ngSwitch]="gridInfo.state">
-              <ng-container *ngSwitchCase="'scrached'">
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#22222288" stroke-width="5" stroke-linejoin="round" />
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#ff3e3e" stroke-width="4" stroke-linejoin="round" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'scraching'">
-                <line [attr.x1]="gridInfo.x * gridSize + 5" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + 5" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 5" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#ff3e3e" stroke-width="4" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + 5" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#ff3e3e" stroke-width="4" stroke-linecap="round" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'restore'">
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#22222288" stroke-width="6" stroke-linejoin="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 15" [attr.y1]="gridInfo.y * gridSize + 25" [attr.x2]="gridInfo.x * gridSize + 35" [attr.y2]="gridInfo.y * gridSize + 25" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 25" [attr.y1]="gridInfo.y * gridSize + 15" [attr.x2]="gridInfo.x * gridSize + 25" [attr.y2]="gridInfo.y * gridSize + 35" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
-                <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#8098ff" stroke-width="4" stroke-linejoin="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 15" [attr.y1]="gridInfo.y * gridSize + 25" [attr.x2]="gridInfo.x * gridSize + 35" [attr.y2]="gridInfo.y * gridSize + 25" stroke="#8098ff" stroke-width="4" stroke-linecap="round" />
-                <line [attr.x1]="gridInfo.x * gridSize + 25" [attr.y1]="gridInfo.y * gridSize + 15" [attr.x2]="gridInfo.x * gridSize + 25" [attr.y2]="gridInfo.y * gridSize + 35" stroke="#8098ff" stroke-width="4" stroke-linecap="round" />
-              </ng-container>
-            </ng-container>
-          </g>
-        </svg>        
+        @if (isScratching) {
+          <svg @fadeInOut [attr.width]="width * gridSize" [attr.height]="height * gridSize" [attr.viewBox]="'0, 0, ' + (width * gridSize) + ', ' + (height * gridSize)">
+            @for (gridInfo of scratchingGridInfos; track identify($index, gridInfo)) {
+              <g [@rotateInOut]="gridInfo.state" [style.transform-origin]="((gridInfo.x + 0.5) * gridSize) + 'px ' + ((gridInfo.y + 0.5) * gridSize) + 'px'">
+                <desc>{{ gridInfo.state }}</desc>
+                <ng-container>
+                  @switch (gridInfo.state) {
+                    @case ('scrached') {
+                      <ng-container>
+                        <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#22222288" stroke-width="5" stroke-linejoin="round" />
+                        <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#ff3e3e" stroke-width="4" stroke-linejoin="round" />
+                      </ng-container>
+                    }
+                    @case ('scraching') {
+                      <ng-container>
+                        <line [attr.x1]="gridInfo.x * gridSize + 5" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + 5" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + 5" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#ff3e3e" stroke-width="4" stroke-linecap="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + (gridSize - 5)" [attr.y1]="gridInfo.y * gridSize + 5" [attr.x2]="gridInfo.x * gridSize + 5" [attr.y2]="gridInfo.y * gridSize + (gridSize - 5)" stroke="#ff3e3e" stroke-width="4" stroke-linecap="round" />
+                      </ng-container>
+                    }
+                    @case ('restore') {
+                      <ng-container>
+                        <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#22222288" stroke-width="6" stroke-linejoin="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + 15" [attr.y1]="gridInfo.y * gridSize + 25" [attr.x2]="gridInfo.x * gridSize + 35" [attr.y2]="gridInfo.y * gridSize + 25" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + 25" [attr.y1]="gridInfo.y * gridSize + 15" [attr.x2]="gridInfo.x * gridSize + 25" [attr.y2]="gridInfo.y * gridSize + 35" stroke="#22222288" stroke-width="6" stroke-linecap="round" />
+                        <rect [attr.x]="gridInfo.x * gridSize + 5" [attr.y]="gridInfo.y * gridSize + 5" [attr.width]="gridSize - 10" [attr.height]="gridSize - 10" fill="none" stroke="#8098ff" stroke-width="4" stroke-linejoin="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + 15" [attr.y1]="gridInfo.y * gridSize + 25" [attr.x2]="gridInfo.x * gridSize + 35" [attr.y2]="gridInfo.y * gridSize + 25" stroke="#8098ff" stroke-width="4" stroke-linecap="round" />
+                        <line [attr.x1]="gridInfo.x * gridSize + 25" [attr.y1]="gridInfo.y * gridSize + 15" [attr.x2]="gridInfo.x * gridSize + 25" [attr.y2]="gridInfo.y * gridSize + 35" stroke="#8098ff" stroke-width="4" stroke-linecap="round" />
+                      </ng-container>
+                    }
+                  }
+                </ng-container>
+              </g>
+            }
+          </svg>
+        }
       </div>
-      <div *ngIf="isSelected" class="selected-highlight border" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+      @if (isSelected) {
+        <div class="selected-highlight border" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+      }
     </div>
-    <div *ngIf="!isScratching" class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
-      <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLock ? 'lock' : 'open_with' }}</i>
-    </div>
-    <div *ngIf="isScratching" class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
-      <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isPreviewMode ? 'visibility' : 'draw' }}</i>
-    </div>
-    <div *ngIf="isScratching && ownerIsOnline" class="scratching is-center is-3d" style="pointer-events: none; z-index: 10; top: -10px; left: 1px; backface-visibility: hidden">
-      <div class="name-tag has-length-limit is-nowrap is-black-background" style="color: whitesmoke" [ngStyle]="{'background-color': ownerColor + 'E6'}">
-        <span style="display: inline-block" [ngClass]="{'is-inverse': isInverse}"><i *ngIf="isPreview" style="margin-right: 2px" class="material-icons">visibility</i><b>{{ownerName}}</b>  刮除中
-          <button *ngIf="gameTableMask.isMine" class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchDone($event)" [title]="gameTableMask.scratchingGrids ? '確定' : '結束'"><i class="material-icons small-font">done</i></button>
-          <button *ngIf="gameTableMask.isMine" class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchCancel($event)" title="取消"><i class="material-icons small-font">clear</i></button>
-        </span>
+    @if (!isScratching) {
+      <div class="lock-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden">
+        <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLock ? 'lock' : 'open_with' }}</i>
+      </div>
+    }
+    @if (isScratching) {
+      <div class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
+        <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isPreviewMode ? 'visibility' : 'draw' }}</i>
+      </div>
+    }
+    @if (isScratching && ownerIsOnline) {
+      <div class="scratching is-center is-3d" style="pointer-events: none; z-index: 10; top: -10px; left: 1px; backface-visibility: hidden">
+        <div class="name-tag has-length-limit is-nowrap is-black-background" style="color: whitesmoke" [ngStyle]="{'background-color': ownerColor + 'E6'}">
+          <span style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">@if (isPreview) {
+            <i style="margin-right: 2px" class="material-icons">visibility</i>
+            }<b>{{ownerName}}</b>  刮除中
+            @if (gameTableMask.isMine) {
+              <button class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchDone($event)" [title]="gameTableMask.scratchingGrids ? '確定' : '結束'"><i class="material-icons small-font">done</i></button>
+            }
+            @if (gameTableMask.isMine) {
+              <button class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchCancel($event)" title="取消"><i class="material-icons small-font">clear</i></button>
+            }
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+  @if (isAltitudeIndicate && math.abs(gameTableMaskAltitude) >= 0.5) {
+    <div class="is-3d"
+      style="display: flex; align-items: center; border-left: 2px dashed blanchedalmond; transform-origin: top left; pointer-events: none"
+      [style.height.px]="math.abs(gameTableMaskAltitude * gridSize)"
+      [ngStyle]="{transform: 'translateX(' + (width * gridSize / 2) + 'px) translateY(' + (-height * gridSize / 2) + 'px) rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
+      <div class="is-3d" style="pointer-events: none">
+        <span class="altitude-indicator is-3d" style="position: absolute; pointer-events: none">{{ math.abs(gameTableMaskAltitude) }}</span>
+        <span class="altitude-indicator is-3d" style="position: absolute; pointer-events: none; transform: rotateY(-180deg)">{{ gameTableMaskAltitude }}</span>
       </div>
     </div>
-  </div>
-  <div class="is-3d" *ngIf="isAltitudeIndicate && math.abs(gameTableMaskAltitude) >= 0.5"
-    style="display: flex; align-items: center; border-left: 2px dashed blanchedalmond; transform-origin: top left; pointer-events: none"
-    [style.height.px]="math.abs(gameTableMaskAltitude * gridSize)"
-    [ngStyle]="{transform: 'translateX(' + (width * gridSize / 2) + 'px) translateY(' + (-height * gridSize / 2) + 'px) rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
-    <div class="is-3d" style="pointer-events: none">
-      <span class="altitude-indicator is-3d" style="position: absolute; pointer-events: none">{{ math.abs(gameTableMaskAltitude) }}</span>
-      <span class="altitude-indicator is-3d" style="position: absolute; pointer-events: none; transform: rotateY(-180deg)">{{ gameTableMaskAltitude }}</span>
-    </div>
-  </div>
+  }
 </div>

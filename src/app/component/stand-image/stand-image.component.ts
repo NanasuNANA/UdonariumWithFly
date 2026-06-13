@@ -9,46 +9,47 @@ import { DataElement } from '@udonarium/data-element';
 import { GameCharacter } from '@udonarium/game-character';
 
 @Component({
-  selector: 'stand-image',
-  templateUrl: './stand-image.component.html',
-  styleUrls: ['./stand-image.component.css'],
-  animations: [
-    trigger('standInOut', [
-      transition('void => *,:increment,:decrement', [
-        animate('132ms cubic-bezier(.21,.97,.75,1.25)', keyframes([
-          style({ opacity: 0.6, transform: 'translateY(48px) scale(0.9)', offset: 0 }),
-          style({ opacity: 1.0, transform: 'translateY(0px) scale(1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void,:increment,:decrement', [
-        animate('132ms ease-out', keyframes([
-          style({ transform: 'translateY(0px) scale(1.0)', offset: 0 }),
-          style({ opacity: 0, transform: 'translateY(96px) scale(0.9)', offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('dialogShake', [
-      transition(':increment', [
-        animate('19ms ease', keyframes([
-          style({ transform: 'translateX(1px)' })
-        ])),
-        animate('19ms ease', keyframes([
-          style({ transform: 'translateX(-1px)' })
-        ]))
-      ])
-    ]),
-    trigger('fadeAndScaleInOut', [
-      transition('void => *, true => false', [
-        animate('200ms ease-in-out', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', opacity: 0  }),
-          style({ transform: 'scale3d(0.9, 0.9, 0.9)', opacity: 0.9 }),
-        ]))
-      ]),
-      transition('* => void, true => false', [
-        animate('100ms ease-in-out', style({ transform: 'scale3d(0, 0, 0)', opacity: 0 }))
-      ])
-    ])
-  ]
+    selector: 'stand-image',
+    templateUrl: './stand-image.component.html',
+    styleUrls: ['./stand-image.component.css'],
+    animations: [
+        trigger('standInOut', [
+            transition('void => *,:increment,:decrement', [
+                animate('132ms cubic-bezier(.21,.97,.75,1.25)', keyframes([
+                    style({ opacity: 0.6, transform: 'translateY(48px) scale(0.9)', offset: 0 }),
+                    style({ opacity: 1.0, transform: 'translateY(0px) scale(1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void,:increment,:decrement', [
+                animate('132ms ease-out', keyframes([
+                    style({ transform: 'translateY(0px) scale(1.0)', offset: 0 }),
+                    style({ opacity: 0, transform: 'translateY(96px) scale(0.9)', offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('dialogShake', [
+            transition(':increment', [
+                animate('19ms ease', keyframes([
+                    style({ transform: 'translateX(1px)' })
+                ])),
+                animate('19ms ease', keyframes([
+                    style({ transform: 'translateX(-1px)' })
+                ]))
+            ])
+        ]),
+        trigger('fadeAndScaleInOut', [
+            transition('void => *, true => false', [
+                animate('200ms ease-in-out', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', opacity: 0 }),
+                    style({ transform: 'scale3d(0.9, 0.9, 0.9)', opacity: 0.9 }),
+                ]))
+            ]),
+            transition('* => void, true => false', [
+                animate('100ms ease-in-out', style({ transform: 'scale3d(0, 0, 0)', opacity: 0 }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class StandImageComponent implements OnInit, OnDestroy {
   @Input() gameCharacter: GameCharacter;

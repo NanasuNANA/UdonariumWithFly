@@ -1,52 +1,100 @@
 <div style="display: flex; flex-direction: column" class="component" [ngClass]="{'icons-panel': isIconsMenu, 'submenu-panel': isSubmenu, 'is-max-limit': !isSubmenu, 'pointer-events-none': isPointerDragging}"
   (mouseleave)="hideSubMenu()"  #root>
-  <div *ngIf="(!isIconsMenu && 0 < title.length) || altitudeHande"><div class="title" [style.color]="titleColor" [style.font-weight]="titleBold ? 'bolder' : 'normal'">{{title}}<span style="font-size: small;" *ngIf="altitudeHande"> (高度 <input type="number" step="0.1" style="font-size: small; width:3.6em; text-align:right" [(ngModel)]="altitudeHande.altitude" [disabled]="!altitudeHande.isHaveAltitude || isAltitudeDisabled">)</span></div></div>
+  @if ((!isIconsMenu && 0 < title.length) || altitudeHande) {
+    <div><div class="title" [style.color]="titleColor" [style.font-weight]="titleBold ? 'bolder' : 'normal'">{{title}}@if (altitudeHande) {
+      <span style="font-size: small;"> (高度 <input type="number" step="0.1" style="font-size: small; width:3.6em; text-align:right" [(ngModel)]="altitudeHande.altitude" [disabled]="!altitudeHande.isHaveAltitude || isAltitudeDisabled">)</span>
+    }</div></div>
+  }
   <div style="display: flex; align-items: center">
-    <div *ngIf="altitudeHande" class="altitude ruler" style="display: flex; align-self: stretch; flex-direction: column; align-content: center"><div style="margin-top: 2em;">高</div><div style="align-self: center; margin-top: auto; margin-bottom: auto">0</div><div style="margin-bottom: 2em;">低</div></div>
-    <div *ngIf="altitudeHande" class="altitude"><input #altitudeSlider class="altitude" title="{{altitudeHande.altitude}}" [(ngModel)]="altitudeHande.altitude" type="range" max="12" min="-12" step="0.5" orient="vertical" [disabled]="!altitudeHande.isHaveAltitude || isAltitudeDisabled"></div>
+    @if (altitudeHande) {
+      <div class="altitude ruler" style="display: flex; align-self: stretch; flex-direction: column; align-content: center"><div style="margin-top: 2em;">高</div><div style="align-self: center; margin-top: auto; margin-bottom: auto">0</div><div style="margin-bottom: 2em;">低</div></div>
+    }
+    @if (altitudeHande) {
+      <div class="altitude"><input #altitudeSlider class="altitude" title="{{altitudeHande.altitude}}" [(ngModel)]="altitudeHande.altitude" type="range" max="12" min="-12" step="0.5" orient="vertical" [disabled]="!altitudeHande.isHaveAltitude || isAltitudeDisabled"></div>
+    }
     <div style="flex-grow: 1">
       <ul>
-        <ng-container *ngFor="let action of actions">
-          <ng-container *ngIf="action">
+        @for (action of actions; track action) {
+          @if (action) {
             <ng-container *ngTemplateOutlet="action?.type === 'separator' ? separator : actionMenu; context: { action: action }"></ng-container>
-          </ng-container>
-        </ng-container>
+          }
+        }
       </ul>
     </div>
   </div>
 </div>
 <ng-template #actionMenu let-action="action">
   <li [ngClass]="{'has-color': action.color, 'hasHighlight': !(action.disabled || action.icon || (action.altitudeHande && action.altitudeHande.altitude == 0)), 'disabled': (action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0))}"
-      [style.padding-left.em]="action.icon ? 0 : (action.level ? (action.level + 1.5) : 1.5) - (altitudeHande ? 0.5 : 0)"
-      [style.color]="action.color ? action.color : ''" 
-      [style.text-align]="action.center ? 'center': ''"
-      (click)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : doAction(action)"
-      (mouseenter)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : showSubMenu(action)">
+    [style.padding-left.em]="action.icon ? 0 : (action.level ? (action.level + 1.5) : 1.5) - (altitudeHande ? 0.5 : 0)"
+    [style.color]="action.color ? action.color : ''"
+    [style.text-align]="action.center ? 'center': ''"
+    (click)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : doAction(action)"
+    (mouseenter)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : showSubMenu(action)">
     <div class="menu-title" [ngClass]="{'icon-menu': action.icon, default: action.default}" style="width: 100%">
-      <span *ngIf="action.error" title="{{action.error}}">⚠️</span>
-      <input *ngIf="action.name && action.checkBox == 'check' && action.name.indexOf('☑') == 0" type="checkbox" [disabled]="action.disabled" checked/>
-      <input *ngIf="action.name && action.checkBox == 'check' && action.name.indexOf('☐') == 0" type="checkbox" [disabled]="action.disabled" />
-      <input *ngIf="action.name && action.checkBox == 'radio' && action.name.indexOf('◉') == 0" type="radio" [disabled]="action.disabled" checked />
-      <input *ngIf="action.name && action.checkBox == 'radio' && action.name.indexOf('○') == 0" type="radio" [disabled]="action.disabled" />
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('黑') == 2" class="color-indicator" style="color: #000">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('藍') == 2" class="color-indicator" style="color: #00f">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('綠') == 2" class="color-indicator" style="color: #0f0">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('青') == 2" class="color-indicator" style="color: #0ff">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('紅') == 2" class="color-indicator" style="color: #f00">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('紫') == 2" class="color-indicator" style="color: #f0f">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('黃') == 2" class="color-indicator" style="color: #ff0">■</span>
-      <span *ngIf="action.name && action.colorSample && action.name.indexOf('白') == 2" class="color-indicator" style="color: #fff">■</span>
-      <span *ngIf="action.materialIcon" style="vertical-align: top"><i style="font-size: 150%; padding-left: 2px;" class="material-icons">{{action.materialIcon}}</i></span>
-      <span [innerHTML]="actionNameHtmlEscape(action.name, action.checkBox) | safe: 'html'"></span><sup *ngIf="action.selfOnly" class="self-only">*</sup>
-      <span *ngIf="action.hotkey != ''" class="hotkey" [innerHtml]="action.hotkey"></span>
-      <span *ngIf="action.icon && 0 < action.icon?.url.length" class="imagebox"><img class="image" [src]="action.icon.url | safe: 'resourceUrl'"></span>
-      <i *ngIf="action.isOuterLink" class="material-icons" style="font-size: 1rem">open_in_new</i>
-    </div>
-    <div *ngIf="action.subActions && !action.disabled" class="sub-menu-arrow">
+      @if (action.error) {
+        <span title="{{action.error}}">⚠️</span>
+      }
+      @if (action.name && action.checkBox == 'check' && action.name.indexOf('☑') == 0) {
+        <input type="checkbox" [disabled]="action.disabled" checked/>
+      }
+      @if (action.name && action.checkBox == 'check' && action.name.indexOf('☐') == 0) {
+        <input type="checkbox" [disabled]="action.disabled" />
+      }
+      @if (action.name && action.checkBox == 'radio' && action.name.indexOf('◉') == 0) {
+        <input type="radio" [disabled]="action.disabled" checked />
+      }
+      @if (action.name && action.checkBox == 'radio' && action.name.indexOf('○') == 0) {
+        <input type="radio" [disabled]="action.disabled" />
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('黑') == 2) {
+        <span class="color-indicator" style="color: #000">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('藍') == 2) {
+        <span class="color-indicator" style="color: #00f">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('綠') == 2) {
+        <span class="color-indicator" style="color: #0f0">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('青') == 2) {
+        <span class="color-indicator" style="color: #0ff">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('紅') == 2) {
+        <span class="color-indicator" style="color: #f00">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('紫') == 2) {
+        <span class="color-indicator" style="color: #f0f">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('黃') == 2) {
+        <span class="color-indicator" style="color: #ff0">■</span>
+      }
+      @if (action.name && action.colorSample && action.name.indexOf('白') == 2) {
+        <span class="color-indicator" style="color: #fff">■</span>
+      }
+      @if (action.materialIcon) {
+        <span style="vertical-align: top"><i style="font-size: 150%; padding-left: 2px;" class="material-icons">{{action.materialIcon}}</i></span>
+      }
+      <span [innerHTML]="actionNameHtmlEscape(action.name, action.checkBox) | safe: 'html'"></span>@if (action.selfOnly) {
+      <sup class="self-only">*</sup>
+    }
+    @if (action.hotkey != '') {
+      <span class="hotkey" [innerHtml]="action.hotkey"></span>
+    }
+    @if (action.icon && 0 < action.icon?.url.length) {
+      <span class="imagebox"><img class="image" [src]="action.icon.url | safe: 'resourceUrl'"></span>
+    }
+    @if (action.isOuterLink) {
+      <i class="material-icons" style="font-size: 1rem">open_in_new</i>
+    }
+  </div>
+  @if (action.subActions && !action.disabled) {
+    <div class="sub-menu-arrow">
       <i class="material-icons" style="font-size: 1em; vertical-align: bottom;">arrow_forward_ios</i>
     </div>
-    <context-menu *ngIf="subMenu && parentMenu === action" [title]="action.name" [actions]="subMenu" [isSubmenu]="true"></context-menu>
-  </li>
+  }
+  @if (subMenu && parentMenu === action) {
+    <context-menu [title]="action.name" [actions]="subMenu" [isSubmenu]="true"></context-menu>
+  }
+</li>
 </ng-template>
 <ng-template #separator let-action="action">
   <li>

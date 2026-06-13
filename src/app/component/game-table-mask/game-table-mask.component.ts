@@ -36,34 +36,35 @@ import { xor } from 'lodash';
 import { SelectionState, TabletopSelectionService } from 'service/tabletop-selection.service';
 
 @Component({
-  selector: 'game-table-mask',
-  templateUrl: './game-table-mask.component.html',
-  styleUrls: ['./game-table-mask.component.css'],
-  animations: [
-    trigger('fadeInOut', [
-      transition('void => *', [
-        animate('132ms ease-out', keyframes([
-          style({ opacity: 0, offset: 0 }),
-          style({ opacity: 1, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('132ms ease-in', keyframes([
-          style({ opacity: 1, offset: 0 }),
-          style({ opacity: 0, offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('rotateInOut', [
-      transition('scrached<=>restore', [
-        animate('132ms ease-in-out', keyframes([
-          style({ transform: 'rotateY(0deg)', offset: 0.0 }),
-          style({ transform: 'rotateY(-90deg)', offset: 1.0 })
-        ]))
-      ])
-    ]),
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'game-table-mask',
+    templateUrl: './game-table-mask.component.html',
+    styleUrls: ['./game-table-mask.component.css'],
+    animations: [
+        trigger('fadeInOut', [
+            transition('void => *', [
+                animate('132ms ease-out', keyframes([
+                    style({ opacity: 0, offset: 0 }),
+                    style({ opacity: 1, offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('132ms ease-in', keyframes([
+                    style({ opacity: 1, offset: 0 }),
+                    style({ opacity: 0, offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('rotateInOut', [
+            transition('scrached<=>restore', [
+                animate('132ms ease-in-out', keyframes([
+                    style({ transform: 'rotateY(0deg)', offset: 0.0 }),
+                    style({ transform: 'rotateY(-90deg)', offset: 1.0 })
+                ]))
+            ])
+        ]),
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() gameTableMask: GameTableMask = null;

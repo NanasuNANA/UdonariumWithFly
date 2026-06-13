@@ -12,76 +12,77 @@ import { ContextMenuSeparator, ContextMenuService } from 'service/context-menu.s
 import { PointerDeviceService } from 'service/pointer-device.service';
 
 @Component({
-  selector: 'cut-in',
-  templateUrl: './cut-in.component.html',
-  styleUrls: ['./cut-in.component.css'],
-  animations: [
-    trigger('cutInNone', [
-      transition('void => *', [
-        animate('10ms ease-in', keyframes([
-          style({ opacity: 0, offset: 0 }),
-          style({ opacity: 1.0, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('10ms ease-in', keyframes([
-          style({ opacity: 0, offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('cutInFadeInOut', [
-      transition('void => *', [
-        animate('330ms ease-in', keyframes([
-          style({ opacity: 0, offset: 0 }),
-          style({ opacity: 1.0, offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('330ms ease-in', keyframes([
-          style({ opacity: 1.0, offset: 0 }),
-          style({ opacity: 0, offset: 1.0 })
-        ]))
-      ])
-    ]),
-    trigger('cutInBounceInOut', [
-      transition('void => *', [
-        animate('600ms ease', keyframes([
-          style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
-          style({ transform: 'scale3d(1.5, 1.5, 1.5)', offset: 0.5 }),
-          style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.75 }),
-          style({ transform: 'scale3d(1.125, 1.125, 1.125)', offset: 0.875 }),
-          style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ transform: 'scale3d(0, 0, 0)' }))
-      ])
-    ]),
-    trigger('cutInOpenInOut', [
-      transition('void => *', [
-        animate('262ms ease', keyframes([
-          style({ opacity: 0, transform: 'scale3d(0, 1.0, 1.0)', offset: 0 }),
-          style({ opacity: 1, transform: 'scale3d(1.1, 1.0, 1.0)', offset: 0.875 }),
-          style({ opacity: 1, transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ opacity: 0, transform: 'scale3d(0, 1.0, 1.0)' }))
-      ])
-    ]),
-    trigger('cutInOpenInOut2', [
-      transition('void => *', [
-        animate('262ms ease', keyframes([
-          style({ opacity: 0, transform: 'scale3d(1.0, 0, 1.0)', offset: 0 }),
-          style({ opacity: 1, transform: 'scale3d(1.0, 1.1, 1.0)', offset: 0.875 }),
-          style({ opacity: 1,transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate(100, style({ opacity: 0, transform: 'scale3d(1.0, 0, 1.0)' }))
-      ])
-    ]),
-  ]
+    selector: 'cut-in',
+    templateUrl: './cut-in.component.html',
+    styleUrls: ['./cut-in.component.css'],
+    animations: [
+        trigger('cutInNone', [
+            transition('void => *', [
+                animate('10ms ease-in', keyframes([
+                    style({ opacity: 0, offset: 0 }),
+                    style({ opacity: 1.0, offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('10ms ease-in', keyframes([
+                    style({ opacity: 0, offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('cutInFadeInOut', [
+            transition('void => *', [
+                animate('330ms ease-in', keyframes([
+                    style({ opacity: 0, offset: 0 }),
+                    style({ opacity: 1.0, offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('330ms ease-in', keyframes([
+                    style({ opacity: 1.0, offset: 0 }),
+                    style({ opacity: 0, offset: 1.0 })
+                ]))
+            ])
+        ]),
+        trigger('cutInBounceInOut', [
+            transition('void => *', [
+                animate('600ms ease', keyframes([
+                    style({ transform: 'scale3d(0, 0, 0)', offset: 0 }),
+                    style({ transform: 'scale3d(1.5, 1.5, 1.5)', offset: 0.5 }),
+                    style({ transform: 'scale3d(0.75, 0.75, 0.75)', offset: 0.75 }),
+                    style({ transform: 'scale3d(1.125, 1.125, 1.125)', offset: 0.875 }),
+                    style({ transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ transform: 'scale3d(0, 0, 0)' }))
+            ])
+        ]),
+        trigger('cutInOpenInOut', [
+            transition('void => *', [
+                animate('262ms ease', keyframes([
+                    style({ opacity: 0, transform: 'scale3d(0, 1.0, 1.0)', offset: 0 }),
+                    style({ opacity: 1, transform: 'scale3d(1.1, 1.0, 1.0)', offset: 0.875 }),
+                    style({ opacity: 1, transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ opacity: 0, transform: 'scale3d(0, 1.0, 1.0)' }))
+            ])
+        ]),
+        trigger('cutInOpenInOut2', [
+            transition('void => *', [
+                animate('262ms ease', keyframes([
+                    style({ opacity: 0, transform: 'scale3d(1.0, 0, 1.0)', offset: 0 }),
+                    style({ opacity: 1, transform: 'scale3d(1.0, 1.1, 1.0)', offset: 0.875 }),
+                    style({ opacity: 1, transform: 'scale3d(1.0, 1.0, 1.0)', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate(100, style({ opacity: 0, transform: 'scale3d(1.0, 0, 1.0)' }))
+            ])
+        ]),
+    ],
+    standalone: false
 })
 export class CutInComponent implements OnInit, OnDestroy {
   @ViewChild('cutInImageElement', { static: false }) cutInImageElement: ElementRef;

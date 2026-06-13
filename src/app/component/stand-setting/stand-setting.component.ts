@@ -14,9 +14,10 @@ import { ConfirmationComponent, ConfirmationType } from 'component/confirmation/
 import { ModalService } from 'service/modal.service';
 
 @Component({
-  selector: 'app-stand-setting',
-  templateUrl: './stand-setting.component.html',
-  styleUrls: ['./stand-setting.component.css']
+    selector: 'app-stand-setting',
+    templateUrl: './stand-setting.component.html',
+    styleUrls: ['./stand-setting.component.css'],
+    standalone: false
 })
 export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() character: GameCharacter = null;

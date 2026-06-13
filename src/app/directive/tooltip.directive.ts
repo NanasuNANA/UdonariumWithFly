@@ -17,7 +17,8 @@ import { ContextMenuService } from 'service/context-menu.service';
 import { PointerDeviceService } from 'service/pointer-device.service';
 
 @Directive({
-  selector: '[appTooltip]'
+    selector: '[appTooltip]',
+    standalone: false
 })
 export class TooltipDirective implements AfterViewInit, OnDestroy {
   private static activeTooltips: ComponentRef<OverviewPanelComponent>[] = [];

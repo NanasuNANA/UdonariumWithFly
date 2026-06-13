@@ -21,17 +21,18 @@ import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import * as localForage from 'localforage';
 
 @Component({
-  selector: 'peer-menu',
-  templateUrl: './peer-menu.component.html',
-  styleUrls: ['./peer-menu.component.css'],
-  animations: [
-    trigger('fadeInOut', [
-      transition('false => true', [
-        animate('50ms ease-in-out', style({ opacity: 1.0 })),
-        animate('900ms ease-in-out', style({ opacity: 0 }))
-      ])
-    ])
-  ]
+    selector: 'peer-menu',
+    templateUrl: './peer-menu.component.html',
+    styleUrls: ['./peer-menu.component.css'],
+    animations: [
+        trigger('fadeInOut', [
+            transition('false => true', [
+                animate('50ms ease-in-out', style({ opacity: 1.0 })),
+                animate('900ms ease-in-out', style({ opacity: 0 }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class PeerMenuComponent implements OnInit, OnDestroy {
   targetUserId: string = '';

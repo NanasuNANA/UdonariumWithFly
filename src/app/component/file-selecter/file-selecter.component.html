@@ -10,59 +10,81 @@
       <input name="word-selecter" type="checkbox" value="ALL" checked="{{searchAllImage ? 'checked' : ''}}" (click)="onSearchAllImage()">
       <div class="all-tags"><b>ALL</b><badge class="badge" [count]="images.length" [@.disabled]="true"></badge></div>
     </label>
-    <label *ngIf="countAllImagesHasWord(null) > 0">
-      <input name="word-selecter" type="checkbox" value="No Tag" [(ngModel)]="searchNoTagImage" checked="{{searchNoTagImage ? 'checked' : ''}}" (change)="searchNoTagImage = (searchNoTagImage ? true : false)">
-      <div class="no-tag"><s>No Tag</s><badge *ngIf="countImagesHasWord(null) > 0" class="badge" [count]="countImagesHasWord(null)" [@.disabled]="true"></badge></div>
+    @if (countAllImagesHasWord(null) > 0) {
+      <label>
+        <input name="word-selecter" type="checkbox" value="No Tag" [(ngModel)]="searchNoTagImage" checked="{{searchNoTagImage ? 'checked' : ''}}" (change)="searchNoTagImage = (searchNoTagImage ? true : false)">
+        <div class="no-tag"><s>No Tag</s>@if (countImagesHasWord(null) > 0) {
+        <badge class="badge" [count]="countImagesHasWord(null)" [@.disabled]="true"></badge>
+      }</div>
     </label>
-    <label *ngFor="let word of allImagesOwnWords">
+  }
+  @for (word of allImagesOwnWords; track word) {
+    <label>
       <input name="word-selecter" type="checkbox" value="{{word}}" [checked]="searchWords.includes(word)" (change)="onSelectedWord(word)">
-      <div>{{word}}<badge *ngIf="countImagesHasWord(word) > 0" class="badge" [count]="countImagesHasWord(word)" [@.disabled]="true"></badge></div>
+      <div>{{word}}@if (countImagesHasWord(word) > 0) {
+        <badge class="badge" [count]="countImagesHasWord(word)" [@.disabled]="true"></badge>
+      }</div>
     </label>
-  </span>
-  <span style="white-space: nowrap">
-    <select [(ngModel)]="serchCondIsOr" style="margin-left: 3px">
-      <option value="true">任一符合 (OR)</option>
-      <option value="">全部符合 (AND)</option>
-    </select>
-    <label sytle="white-space: nowrap" title="將最近使用標籤的圖片排在前面">
-      <input name="is-sort" value="Sort" type="checkbox" [(ngModel)]="isSort" checked="{{isSort ? 'checked' : ''}}" (change)="isSort = (isSort ? true : false)">
-      <b style="font-size: smaller; margin-right: 3px">排序</b>
-    </label>
-  </span>
+  }
+</span>
+<span style="white-space: nowrap">
+  <select [(ngModel)]="serchCondIsOr" style="margin-left: 3px">
+    <option value="true">任一符合 (OR)</option>
+    <option value="">全部符合 (AND)</option>
+  </select>
+  <label sytle="white-space: nowrap" title="將最近使用標籤的圖片排在前面">
+    <input name="is-sort" value="Sort" type="checkbox" [(ngModel)]="isSort" checked="{{isSort ? 'checked' : ''}}" (change)="isSort = (isSort ? true : false)">
+    <b style="font-size: smaller; margin-right: 3px">排序</b>
+  </label>
+</span>
 </div>
 <div id="file-list" style="min-height: 250px; margin-left: 1px; padding-top: 3px">
-  <span *ngIf="isAllowedEmpty" class="empty" style="display: inline-block;">
-    <button (click)="onSelectedFile(empty)" style="min-width: 100px; margin-left: -1px; margin-right: 3px">無圖片<br>/取消設定</button>
-  </span>
-  <div *ngFor="let file of images; trackBy: identify" @scaleInOut class="image" style="text-align: center; min-width: 100px; height: 120px; position: relative" [ngClass]="{'current-images': getCurrent(file)}">
-    <div style="position: absolute; font-size: xx-small; text-align: left; bottom: 0px; width: 100%; height: 100%; overflow: hidden; pointer-events: none">
-      <ng-container *ngIf="getTagWords(file).length > 0; then tagsBlock; else noTagBlock"></ng-container> 
-      <ng-template #tagsBlock>
-        <div style="position: absolute; bottom: 0px; z-index: 5">
-          <ng-container *ngFor="let word of getTagWords(file); index as i">  
-            <label *ngIf="i < 6" class="word-tag grow" style="display: block; width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">{{ word }}</label>
-            <span *ngIf="i == 6" class="grow" style="display: block; width: 88px; overflow: hidden; padding-left: 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">…</span>
-          </ng-container>
+  @if (isAllowedEmpty) {
+    <span class="empty" style="display: inline-block;">
+      <button (click)="onSelectedFile(empty)" style="min-width: 100px; margin-left: -1px; margin-right: 3px">無圖片<br>/取消設定</button>
+    </span>
+  }
+  @for (file of images; track identify($index, file)) {
+    <div @scaleInOut class="image" style="text-align: center; min-width: 100px; height: 120px; position: relative" [ngClass]="{'current-images': getCurrent(file)}">
+      <div style="position: absolute; font-size: xx-small; text-align: left; bottom: 0px; width: 100%; height: 100%; overflow: hidden; pointer-events: none">
+        @if (getTagWords(file).length > 0) {
+          <div style="position: absolute; bottom: 0px; z-index: 5">
+            @for (word of getTagWords(file); track word; let i = $index) {
+              @if (i < 6) {
+                <label class="word-tag grow" style="display: block; width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">{{ word }}</label>
+              }
+              @if (i == 6) {
+                <span class="grow" style="display: block; width: 88px; overflow: hidden; padding-left: 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">…</span>
+              }
+            }
+          </div>
+        } @else {
+          <div style="position: absolute; bottom: 0px; z-index: 5">
+            <s class="grow" style="color:gray; display: block; padding-left: 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">No Tag</s>
+          </div>
+        }
+        <div class="zoom-in" style="z-index: 10; position: absolute; right: 0px; bottom: 2px">
+          <button class="zoom-button" (click)="chanageImageView(file)">
+            <i class="material-icons">zoom_in</i>
+          </button>
         </div>
-      </ng-template>
-      <ng-template #noTagBlock>
-        <div style="position: absolute; bottom: 0px; z-index: 5">
-          <s class="grow" style="color:gray; display: block; padding-left: 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">No Tag</s>
-        </div>
-      </ng-template>
-      <div class="zoom-in" style="z-index: 10; position: absolute; right: 0px; bottom: 2px">
-        <button class="zoom-button" (click)="chanageImageView(file)">
-          <i class="material-icons">zoom_in</i>
-        </button>
       </div>
+      @if (getHidden(file)) {
+        <div style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
+          <i class="material-icons red-eye" style="z-index: 5; margin-right: 2px; font-size: 16px; display: block">visibility</i>
+        </div>
+      }
+      @if (getCurrent(file)) {
+        <div style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 5">
+          <b class="grow" style="font-size: 13px; color: red; padding-left: 2px">設定中</b>
+        </div>
+      }
+      @if (0 < file.url.length) {
+        <img [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="getCurrent(file) ? false : onSelectedFile(file)" draggable="false" />
+      }
+      @if (file.url.length <= 0) {
+        <img src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
+      }
     </div>
-    <div *ngIf="getHidden(file)" style="position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-      <i class="material-icons red-eye" style="z-index: 5; margin-right: 2px; font-size: 16px; display: block">visibility</i>
-    </div>
-    <div *ngIf="getCurrent(file)" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 5">
-      <b class="grow" style="font-size: 13px; color: red; padding-left: 2px">設定中</b>
-    </div>
-    <img *ngIf="0 < file.url.length" [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="getCurrent(file) ? false : onSelectedFile(file)" draggable="false" />
-    <img *ngIf="file.url.length <= 0" src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
-  </div>
+  }
 </div>

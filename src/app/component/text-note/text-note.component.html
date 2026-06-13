@@ -7,30 +7,40 @@
         <div class="is-3d is-transition" [ngStyle]="{'transform': 'rotateZ(' + (isUpright ? 0 : 90) + 'deg) rotateY(-90deg)'}">
           <div class="upright-transform is-3d is-bg-color is-front is-bg-texture chrome-smooth-image-trick" [ngClass]="{'is-bg-filter': isWhiteOut}"
             [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
-            <div *ngIf="isShowTitle && title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
+            @if (isShowTitle && title.length) {
+              <div class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
+            }
             <textarea #textArea (input)="calcFitHeight();" class="textarea is-3d" [ngClass]="{'is-pointer-events-none': !isEditorSelected, 'is-pointer-events-auto': isEditorSelected, 'hide-area': !isEditorSelected}"
-              [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false"></textarea>
+            [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false"></textarea>
             <div class="is-3d is-outline-text note-text" style="margin-top:-18px" [ngClass]="{'hide-area': isEditorSelected}" (click)="activate()"
-              [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
-              <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+            [style.font-size.px]="fontSize + 9" [style.color]="color" [style.text-shadow]="textShadowCss" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
+            @if (isSelected) {
+              <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+            }
           </div>
           <div class="upright-transform is-3d is-back is-bg-color is-bg-texture chrome-smooth-image-trick"
             [style.background-image]="'url(' + imageFile?.url + ')' | safe: 'style'" [style.width.px]="width * gridSize" [style.min-height.px]="height * gridSize">
-            <div *ngIf="isSelected" class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+            @if (isSelected) {
+              <div class="selected-highlight" [ngClass]="{'is-magnetic': isMagnetic}"></div>
+            }
             <div class="is-3d is-pointer-events-none" style="visibility: hidden">
-              <div *ngIf="isShowTitle && title.length" class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
+              @if (isShowTitle && title.length) {
+                <div class="title is-3d is-black-background is-pointer-events-none">{{title}}</div>
+              }
               <textarea class="textarea is-3d hide-area is-pointer-events-none"
-                [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false" readonly></textarea>
+              [style.font-size.px]="fontSize + 9" [(ngModel)]="text" spellcheck="false" readonly></textarea>
               <div class="is-3d is-outline-text note-text is-pointer-events-none" style="margin-top:-18px"
-                [style.font-size.px]="fontSize + 9" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
+              [style.font-size.px]="fontSize + 9" [innerHTML]="lastNewLineAdjust(rubiedText) | safe: 'html'"></div>
             </div>
           </div>
         </div>
       </div>
-      <div *ngIf="!isLocked" [ngClass]="{'is-grab': !isLocked}" class="grand-grabing-area" style="position: absolute"
-        [ngStyle]="{'transform': 'translateX(' + gridSize / 2 + 'px) translateY(' + (-gridSize / 4) + 'px)'}"
-        [style.width.px]="(width - 1) * gridSize"
+      @if (!isLocked) {
+        <div [ngClass]="{'is-grab': !isLocked}" class="grand-grabing-area" style="position: absolute"
+          [ngStyle]="{'transform': 'translateX(' + gridSize / 2 + 'px) translateY(' + (-gridSize / 4) + 'px)'}"
+          [style.width.px]="(width - 1) * gridSize"
         [style.min-height.px]="gridSize / 2"></div>
+      }
       <div [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px)'}">
         <div class="rotate-grab of-left-top">
           <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
@@ -39,23 +49,27 @@
           <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'autorenew' }}</i>
         </div>
       </div>
-      <div *ngIf="!isLocked">
-        <div class="rotate-grab of-left-top">
-          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">autorenew</i>
+      @if (!isLocked) {
+        <div>
+          <div class="rotate-grab of-left-top">
+            <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">autorenew</i>
+          </div>
+          <div class="rotate-grab of-right-top">
+            <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">autorenew</i>
+          </div>
         </div>
-        <div class="rotate-grab of-right-top">
-          <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">autorenew</i>
-        </div>
+      }
+    </div>
+  </div>
+  @if (isAltitudeIndicate && math.abs(textNoteAltitude) >= 0.5) {
+    <div class="is-3d"
+      style="display: flex; align-items: center; border-left: 2px dashed blanchedalmond; transform-origin: top left"
+      [style.height.px]="math.abs(textNoteAltitude * gridSize)"
+      [ngStyle]="{transform: 'rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
+      <div class="is-3d">
+        <span class="altitude-indicator is-3d" style="position: absolute">{{ math.abs(textNoteAltitude) }}</span>
+        <span class="altitude-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)">{{ textNoteAltitude }}</span>
       </div>
     </div>
-  </div>
-  <div class="is-3d" *ngIf="isAltitudeIndicate && math.abs(textNoteAltitude) >= 0.5"
-    style="display: flex; align-items: center; border-left: 2px dashed blanchedalmond; transform-origin: top left"
-    [style.height.px]="math.abs(textNoteAltitude * gridSize)"
-    [ngStyle]="{transform: 'rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
-    <div class="is-3d">
-      <span class="altitude-indicator is-3d" style="position: absolute">{{ math.abs(textNoteAltitude) }}</span>
-      <span class="altitude-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)">{{ textNoteAltitude }}</span>
-    </div>
-  </div>
+  }
 </div>
