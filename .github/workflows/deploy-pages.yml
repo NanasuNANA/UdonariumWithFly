@@ -42,11 +42,11 @@ jobs:
 
       - name: Push to Double-Plus-Studio.github.io
         run: |
-          touch dist/udonarium/.nojekyll
+          touch dist/udonarium/browser/.nojekyll
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git clone https://x-access-token:${{ secrets.PAGES_DEPLOY_TOKEN }}@github.com/Double-Plus-Studio/Double-Plus-Studio.github.io.git pages-repo
-          cp -r dist/udonarium/. pages-repo/
+          cp -r dist/udonarium/browser/. pages-repo/
           cd pages-repo
           git add -A
           git diff --cached --quiet || git commit -m "Deploy from UdonariumWithFly@${{ github.sha }}"
