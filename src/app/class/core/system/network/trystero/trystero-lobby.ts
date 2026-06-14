@@ -31,8 +31,6 @@ export class TrysteroLobby {
 
   async unregister(): Promise<void> {
     if (!this.registeredPeerId) return;
-    const peerRef = ref(this.db, `${LOBBY_ROOT}/peers/${this.registeredPeerId}`);
-    await remove(peerRef);
     this.registeredPeerId = null;
   }
 
