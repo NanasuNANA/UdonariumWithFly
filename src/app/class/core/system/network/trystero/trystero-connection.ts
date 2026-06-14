@@ -267,7 +267,7 @@ export class TrysteroConnection implements Connection {
 
     // Start periodic room peer sync if not already running
     if (!this.syncInterval && this._peer?.isRoom) {
-      this.syncInterval = setInterval(() => this.syncRoomPeersAsync(), 15000);
+      this.syncInterval = setInterval(() => this.syncRoomPeersAsync(), 60000);
     }
   }
 

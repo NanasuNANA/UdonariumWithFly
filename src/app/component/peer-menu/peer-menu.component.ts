@@ -45,6 +45,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   isPasswordOpen = false;
   isRoomInfoCopied = false;
   isReregistering = false;
+  isResyncingConnections = false;
 
   help: string = '';
 
@@ -52,6 +53,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   private _timeOutId2: NodeJS.Timeout;
   private _timeOutId3: NodeJS.Timeout;
   private _timeOutId4: NodeJS.Timeout;
+  private _resyncTimeoutId: NodeJS.Timeout;
 
   private interval: NodeJS.Timeout;
   get myPeer(): PeerCursor { return PeerCursor.myCursor; }
@@ -123,6 +125,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     clearTimeout(this._timeOutId2);
     clearTimeout(this._timeOutId3);
     clearTimeout(this._timeOutId4);
+    clearTimeout(this._resyncTimeoutId);
     EventSystem.unregister(this);
     clearInterval(this.interval);
   }
@@ -274,6 +277,21 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     this.isReregistering = true;
     await this.networkService.reregisterLobby();
     this.isReregistering = false;
+  }
+
+  async resyncRoomConnections() {
+    if (this.isResyncingConnections) return;
+
+    this.isResyncingConnections = true;
+    clearTimeout(this._resyncTimeoutId);
+
+    try {
+      await this.networkService.syncRoomPeers();
+    } finally {
+      this._resyncTimeoutId = setTimeout(() => {
+        this.isResyncingConnections = false;
+      }, 3000);
+    }
   }
 
   isAbleClipboardCopy(): boolean {

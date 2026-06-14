@@ -88,7 +88,14 @@
 @for (peer of networkService.peers; track peer; let i = $index) {
   <div>
     @if (i == 0) {
-      <div style="font-weight: bold">與其他參加者的連線狀態<span class="health">（良好 </span><i class="material-icons health health-blue">sentiment_very_satisfied</i><span class="health"> ＞ </span><i class="material-icons health health-green">sentiment_dissatisfied</i><span class="health"> ＞ </span><i class="material-icons health health-yellow">mood_bad</i><span class="health"> ＞ </span><i class="material-icons health health-red">sentiment_very_dissatisfied</i><span class="health"> 不良）</span>：</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="font-weight: bold">與其他參加者的連線狀態<span class="health">（良好 </span><i class="material-icons health health-blue">sentiment_very_satisfied</i><span class="health"> ＞ </span><i class="material-icons health health-green">sentiment_dissatisfied</i><span class="health"> ＞ </span><i class="material-icons health health-yellow">mood_bad</i><span class="health"> ＞ </span><i class="material-icons health health-red">sentiment_very_dissatisfied</i><span class="health"> 不良）</span>：</div>
+        @if (networkService.peer.isRoom && networkService.peerIds.length > 0) {
+          <button style="padding: 4px 8px; margin-left: 8px; white-space: nowrap;" (click)="resyncRoomConnections()" [disabled]="isResyncingConnections">
+            <b class="material-icons" style="font-size: 1em; vertical-align: middle">sync</b><b style="margin-left: 2px; font-size: smaller;">重新整理其他參加者的連線</b>
+          </button>
+        }
+      </div>
     }
     <div class="peer-info">
       @if (!peer.isOpen) {
