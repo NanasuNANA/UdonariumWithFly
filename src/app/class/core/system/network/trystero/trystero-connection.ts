@@ -48,6 +48,7 @@ export class TrysteroConnection implements Connection {
   private gameAction: MessageAction<ArrayBuffer> | null = null;
   private helloAction: MessageAction<HelloPayload> | null = null;
   private pingInterval: ReturnType<typeof setInterval> | null = null;
+  private syncInterval: ReturnType<typeof setInterval> | null = null;
 
   private outboundQueue: Promise<void> = Promise.resolve();
   private inboundQueue: Promise<void> = Promise.resolve();
@@ -73,6 +74,7 @@ export class TrysteroConnection implements Connection {
 
   close(): void {
     if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
+    if (this.syncInterval) { clearInterval(this.syncInterval); this.syncInterval = null; }
     this.lobby?.unregister();
     this.room?.leave();
     this.room = null;
@@ -262,6 +264,11 @@ export class TrysteroConnection implements Connection {
     if (!this.pingInterval) {
       this.pingInterval = setInterval(() => this.updatePingAll(), 30000);
     }
+
+    // Start periodic room peer sync if not already running
+    if (!this.syncInterval && this._peer?.isRoom) {
+      this.syncInterval = setInterval(() => this.syncRoomPeersAsync(), 15000);
+    }
   }
 
   private async updatePingAll(): Promise<void> {
@@ -285,6 +292,28 @@ export class TrysteroConnection implements Connection {
       this.udonariumToTrystero.delete(context.peerId);
       context.isOpen = false;
       if (this.callback.onDisconnect) this.callback.onDisconnect(context);
+    }
+  }
+
+  private async syncRoomPeersAsync(): Promise<void> {
+    if (!this._peer?.isRoom) return;
+    try {
+      const rooms = await this.listAllRooms();
+      const currentRoom = rooms.find(r => r.id === this._peer.roomId && r.name === this._peer.roomName);
+      if (!currentRoom) return;
+
+      const connectedIds = new Set(this.udonariumToTrystero.keys());
+      const targetPeers = this._peer.hasPassword
+        ? currentRoom.filterByPassword(this._peer.password)
+        : currentRoom.peers;
+
+      for (const peer of targetPeers) {
+        if (!connectedIds.has(peer.peerId) && this.connect(peer)) {
+          console.log('Trystero: syncing room peer', peer.peerId);
+        }
+      }
+    } catch (e) {
+      console.warn('Trystero: room peer sync failed:', e);
     }
   }
 

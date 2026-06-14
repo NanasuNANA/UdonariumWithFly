@@ -145,8 +145,34 @@ export class Network {
     return this.connection ? this.connection.listAllRooms() : Promise.resolve([]);
   }
 
-  reregisterLobby(): Promise<void> {
-    return (this.connection as any)?.reregisterLobby?.() ?? Promise.resolve();
+  async reregisterLobby(): Promise<void> {
+    await ((this.connection as any)?.reregisterLobby?.() ?? Promise.resolve());
+    this.broadcastReregisterLobby();
+    await this.syncRoomPeers();
+  }
+
+  private broadcastReregisterLobby(): void {
+    if (!this.peer.isRoom || this.peerIds.length < 1) return;
+    this.send(['REREGISTER_LOBBY_PEER']);
+  }
+
+  async syncRoomPeers(): Promise<void> {
+    if (!this.peer.isRoom) return;
+    const rooms = await this.listAllRooms();
+    const currentRoom = rooms.find(r => r.id === this.peer.roomId && r.name === this.peer.roomName);
+    if (!currentRoom) return;
+
+    const connectedIds = new Set(this.peerIds);
+    const targetPeers = this.peer.hasPassword
+      ? currentRoom.filterByPassword(this.peer.password)
+      : currentRoom.peers;
+
+    for (const peer of targetPeers) {
+      if (!connectedIds.has(peer.peerId)) {
+        console.log('Syncing room peer:', peer.peerId);
+        this.connect(peer);
+      }
+    }
   }
 
   private initializeConnection(): Connection {

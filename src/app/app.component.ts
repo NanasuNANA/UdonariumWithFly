@@ -266,6 +266,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('UPDATE_SELECTION', event => { this.lazyNgZoneUpdate(event.isSendFromSelf); })
       .on('SYNCHRONIZE_AUDIO_LIST', event => { if (event.isSendFromSelf) this.lazyNgZoneUpdate(false); })
       .on('SYNCHRONIZE_FILE_LIST', event => { if (event.isSendFromSelf) this.lazyNgZoneUpdate(false); })
+      .on('REREGISTER_LOBBY_PEER', event => { if (!event.isSendFromSelf) Network.reregisterLobby(); })
       .on<AppConfig>('LOAD_CONFIG', event => {
         console.log('LOAD_CONFIG !!!', event.data);
         if (event.data.dice && event.data.dice.url) {
