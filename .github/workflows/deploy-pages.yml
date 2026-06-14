@@ -46,6 +46,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git clone https://x-access-token:${{ secrets.PAGES_DEPLOY_TOKEN }}@github.com/Double-Plus-Studio/Double-Plus-Studio.github.io.git pages-repo
+          find pages-repo -maxdepth 1 ! -name '.git' ! -name 'pages-repo' -exec rm -rf {} +
           cp -r dist/udonarium/browser/. pages-repo/
           cd pages-repo
           git add -A
