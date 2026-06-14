@@ -130,4 +130,5 @@ export class LobbyComponent implements OnInit, OnDestroy {
     if (isCreate) this.modalService.resolve();
     this.help = '按下「重新整理列表」按鈕可顯示可連線的房間列表。';
   }
+
 }

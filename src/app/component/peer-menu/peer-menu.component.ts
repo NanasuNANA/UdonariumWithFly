@@ -43,7 +43,8 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   isRoomNameCopied = false;
   isPasswordCopied = false;
   isPasswordOpen = false;
-  isRoomInfoCopied = false
+  isRoomInfoCopied = false;
+  isReregistering = false;
 
   help: string = '';
 
@@ -251,7 +252,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   copyRoomInfo() {
     if (navigator.clipboard) {
       this.modalService.open(ConfirmationComponent, {
-        title: '複製房間資訊', 
+        title: '複製房間資訊',
         text: '確定要將房間資訊（房間名稱/房間ID、密碼）複製到剪貼簿嗎？',
         helpHtml: '共享密碼時，請<b>避免在SNS公開帳號等地方公開給不特定多數人</b>。',
         type: ConfirmationType.OK_CANCEL,
@@ -267,6 +268,12 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
       });
       this.isPasswordOpen = false;
     }
+  }
+
+  async reregisterLobby() {
+    this.isReregistering = true;
+    await this.networkService.reregisterLobby();
+    this.isReregistering = false;
   }
 
   isAbleClipboardCopy(): boolean {

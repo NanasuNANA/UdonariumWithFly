@@ -370,7 +370,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (!reconnectErrorTypes.includes(errorType)) return;
           await this.modalService.open(TextViewComponent, { title: '網路錯誤', text: '關閉此視窗將嘗試重新連線。' });
-          Network.open();
+          const peer = Network.peer;
+          if (peer.isRoom) {
+            Network.open(peer.userId, peer.roomId, peer.roomName, peer.password);
+          } else {
+            Network.open(peer.userId);
+          }
           this.isLoggedin = false;
         });
       })

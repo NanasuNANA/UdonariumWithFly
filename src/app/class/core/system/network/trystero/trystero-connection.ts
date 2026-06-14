@@ -158,6 +158,10 @@ export class TrysteroConnection implements Connection {
     return RoomInfo.listFrom(peerIds);
   }
 
+  async reregisterLobby(): Promise<void> {
+    if (this._peer?.isRoom) await this.lobby?.register(this._peer);
+  }
+
   private async openAsync(peer: PeerContext): Promise<void> {
     const firebaseConfig = this.config?.trystero?.firebase;
     if (!firebaseConfig?.databaseURL) {

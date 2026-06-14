@@ -145,6 +145,10 @@ export class Network {
     return this.connection ? this.connection.listAllRooms() : Promise.resolve([]);
   }
 
+  reregisterLobby(): Promise<void> {
+    return (this.connection as any)?.reregisterLobby?.() ?? Promise.resolve();
+  }
+
   private initializeConnection(): Connection {
     let connection = new this.connectionClass();
     connection.configure(this.config);

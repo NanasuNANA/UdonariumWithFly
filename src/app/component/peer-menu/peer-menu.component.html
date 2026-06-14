@@ -80,6 +80,9 @@
       </div>
     </div>
   }
+  <div style="margin-top: 4px">
+    <button style="margin-left: 0px" (click)="reregisterLobby()" [disabled]="isReregistering"><b class="material-icons" style="font-size: 1em; vertical-align: middle">meeting_room</b><b style="margin-left: 2px; display: inline-block; font-size: smaller">{{ isReregistering ? '處理中...' : '重新在房間列表顯示房間' }}</b></button>
+  </div>
 }
 <hr/>
 @for (peer of networkService.peers; track peer; let i = $index) {

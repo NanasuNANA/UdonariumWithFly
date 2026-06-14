@@ -3,7 +3,7 @@ import { Database, get, getDatabase, onDisconnect, ref, remove, set } from 'fire
 import { IPeerContext } from '../peer-context';
 
 const LOBBY_ROOT = 'udonarium-lobby';
-const STALE_MS = 5 * 60 * 1000;
+const STALE_MS = 10 * 60 * 1000;
 
 interface LobbyEntry {
   peerId: string;
