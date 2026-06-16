@@ -1,4 +1,4 @@
-import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
+import { FirebaseApp } from 'firebase/app';
 import { Database, get, getDatabase, onDisconnect, ref, remove, set } from 'firebase/database';
 import { IPeerContext } from '../peer-context';
 
@@ -15,9 +15,8 @@ export class TrysteroLobby {
   private db: Database;
   private registeredPeerId: string | null = null;
 
-  constructor(firebaseConfig: object) {
-    const existing = getApps().find(a => a.name === LOBBY_ROOT);
-    this.app = existing ?? initializeApp(firebaseConfig, LOBBY_ROOT);
+  constructor(firebaseApp: FirebaseApp) {
+    this.app = firebaseApp;
     this.db = getDatabase(this.app);
   }
 
@@ -31,6 +30,8 @@ export class TrysteroLobby {
 
   async unregister(): Promise<void> {
     if (!this.registeredPeerId) return;
+    const peerRef = ref(this.db, `${LOBBY_ROOT}/peers/${this.registeredPeerId}`);
+    await remove(peerRef);
     this.registeredPeerId = null;
   }
 
