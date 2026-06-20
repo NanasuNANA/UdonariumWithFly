@@ -179,6 +179,7 @@ export class TrysteroConnection implements Connection {
       this.firebaseApp = existing ?? initializeApp(firebaseConfig, appName);
 
       this.lobby = new TrysteroLobby(this.firebaseApp);
+      await this.lobby.ensureSignedIn();
       if (peer.isRoom) await this.lobby.register(peer);
 
       const trysteroRoomId = this.calcTrysteroRoomId(peer);
