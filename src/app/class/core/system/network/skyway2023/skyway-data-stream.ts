@@ -345,7 +345,7 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
     }
     for (let data of this.sendQueue) {
       try {
-        this.dataChannel.send(data);
+        this.dataChannel.send(data as Uint8Array<ArrayBuffer>);
         this.sendQueue.delete(data);
       } catch (err) {
         console.error(err);
