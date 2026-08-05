@@ -28,7 +28,7 @@
     "@zip.js/zip.js": "^2.7.72",
     "autolinker": "^3.16.2",
     "base-x": "^5.0.1",
-    "bcdice": "^4.9.0",
+    "bcdice": "^4.10.0",
     "crypto-js": "^4.2.0",
     "file-saver": "^2.0.5",
     "hammerjs": "^2.0.8",
